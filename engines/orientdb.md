@@ -13,6 +13,18 @@ confidence: high
 
 > A single-engine multi-model database (graph + document + key-value + object) with O(1) pointer-based edge traversal and a SQL dialect — capable on a single node, but its distributed layer is fragile and the project has been effectively orphaned since SAP withdrew commercial support in 2021.
 
+## When to use
+
+**Use OrientDB if:**
+- ✅ You already run it and want one embeddable JVM engine unifying graph + document data on a single node
+- ✅ You want O(1) RID pointer-based edge traversal (no per-hop index lookup) with a SQL dialect plus Gremlin
+- ✅ You can live with read-committed isolation (the only level over the remote protocol) and self-managed deployment
+
+**Avoid OrientDB if:**
+- ❌ It's a new greenfield project — the project lost its commercial backer when SAP dropped support in 2021 and is now low-volume community bugfix only; prefer arcadedb, [arangodb](arangodb.md), or [neo4j](neo4j.md)
+- ❌ You need production multi-master clusters with proven partition safety — the distributed (Hazelcast) layer has documented split-brain/lock issues and no published Jepsen validation
+- ❌ You need serializable isolation, large-scale OLAP/analytics, or automatic sharding (sharding is manual and resharding is painful)
+
 ## Identity
 - **Taxonomy / data model:** [multi-model](../concepts/multi-model.md) DBMS combining graph, document, key-value, and object models in one core engine (not adapters over a single model). Relationships are stored as direct physical links between records via Record IDs (RIDs), giving constant-time edge traversal without index lookups or JOINs. See [graph-data-model](../concepts/graph-data-model.md).
 - **Storage model:** "plocal" (paginated local) is the primary engine — page-oriented disk storage with [WAL](../concepts/wal-and-durability.md), B-tree and extendible-hash indexes, and surrogate keys (RIDs) encoding cluster + physical position. Row/record-oriented, not columnar; not an [LSM](../concepts/lsm-vs-btree.md) store. An in-memory engine also exists.

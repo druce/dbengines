@@ -13,6 +13,20 @@ confidence: high
 
 > A free, GPL drop-in replacement for Oracle MySQL Community Edition that adds enterprise-grade observability, security, and an LSM storage engine (MyRocks) without per-core licensing — but it is still single-node MySQL, with the same replication and consistency caveats.
 
+## When to use
+
+**Use Percona Server for MySQL if:**
+- ✅ You run MySQL in production and want Enterprise-tier features (audit log, thread pool, encryption, PAM auth, hot non-blocking XtraBackup) for free under GPL
+- ✅ You have write-heavy or storage-cost-sensitive data that benefits from the MyRocks LSM engine's low write amplification
+- ✅ You want deeper MySQL instrumentation — per-table/index/user/thread stats, extended slow-query log, PMM dashboards
+- ✅ You want to avoid Oracle per-core licensing with a 100% wire-compatible drop-in (every MySQL driver, ProxySQL, Debezium works unchanged)
+
+**Avoid Percona Server for MySQL if:**
+- ❌ You expect synchronous multi-master HA from plain Percona Server — that requires the separate Percona XtraDB **Cluster** product; this engine has MySQL's ordinary async replication and split-brain risk
+- ❌ You need analytical/OLAP workloads — no columnar engine; use ClickHouse or a warehouse
+- ❌ You need automatic failover or built-in sharding — both require external tooling (Orchestrator, ProxySQL, Vitess)
+- ❌ You rely on InnoDB REPEATABLE READ being true snapshot isolation — Jepsen found MySQL's RR permits lost updates, write skew, and read skew
+
 ## Identity
 - **Taxonomy / data model:** relational, SQL. A near-source-compatible fork of upstream Oracle [mysql](mysql.md), tracking the same major versions (8.0, 8.4). See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** default engine is **Percona XtraDB**, an enhanced InnoDB (B-tree / clustered-index row store, [lsm-vs-btree](../concepts/lsm-vs-btree.md), [mvcc](../concepts/mvcc.md)). Also ships **MyRocks** (RocksDB-based LSM engine) for write-heavy, space-constrained workloads ([Percona docs](https://docs.percona.com/percona-server/8.0/feature-comparison.html)). TokuDB was deprecated and removed in 8.0 ([changed-in-version notes](https://docs.percona.com/percona-server/8.0/changed_in_version.html)).

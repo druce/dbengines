@@ -13,6 +13,18 @@ confidence: high
 
 > DataStax Enterprise (DSE) is a proprietary, support-backed superset of Apache [apache-cassandra](apache-cassandra.md) that bolts Solr search, Spark analytics, TinkerPop graph, and vector search onto Cassandra's wide-column core — you adopt it for the operational tooling and SLAs, not for any change to Cassandra's underlying consistency model.
 
+## When to use
+
+**Use Datastax Enterprise if:**
+- ✅ You already want Cassandra's always-on, multi-datacenter, write-scalable AP model with tunable consistency.
+- ✅ You need vendor support plus integrated Search/Analytics/Graph/vector + OpsCenter in one supported package rather than assembling them yourself.
+- ✅ You run write-heavy, geo-distributed workloads (time-series, IoT, messaging, catalogs) needing multi-DC active-active.
+
+**Avoid Datastax Enterprise if:**
+- ❌ You need joins, multi-key serializable transactions, or ad-hoc analytics — it inherits Cassandra's clock-driven last-write-wins model.
+- ❌ You have a small dataset that doesn't justify the operational complexity and per-node subscription cost.
+- ❌ The proprietary licensing and now-IBM ownership are continuity concerns (OSS Cassandra is the open alternative).
+
 ## Identity
 - **Taxonomy / data model:** Wide-column store at its core (CQL partitioned row store), made multi-model by add-on workloads: full-text [full-text-search](../concepts/full-text-search.md) (DSE Search, Solr/Lucene), graph (DSE Graph, Apache TinkerPop/Gremlin), and vector search ([vector-search-ann](../concepts/vector-search-ann.md)) in recent versions ([DSE architecture](https://docs.datastax.com/en/dse/6.9/architecture/database-architecture/architecture-introduction.html)).
 - **Storage model:** [LSM](../concepts/lsm-vs-btree.md) tree — writes hit a commit log + memtable, flushed to immutable SSTables, merged by compaction ([DSE architecture](https://docs.datastax.com/en/dse/6.9/architecture/database-architecture/architecture-introduction.html)). See [columnar-storage](../concepts/columnar-storage.md) caveat: it is a *row*-oriented wide-column store, not analytic columnar.

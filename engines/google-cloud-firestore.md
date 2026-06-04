@@ -13,7 +13,17 @@ confidence: high
 
 > A fully-managed, serverless document database built on Spanner-class infrastructure that pairs strong consistency and ACID transactions with realtime client sync and offline support — provided you denormalize, design keys to avoid hotspots, and accept per-operation billing.
 
-## Identity
+## When to use
+
+**Use Google Cloud Firestore if:**
+- ✅ You're building realtime, offline-capable mobile/web apps on GCP/Firebase (chat, collaboration, presence, live dashboards) and want serverless scaling with zero ops.
+- ✅ You need genuinely strong (serializable, TrueTime-backed) ACID transactions in a document store, not just single-doc atomicity.
+- ✅ You want automatic horizontal scaling with no node sizing, plus multi-region survival of a full region loss.
+
+**Avoid Google Cloud Firestore if:**
+- ❌ You have relational/JOIN-heavy data or need ad-hoc SQL analytics — standard mode has no native joins (denormalize) and only `count()`/`sum()`/`avg()` aggregations (export to BigQuery for OLAP).
+- ❌ You have high-write single entities — a single document caps at ~1 write/sec sustained, so hot counters need sharded-counter patterns; monotonic keys create index hotspots (biggest gotcha).
+- ❌ You're cost-sensitive with scan-heavy/read-heavy access — per-operation/per-document billing makes list views and fan-out reads the budget killers.
 - **Taxonomy / data model:** Document store. Data is collections → documents → fields, with documents holding nested maps/arrays and subcollections. Two operating modes: **Native mode** (document API, realtime listeners, offline SDKs) and **Datastore mode** (entity API, server-side, no realtime). A newer **Enterprise edition** adds MongoDB wire-protocol compatibility ([MongoDB compatibility GA Aug 2025](https://firebase.blog/posts/2025/08/firestore-mongodb-general-availability/)).
 - **Storage model:** Two logical tables — Documents and Indexes — partitioned into "splits" (key ranges) spread across storage servers; documents ordered lexicographically by key ([Understand reads and writes at scale](https://docs.cloud.google.com/firestore/native/docs/understand-reads-writes-scale)). ⚠️ unverified — the underlying physical storage engine is not documented publicly; "LSM-tree-backed / Spanner/Bigtable lineage" is a widely-repeated inference, not stated in the official scale doc. See [lsm-vs-btree](../concepts/lsm-vs-btree.md). On-disk format is opaque/managed.
 - **Workload:** OLTP-oriented, optimized for many small point reads/writes and realtime fan-out, not analytics. Not HTAP — no columnar/analytical path; export to BigQuery for OLAP. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).

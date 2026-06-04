@@ -13,6 +13,18 @@ confidence: high
 
 > A standards-compliant RDF triplestore (RDF4J + W3C SPARQL) built around forward-chaining OWL/RDFS inference materialized at load time; reach for it when semantics, reasoning, and linked-data interchange matter more than raw graph-traversal throughput.
 
+## When to use
+
+**Use GraphDB if:**
+- ✅ You need a standards-compliant RDF/SPARQL triplestore with materialized OWL/RDFS inference for enterprise knowledge graphs or linked-data publishing.
+- ✅ Reasoning-heavy reads matter more than write throughput — inference is forward-chained at load time so inferred facts query fast.
+- ✅ You want low data/query lock-in (RDF + SPARQL are W3C standards, exportable to any RDF4J store) and GraphRAG over ontology-modeled data.
+
+**Avoid GraphDB if:**
+- ❌ You need snapshot/serializable isolation — it is only read committed and does not guarantee a single consistent snapshot per transaction.
+- ❌ You have write-heavy OLTP or web-scale data needing horizontal write scaling — the EE cluster replicates (full copy per node), it does not shard.
+- ❌ You want a property-graph traversal engine ([neo4j](neo4j.md)/[memgraph](memgraph.md)) or an open-source product — GraphDB is proprietary and license-gated even for the Free tier, with no independent Jepsen verification of its cluster.
+
 ## Identity
 - **Taxonomy / data model:** RDF triplestore — the [graph-data-model](../concepts/graph-data-model.md) expressed as subject-predicate-object triples (quads with named graphs), queried in SPARQL. Property-graph engines like [neo4j](neo4j.md) are a different graph model; GraphDB is the W3C semantic-web/linked-data lineage.
 - **Storage model:** disk-based, B-tree-style sorted indexes over triples — primarily the PSO (predicate-subject-object) and POS (predicate-object-subject) indexes, plus optional additional indexes (e.g. context/predicate-list) for specific access patterns ([storage docs](https://graphdb.ontotext.com/documentation/10.8/storage.html)). Not an [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM engine; closer to sorted-index/B-tree on disk. Inferred triples are materialized and stored alongside asserted ones.

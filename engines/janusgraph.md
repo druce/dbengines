@@ -13,6 +13,19 @@ confidence: medium
 
 > A horizontally-scalable Apache TinkerPop property graph that is really a Gremlin query layer bolted onto a separate wide-column store (Cassandra/HBase/Bigtable) — so its consistency, durability, and "ACID" story are whatever that backend gives you, which on the usual backends is *not* serializable and *not* multi-row atomic.
 
+## When to use
+
+**Use JanusGraph if:**
+- ✅ You need an open, vendor-neutral (Apache 2.0, Linux Foundation) property graph that scales horizontally on commodity/Hadoop infrastructure
+- ✅ You already run Cassandra/HBase/Bigtable and your team can operate a multi-tier distributed system
+- ✅ Your workload is large connected-data graphs — knowledge graphs, fraud/identity, recommendation, network topology, master data
+- ✅ You want Gremlin/TinkerPop with native OLAP via Spark/Hadoop
+
+**Avoid JanusGraph if:**
+- ❌ On its common backends it is eventually consistent and not ACID — no serializable isolation or multi-row atomic writes, and even uniqueness locks depend on synchronized clocks
+- ❌ Your graph fits on one node (the 3-system stack overhead is unjustified — consider [neo4j](neo4j.md))
+- ❌ You need strict cross-entity serializability, ultra-low-latency single-key lookups, or lack the ops capacity for storage + search + graph tiers
+
 ## Identity
 - **Taxonomy / data model:** Labeled property graph (vertices, edges, properties), accessed via [graph-data-model](../concepts/graph-data-model.md) and the Gremlin traversal language. Successor fork of TitanDB, brought under open governance in 2017 and later into the Linux Foundation (LF AI & Data). See [graph-data-model](../concepts/graph-data-model.md).
 - **Storage model:** No native storage engine of its own. It is a graph *engine* over a pluggable storage backend, with an adjacency-list encoding mapped onto a wide-column key→column-family layout. On-disk format and [lsm-vs-btree](../concepts/lsm-vs-btree.md) characteristics are entirely the backend's: Cassandra/ScyllaDB (LSM), HBase/Bigtable (LSM), or BerkeleyDB (B-tree, single-node). Mixed (search) indexes live in a separate index backend — Elasticsearch, Solr, or embedded Lucene. See [wide-column](../concepts/wide-column.md), [full-text-search](../concepts/full-text-search.md).

@@ -13,7 +13,17 @@ confidence: high
 
 > A small, strongly-consistent (strict-serializable) [Raft](../concepts/consensus-raft-paxos.md) key-value store for coordination and configuration — superb for cluster metadata, wrong for anything large or write-heavy.
 
-## Identity
+## When to use
+
+**Use etcd if:**
+- ✅ You need a small, fiercely consistent store for cluster metadata, configuration, service discovery, or leader election.
+- ✅ You value strict serializability (Jepsen-confirmed for reads/writes/multi-key txns) and a clean Raft failure model with no split-brain over raw scale.
+- ✅ Your dataset stays tiny (≤8 GB recommended) with modest write rates and high read fanout.
+
+**Avoid etcd if:**
+- ❌ You're storing application/business data, large values, blobs, or high-volume event streams — it throttles, exhausts its quota, and goes read-only.
+- ❌ You rely on its distributed locks/leases for correctness — they do NOT guarantee mutual exclusion (Jepsen saw multiple holders); always use fencing tokens.
+- ❌ You need write throughput to scale out — every member holds a full copy and writes never shard, so it hits a hard ceiling (plus the compaction→defrag→quota treadmill).
 - **Taxonomy / data model:** Distributed key-value store specialized for **coordination/configuration**, not bulk data. Flat byte-string keys, range queries over a sorted keyspace, plus watches, leases, and a transaction primitive.
 - **Storage model:** Single-node embedded **B+tree** via [BoltDB/bbolt](https://etcd.io/docs/v3.5/learning/data_model/) on each member (B-tree family, see [lsm-vs-btree](../concepts/lsm-vs-btree.md)); an **[MVCC](../concepts/mvcc.md)** layer keeps every revision of the keyspace until compacted. Each write bumps a global monotonic `revision`. Whole DB file is mmap'd, so the dataset is effectively bounded by RAM ([etcd maintenance docs](https://etcd.io/docs/v3.4/op-guide/maintenance/)).
 - **Workload:** [OLTP-ish](../concepts/oltp-olap-htap.md) but extreme small-data / metadata niche — high read fanout, modest write rate, tiny total size (default 2 GB quota, recommended max **8 GB**, [maintenance docs](https://etcd.io/docs/v3.4/op-guide/maintenance/)). Not OLAP, not HTAP, not a primary app datastore.

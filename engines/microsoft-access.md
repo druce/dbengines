@@ -13,6 +13,18 @@ confidence: medium
 
 > A single-file desktop relational database plus a rapid forms/reports/macro app builder; the right tool for one user or a tiny LAN workgroup, and the wrong tool the moment you need real concurrency, durability, or scale.
 
+## When to use
+
+**Use Microsoft Access if:**
+- ✅ One user, or a small trusted LAN workgroup, needs a quick CRUD app with forms and reports and you value build speed over robustness
+- ✅ You want a fast RAD/prototyping tool or an Excel-graduation database with a built-in forms/reports/VBA layer
+- ✅ You need a desktop front-end to [microsoft-sql-server](microsoft-sql-server.md) or another RDBMS via ODBC linked tables — the official "outgrow Access" upgrade path
+
+**Avoid Microsoft Access if:**
+- ❌ You need a web/public-facing app, real concurrency (writers become unreliable past ~10–20), high write throughput, or 24/7 uptime
+- ❌ Your data approaches the hard 2 GB file ceiling, or you need strong durability, PITR, or any real observability — there is no server-side WAL
+- ❌ You'd put the `.accdb` on a WAN/VPN/Wi-Fi network share with multiple writers — a dropped mid-write connection corrupts the file, the single most notorious Access failure mode
+
 ## Identity
 - **Taxonomy / data model:** relational. A complete Office application combining the **ACE database engine** (Access Connectivity Engine, successor to the older **Jet** engine since Access 2007) with a RAD layer of forms, reports, queries, macros, and VBA. The engine and the dev environment ship together; "Access" colloquially means both.
 - **Storage model:** single-file, page-based **B-tree** ([lsm-vs-btree](../concepts/lsm-vs-btree.md)) row-store. The whole database — tables, indexes, queries, forms, reports, VBA — lives in **one `.accdb` file** (legacy `.mdb` for Jet). Page size is 4 KB for `.accdb` (2 KB for old `.mdb`).

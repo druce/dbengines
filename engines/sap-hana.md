@@ -13,6 +13,18 @@ confidence: high
 
 > In-memory, columnar, ACID relational engine designed so analytics run directly on the transactional row set — high-performance and feature-dense, but proprietary, RAM-hungry, expensive, and most compelling when you already live in the SAP application stack.
 
+## When to use
+
+**Use SAP HANA if:**
+- ✅ You run SAP S/4HANA or BW/4HANA — it is the database under SAP's own stack.
+- ✅ You need genuine HTAP: real-time analytics directly on transactional data via the delta/main column-store split, retiring separate ETL.
+- ✅ You can keep the working set in RAM and have SAP/HANA Basis operational expertise.
+
+**Avoid SAP HANA if:**
+- ❌ It is greenfield, non-SAP, cost-sensitive work — a disk-based engine ([postgresql](postgresql.md), [mysql](mysql.md)) or a purpose-built warehouse ([snowflake](snowflake.md), [clickhouse](clickhouse.md)) fits better.
+- ❌ Your data is large/cold — it is RAM-priced and RAM-bound, so cost and OOM risk scale aggressively with data volume.
+- ❌ You depend on true serializability — despite the "ACID/serializable" framing, SERIALIZABLE is implemented as snapshot isolation (write skew is possible).
+
 ## Identity
 - **Taxonomy / data model:** Primarily relational, but multi-model — bundles graph, spatial/geospatial, document/JSON (DocStore), text/full-text search, and predictive/ML engines inside one server. The marketing position is "one database for everything."
 - **Storage model:** Hybrid. Default and signature mode is an **in-memory column store** (dictionary-encoded, compressed, columnar); a **row store** is also available and is preferred for small, write-heavy, frequently-joined config tables. Data is held in RAM for query; persisted to disk for durability (see Performance). Column tables use a write-optimized **delta store** merged into the read-optimized **main store** by a background **delta merge**. See [lsm-vs-btree](../concepts/lsm-vs-btree.md) (HANA is neither classic LSM nor B-tree — delta/main is its own variant), [columnar-storage](../concepts/columnar-storage.md).

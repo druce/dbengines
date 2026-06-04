@@ -13,6 +13,20 @@ confidence: medium
 
 > A purpose-built time-series database for industrial IoT that shards one physical table per device under a "supertable" schema, stores data columnar/compressed, and replicates via Raft — fast for high-cardinality sensor ingestion, narrow for anything that isn't time-series.
 
+## When to use
+
+**Use TDengine if:**
+- ✅ You have high-volume, high-device-count time-series/IIoT telemetry (smart manufacturing, power/energy, fleet, DevOps metrics)
+- ✅ You want SQL with built-in time-series windowing/downsampling (`INTERVAL`, `FILL`, `PARTITION BY`, `LAST`) and the one-table-per-device supertable model
+- ✅ You need InfluxDB/OpenTSDB-compatible line-protocol ingestion plus first-class Grafana integration
+- ✅ You want columnar compression with multi-tier hot/warm/cold storage and Raft 3-replica HA
+
+**Avoid TDengine if:**
+- ❌ You need a general-purpose database — no multi-statement transactions, no real joins, no full-text or vector/ANN search
+- ❌ Your data has no timestamp dimension or is low-cardinality non-time-keyed — wrong tool
+- ❌ You rely on batch write atomicity — schemaless ingestion does NOT provide atomicity for multiple rows (some can succeed while others fail)
+- ❌ The HA/replication mode or connectors you need are behind the commercial Enterprise tier, or AGPL-3.0 doesn't fit your distribution model
+
 ## Identity
 - **Taxonomy / data model:** Time-series database (TSDB). See [time-series-storage](../concepts/time-series-storage.md) and the [oltp-olap-htap](../concepts/oltp-olap-htap.md) workload axis. The defining abstraction is the **supertable (STable)**: a schema template carrying a data schema plus **tags**, from which one **subtable per data-collection point** (device/sensor) is auto-created ([supertable](https://tdengine.com/supertable/)). This "one table per device" partitioning is the core design choice — it reduces write contention and lets per-device queries avoid full scans, but pushes cardinality into the number of tables.
 - **Storage model:** Columnar on disk; time-series data is stored "in a highly compressed, columnar format" partitioned by device and time interval ([TSDB docs](https://docs.tdengine.com/inside-tdengine/architecture/)). Not a classic [lsm-vs-btree](../concepts/lsm-vs-btree.md) engine — it uses an append-oriented TSDB file format fed from an in-memory buffer and a [WAL](../concepts/wal-and-durability.md), with time-range data files (the layout is closer to time-partitioned columnar blocks than a B-tree). See [columnar-storage](../concepts/columnar-storage.md).

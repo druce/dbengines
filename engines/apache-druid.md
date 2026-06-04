@@ -13,6 +13,20 @@ confidence: high
 
 > A distributed, columnar, time-partitioned analytics datastore built for sub-second aggregation queries over high-volume event streams — not a system of record, and deliberately bad at joins and per-row updates.
 
+## When to use
+
+**Use Apache Druid if:**
+- ✅ You need sub-second, high-concurrency aggregation over large time-stamped event data (dashboards, real-time monitoring)
+- ✅ Your workload is clickstream/ad-tech/observability/network-flow analytics fed from Kafka/Kinesis streams
+- ✅ You can denormalize before ingest and treat data as immutable, time-partitioned segments
+- ✅ You want filter/group-by/top-N/count-distinct (incl. approximate sketches) at high concurrency
+
+**Avoid Apache Druid if:**
+- ❌ You need a system of record, OLTP, or per-row updates/deletes by key — there is no transactional point-write path (biggest gotcha)
+- ❌ Your schema is normalized or join-heavy — no query-time join of two large datasources; all but the base table must fit in memory
+- ❌ You need `ALTER TABLE` / cheap schema changes — model changes mean re-ingesting time chunks
+- ❌ Your team can't run a many-service cluster (metadata DB + deep storage, plus ZooKeeper unless using the k8s discovery extension)
+
 ## Identity
 - **Taxonomy / data model:** real-time analytics / time-series OLAP datastore. Data lives in **datasources** (table analogs) with a mandatory **primary timestamp**, plus **dimensions** (filter/group columns) and **metrics** (aggregatable measures) per the classic OLAP model ([schema model docs](https://druid.apache.org/docs/latest/ingestion/schema-model/)). Often described as multi-model because it ingests JSON/nested data and supports approximate sketches, but it is fundamentally an aggregation engine, not relational.
 - **Storage model:** **columnar**, immutable, compressed **segment** files. Each datasource is partitioned by time into chunks, and each chunk into one or more segments (~few million rows each), with per-column indexes/bitmaps ([segments docs](https://druid.apache.org/docs/latest/design/segments/)). Not [lsm-vs-btree](../concepts/lsm-vs-btree.md); segments are write-once immutable files, replaced atomically rather than mutated in place.

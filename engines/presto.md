@@ -13,6 +13,20 @@ confidence: high
 
 > A storage-less, in-memory MPP SQL engine ("PrestoDB") that federates queries across data lakes and external databases without owning the data — pick it for interactive OLAP over Hive/Iceberg/S3, but know that most of its mindshare and velocity moved to the [trino](trino.md) fork.
 
+## When to use
+
+**Use Presto if:**
+- ✅ You need fast interactive SQL over a data lake/lakehouse (Hive/Iceberg/Delta on S3/HDFS) to replace slow Hive batch jobs
+- ✅ You want to federate a single query across many sources (object storage + operational DBs) without copying data
+- ✅ You value its Meta-scale pedigree and the C++/Velox ("Prestissimo") performance path with lower GC variance
+- ✅ You want a stateless, storage-compute-separated engine that's cheap to idle-down since it holds no data
+
+**Avoid Presto if:**
+- ❌ You run long interactive queries on unreliable/spot nodes — the default path has no mid-query fault tolerance, so a single worker failure restarts the whole query (batch modes exist but aren't the default)
+- ❌ You need OLTP, point lookups, or a system of record — it stores nothing and offers no engine-level durability
+- ❌ You need long batch ETL with mid-query fault tolerance — prefer Trino's fault-tolerant execution or Spark SQL
+- ❌ You want the largest connector set and community momentum — the faster-evolving Trino fork now leads; evaluate it first
+
 ## Identity
 - **Taxonomy / data model:** Relational, SQL-on-everything **query engine** — not a database. Presto stores no data; it reads through pluggable **connectors** (Hive/S3, Iceberg, Delta, MySQL, PostgreSQL, Cassandra, Kafka, MongoDB, Redshift, etc.) and can join across them in a single query ([Presto: SQL on Everything](https://trino.io/Presto_SQL_on_Everything.pdf)). It is a federated compute layer; durability, schema, and storage live in the underlying source.
 - **Storage model:** None of its own. On-disk format is whatever the connector targets (ORC/Parquet on object storage for the dominant Hive/Iceberg case). Execution is **pipelined and largely in-memory** between stages — unlike Hive MapReduce, it does not materialize each stage to disk. It does, however, support **opt-in spill-to-disk** for aggregations and joins (and, in newer versions, ordering/window ops) when a query exceeds memory limits ([Spill to Disk — Presto docs](https://prestodb.io/docs/current/admin/spill.html)). Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) relevant — Presto owns no persistence layer.

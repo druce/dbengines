@@ -13,6 +13,20 @@ confidence: high
 
 > A single-engine multi-model store (JSON documents, property graph, key-value) queried by one SQL-like language (AQL) — convenient if you genuinely need graph + document together, but its full ACID guarantee silently degrades to per-shard once you cluster.
 
+## When to use
+
+**Use ArangoDB if:**
+- ✅ You genuinely need document **and** graph (and maybe KV/search/vector) in one engine with one query language (AQL)
+- ✅ A single-node or OneShard deployment satisfies your scale — its sweet spot, where full ACID holds
+- ✅ Consolidating onto one engine beats running Postgres + Neo4j (fraud/recommendation/knowledge graphs, network topology)
+- ✅ You want integrated full-text (ArangoSearch) and vector (HNSW) search alongside your operational data
+
+**Avoid ArangoDB if:**
+- ❌ You need cluster-wide multi-document ACID while sharding across many DB-Servers — it silently degrades to per-shard, non-atomic-on-commit (the biggest gotcha)
+- ❌ You run heavy columnar analytics / OLAP
+- ❌ You want a large talent pool and SQL ecosystem (AQL is a learning curve)
+- ❌ You only need a graph ([neo4j](neo4j.md) is deeper) or only documents ([mongodb](mongodb.md) has far broader tooling)
+
 ## Identity
 - **Taxonomy / data model:** Native multi-model — documents (JSON), property graph (edges as documents), and key-value share one storage and one query language (AQL). Also full-text/[full-text-search](../concepts/full-text-search.md) via ArangoSearch and vector search (HNSW, added 3.12.x). See [graph-data-model](../concepts/graph-data-model.md).
 - **Storage model:** Single storage engine on [RocksDB](../concepts/lsm-vs-btree.md) (LSM-tree) since 3.7; the older mmap "MMFiles" engine was removed. On-disk values are VelocyPack (compact binary JSON). Document-level locks: writes don't block reads and reads don't block writes ([RocksDB engine docs](https://docs.arangodb.com/3.12/components/arangodb-server/storage-engine/)).

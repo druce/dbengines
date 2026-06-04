@@ -13,6 +13,20 @@ confidence: high
 
 > Append-only columnar analytics engine behind Azure Monitor / Log Analytics, queried with KQL, tuned for fast ingest and ad-hoc scans over telemetry — there are no UPDATEs, no foreign keys, and no multi-row transactions.
 
+## When to use
+
+**Use Microsoft Azure Data Explorer if:**
+- ✅ You live on Azure and need to ingest huge streams of logs/telemetry/time-series and run fast ad-hoc KQL analytics and dashboards
+- ✅ You want the proven engine behind Azure Monitor, Log Analytics, Sentinel, and Fabric Real-Time Intelligence for observability/SIEM
+- ✅ Your workload is append-heavy with interactive scans/aggregations over time-series, traces, and clickstream
+- ✅ You want storage/compute separation (durable data in Blob, compute scales independently) with per-request strong vs weak query consistency
+
+**Avoid Microsoft Azure Data Explorer if:**
+- ❌ You need a transactional store or system of record — there are no multi-row transactions, no foreign keys, and no point-write path
+- ❌ You need small low-latency key lookups — it is a scan/aggregate engine, not a KV store
+- ❌ You require in-place updates — the biggest gotcha is **append-only with no UPDATE**: corrections mean delete-and-reingest or a slow, heavyweight `.purge`
+- ❌ You need multi-cloud or on-prem — it is managed-only on Azure
+
 ## Identity
 - **Taxonomy / data model:** Tabular/relational analytics store (the engine is "Kusto"). Strongly typed columns including a `dynamic` (JSON-like) type, so it straddles relational and semi-structured. Built for telemetry, logs, events, traces, and time series.
 - **Storage model:** Compressed **columnar** column-store, with an auxiliary **row store** used only as a landing buffer for streaming ingestion before data moves to column extents ([how-it-works](https://learn.microsoft.com/en-us/azure/data-explorer/how-it-works)). Data is sharded into immutable **extents** that are encoded, indexed, and merged in the background; free-text and `dynamic` columns are inverted-indexed at ingest. Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) — it is an immutable-extent columnar design with background merge (conceptually closer to a [columnar-storage](../concepts/columnar-storage.md) log-structured merge of shards). Persistent data lives in Azure Blob Storage; compute caches it on local SSD and in RAM (kept compressed in RAM).

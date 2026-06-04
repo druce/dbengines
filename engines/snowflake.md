@@ -13,6 +13,20 @@ confidence: high
 
 > A managed-only, multi-cloud OLAP warehouse whose defining trick is decoupling elastic compute ("virtual warehouses") from shared columnar storage on object storage — you scale, isolate, and pay for each independently.
 
+## When to use
+
+**Use Snowflake if:**
+- ✅ You want a low-ops, elastic SQL warehouse for BI/analytics and ELT, with independent scaling of compute and storage
+- ✅ You need cross-account secure data sharing / Marketplace (share live data without copying) or instant zero-copy clones
+- ✅ Multi-cloud (AWS/Azure/GCP) managed SaaS with transparent rolling upgrades and near-zero tuning fits your team
+- ✅ Analyst-heavy teams want fast ramp on ANSI SQL plus Snowpark for ML/data pipelines
+
+**Avoid Snowflake if:**
+- ❌ You need OLTP, high-concurrency single-row CRUD, or sub-second app serving on standard tables (only READ COMMITTED; no user indexes)
+- ❌ You require air-gapped/on-prem deployment — it is managed-only SaaS with no self-host
+- ❌ Cost governance is not in place: per-second compute plus silent serverless/maintenance charges make bills notoriously surprising
+- ❌ Your workload is tiny continuous trickle inserts (warehouse minimums and per-statement overhead make this expensive)
+
 ## Identity
 - **Taxonomy / data model:** relational (SQL). Analytics/warehouse. Also supports semi-structured (`VARIANT` for JSON/Avro/Parquet), and via add-ons: row-oriented Hybrid Tables (Unistore), open-table-format Iceberg tables. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** columnar. Data is reorganized into immutable, compressed **micro-partitions** (50–500 MB uncompressed, columns stored contiguously within each) held on cloud object storage ([docs](https://docs.snowflake.com/en/user-guide/intro-key-concepts)). Not LSM, not B-tree — pruning is done from per-partition min/max metadata, not indexes. See [lsm-vs-btree](../concepts/lsm-vs-btree.md).

@@ -13,7 +13,17 @@ confidence: high
 
 > A horizontally-scalable relational database that gives you external consistency (strict serializability) across continents by betting correctness on GPS/atomic-clock-synchronized time — at the price of cloud lock-in and a high floor cost.
 
-## Identity
+## When to use
+
+**Use Google Cloud Spanner if:**
+- ✅ You need horizontally-scalable relational OLTP with strict serializability (external consistency) across regions — financial ledgers, inventory, regulated multi-region systems.
+- ✅ You've outgrown a single [postgresql](postgresql.md)/[mysql](mysql.md) instance but cannot tolerate eventual consistency, and want automatic, painless resharding with near-zero ops.
+- ✅ You can commit to Google's stack (or use Spanner Omni's self-managed/on-prem/AWS escape hatch) and want a SQL or Postgres-dialect interface.
+
+**Avoid Google Cloud Spanner if:**
+- ❌ You run small or single-region apps — the cost floor is high versus managed Postgres.
+- ❌ Your workload is analytics-heavy/scan-heavy (use BigQuery) or latency-critical and can't absorb cross-region commit waits.
+- ❌ You use monotonic/sequential primary keys — they create write hotspots on a single split that silently cap throughput (biggest gotcha; you must hash/reverse keys).
 - **Taxonomy / data model:** Distributed relational (SQL). Also exposes a [postgresql](postgresql.md)-dialect interface (PostgreSQL interface) and a GoogleSQL dialect. Supports interleaved tables for parent-child locality. Has bolt-on graph (Spanner Graph / GQL) and vector-search capabilities, making it loosely multi-model, but the core is relational.
 - **Storage model:** Row-oriented, [LSM-tree](../concepts/lsm-vs-btree.md)-based storage on Google's Colossus distributed filesystem (the same lineage as Bigtable). Data is range-partitioned into "splits" by primary key. See [storage-compute-separation](../concepts/storage-compute-separation.md) — compute (Spanner servers) is decoupled from storage (Colossus).
 - **Workload:** OLTP-first, globally distributed. Increasingly positioned for [HTAP](../concepts/oltp-olap-htap.md) via a built-in columnar engine ("Spanner Data Boost" / columnar accelerator) and federation with BigQuery; the physical separation is a separate columnar representation/accelerator, not just a marketing label, though analytical maturity lags dedicated OLAP engines. Treat heavy analytics as a federation-to-BigQuery story, not native.

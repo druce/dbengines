@@ -13,6 +13,20 @@ confidence: high
 
 > The veteran open-source enterprise search server: an inverted-index full-text engine on top of lucene, with deep faceting, geospatial and (since 9.0) dense-vector search — best treated as a secondary search layer, not a system of record.
 
+## When to use
+
+**Use Apache Solr if:**
+- ✅ You need a mature, fully open-source (Apache-2.0) full-text/faceted search engine with no source-available licensing strings (a peer of Elasticsearch with cleaner licensing)
+- ✅ Your workload is enterprise/site search, e-commerce faceted navigation, log/document or geospatial search
+- ✅ You want strong native faceting, grouping, highlighting, and (9.0+) hybrid lexical + dense-vector search
+- ✅ You can run it yourself, including a ZooKeeper ensemble and JVM/GC tuning
+
+**Avoid Apache Solr if:**
+- ❌ You'd use it as your system of record — it's a secondary index fed from an authoritative store (the biggest gotcha)
+- ❌ You need multi-document ACID, relational joins, or transactional workloads (use [postgresql](postgresql.md))
+- ❌ You have high-frequency mutable single-record updates, or can't tolerate eventually-consistent replica reads
+- ❌ You want a managed cloud-native search service ([elasticsearch](elasticsearch.md)/[opensearch](opensearch.md) fit better)
+
 ## Identity
 - **Taxonomy / data model:** Search engine ([full-text-search](../concepts/full-text-search.md)); document-oriented over a flat field/schema model. Built on Apache Lucene; closest sibling is [elasticsearch](elasticsearch.md) / [opensearch](opensearch.md) (also Lucene). Multi-model only loosely (vectors, spatial, JSON facets).
 - **Storage model:** Lucene inverted index plus stored fields, doc-values (columnar) for sorting/faceting, and a per-shard transaction log. Index segments are **immutable**, written once and later merged — append + merge rather than in-place update; conceptually LSM-like rather than B-tree (see [lsm-vs-btree](../concepts/lsm-vs-btree.md)). On-disk format is Lucene's segment files.

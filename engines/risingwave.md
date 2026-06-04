@@ -15,6 +15,19 @@ confidence: high
 
 > A PostgreSQL-compatible streaming database: you write SQL `CREATE MATERIALIZED VIEW` over Kafka/CDC streams and it keeps them incrementally up to date with sub-second latency, storing all streaming state in object storage instead of local disk.
 
+## When to use
+
+**Use RisingWave if:**
+- ✅ You want streaming transformations expressed as SQL materialized views that are also directly queryable over the Postgres wire protocol.
+- ✅ You'd otherwise stitch together Debezium + Kafka + Flink + a serving DB and prefer SQL over Flink's Java/DataStream API.
+- ✅ You want cheap object-storage state (no provisioned SSD/JVM) and Iceberg as the durable lakehouse output.
+
+**Avoid RisingWave if:**
+- ❌ You need a general-purpose OLTP database or a heavy ad-hoc OLAP warehouse — it is built for continuous incremental computation, not point writes or large scans.
+- ❌ You need custom imperative operators or complex-event-processing (`MATCH_RECOGNIZE`) that Flink's DataStream API provides.
+- ❌ You assume end-to-end exactly-once for free — it is only as strong as the sink connector, and large stateful pipelines are memory-sensitive despite S3-backed state.
+- ❌ You need every production feature in the Apache 2.0 core — some sit behind the paid premium license.
+
 ## Identity / role
 - **What it IS:** a distributed [streaming database](../concepts/streaming-databases.md) written in Rust. Unlike a pure stream processor, it both *processes* streams (incremental materialized views) and *stores + serves* the results as a queryable database over the Postgres wire protocol. Sits in the compute+state layer of a real-time stack.
 - **What it is NOT:** not a message broker / event log (it consumes from [apache-kafka](apache-kafka.md), it is not Kafka); not a general-purpose [OLTP](../concepts/oltp-olap-htap.md) database (it is built for continuous incremental computation, not high-rate point writes/updates of arbitrary rows); not a batch OLAP warehouse like [snowflake](snowflake.md) or [clickhouse](clickhouse.md) (ad-hoc large scans are not its strength).

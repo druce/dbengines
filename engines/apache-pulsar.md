@@ -15,6 +15,20 @@ confidence: high
 
 > A distributed pub/sub and streaming platform whose defining bet is **separating stateless serving (brokers) from segmented log storage (Apache BookKeeper)** — enabling independent scaling, instant broker failover, and native tiered storage to object stores, but requiring you to operate multiple tiers.
 
+## When to use
+
+**Use Apache Pulsar if:**
+- ✅ You need multi-tenancy at scale, very large topic/partition counts, and per-tenant isolation policies
+- ✅ You want native geo-replication and unified queue + stream semantics on one platform
+- ✅ You want cheap unbounded retention via built-in tiered storage to object stores
+- ✅ You have the operational maturity to run brokers + BookKeeper + a metadata store (ZooKeeper/Oxia)
+
+**Avoid Apache Pulsar if:**
+- ❌ You want the lowest-operational-overhead message bus or have a small team — the multi-tier stack is the central trade-off
+- ❌ You live in the Kafka ecosystem (tooling, hiring, connector breadth still favor [apache-kafka](apache-kafka.md))
+- ❌ You need SQL analytics, joins, or materialized views from the bus itself (sink to [clickhouse](clickhouse.md)/[apache-druid](apache-druid.md) instead)
+- ❌ You'd assume the Shared subscription preserves ordering — it does not (use Key_Shared or Failover when order matters)
+
 ## Identity / role
 - Apache Pulsar is a **messaging/event-streaming transport and durable log**, not a database and not a query engine. It is the pipe between producers and consumers, with persistence — closest peer is [apache-kafka](apache-kafka.md) (and adjacent to [streaming-platforms](../concepts/streaming-platforms.md)).
 - It unifies two patterns usually served by separate systems: **queueing** (RabbitMQ-style competing consumers via Shared subscriptions) and **streaming/log** (Kafka-style replayable partitions). One topic can be consumed both ways depending on subscription type.

@@ -13,6 +13,20 @@ confidence: high
 
 > The default choice for connected-data and deep-traversal workloads: a native property-graph store with index-free adjacency and the Cypher language, but a single-leader, read-committed engine whose writes do not scale horizontally across one graph.
 
+## When to use
+
+**Use Neo4j if:**
+- ✅ Your problem *is* the relationships — multi-hop traversals, pattern matching, fraud rings, knowledge graphs, GraphRAG/agent memory
+- ✅ Index-free adjacency turns SQL self-join nightmares into cheap pointer chases at constant per-hop cost
+- ✅ You want the most mature graph ecosystem — Cypher/GQL, GDS algorithms, native vector type, broad drivers and tooling
+- ✅ Your active graph and indexes fit in RAM/page cache and read scaling via async replicas suffices
+
+**Avoid Neo4j if:**
+- ❌ You need horizontally write-scalable graph writes — it is single-leader and does **not** transparently shard a connected graph's topology (Infinigraph shards only properties)
+- ❌ You need serializable isolation out of the box — default is read-committed; higher isolation requires manual write locks
+- ❌ You run bulk analytical scans over the whole dataset (use a warehouse/OLAP engine) or store weakly-connected flat tabular/KV data ([postgresql](postgresql.md) is cheaper)
+- ❌ You need clustering/HA/RBAC/PITR for free — those are Enterprise/Aura only; Community is GPLv3 single-instance
+
 ## Identity
 - **Taxonomy / data model:** native labeled property graph — nodes, typed directed relationships, and key/value properties on both. See [graph-data-model](../concepts/graph-data-model.md). Not multi-model: it is graph-first (no document/relational facade).
 - **Storage model:** native graph storage using **index-free adjacency** — each node holds direct pointers to its incident relationships, so a hop is a pointer chase rather than an index lookup, making traversal cost independent of total graph size ([Neo4j: native graph storage](https://neo4j.com/labs/agent-memory/explanation/graph-architecture/)). Historically fixed-size record files; Neo4j 5 (2023) added the **block format** that packs related data into contiguous on-disk blocks for better page-cache locality and scale ([Neo4j 5 announcement](https://neo4j.com/blog/news/announcing-neo4j-5-graph-database/)). Not [lsm-vs-btree](../concepts/lsm-vs-btree.md)-style; this is a bespoke graph layout. Property values and full-text/vector indexes are backed by Apache Lucene.

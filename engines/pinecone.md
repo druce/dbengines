@@ -13,6 +13,20 @@ confidence: high
 
 > A closed-source, fully-managed serverless vector database purpose-built for similarity search and RAG retrieval — you trade self-hosting and SQL for zero ops, billions of vectors on object storage, and per-operation billing.
 
+## When to use
+
+**Use Pinecone if:**
+- ✅ You want production vector search (RAG, semantic search, recommendations, agent memory) with zero operational burden
+- ✅ You need to scale to billions of vectors on object storage without provisioning or managing nodes
+- ✅ You want hosted embedding/reranking (Pinecone Inference) and a small API surface so the learning curve stays low
+- ✅ You can live entirely on a managed, closed-source SaaS and prefer per-operation billing
+
+**Avoid Pinecone if:**
+- ❌ You need a system of record with real transactions, SQL, or joins — it has no multi-record transactions and is eventually consistent (LSN/read-your-writes is per-namespace and vendor-asserted, with no Jepsen validation)
+- ❌ You require self-hosting, air-gapped, or on-prem deployment (managed-only; BYOC runs in your VPC but is still proprietary)
+- ❌ You run sustained high QPS on shared serverless — per-request read pricing and the 100 RPS/namespace limit bite (Dedicated Read Nodes mitigate but cost more)
+- ❌ You need exact (non-approximate) search, or a small/low-budget project where pgvector or an OSS engine avoids a separate vendor and bill
+
 ## Identity
 - **Taxonomy / data model:** specialized [vector-search-ann](../concepts/vector-search-ann.md) database. Records are `(id, dense vector, optional sparse vector, metadata JSON)`; query by approximate nearest-neighbor (ANN) over similarity metrics (cosine, dot product, euclidean). Not a general-purpose store — no relational/document/graph model. Adds native full-text/keyword search (public preview, 2025) and hosted embedding/reranking via Pinecone Inference. See [oltp-olap-htap](../concepts/oltp-olap-htap.md) (this is neither OLTP nor OLAP — it is online retrieval/serving).
 - **Storage model:** object-storage-backed. Vectors persist as immutable files called **slabs** in distributed object storage (S3/GCS/Azure Blob). The write path is described by Pinecone as an [LSM](../concepts/lsm-vs-btree.md)-style design: writes land in an in-memory memtable, then flush to slabs. ([Pinecone serverless architecture](https://docs.pinecone.io/reference/architecture/serverless-architecture), [slab architecture](https://www.pinecone.io/learn/slab-architecture/))

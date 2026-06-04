@@ -13,6 +13,18 @@ confidence: high
 
 > A fully managed, serverless schemaless document/entity store with strongly consistent transactions and effortless horizontal scaling — but it is now legacy: new projects get a Firestore database in "Datastore mode," and the original eventually-consistent Datastore is superseded.
 
+## When to use
+
+**Use Google Cloud Datastore if:**
+- ✅ You want a zero-ops, auto-scaling NoSQL store with real serializable ACID transactions behind a GCP App Engine/Cloud Functions backend.
+- ✅ Your access is point lookups, key/ancestor queries, and small transactional writes (user profiles, game state, catalogs).
+- ✅ You don't need JOINs, analytics, or relational integrity and want Google to handle all sharding and durability.
+
+**Avoid Google Cloud Datastore if:**
+- ❌ You're starting a new project — Google now provisions Firestore in Datastore mode, and Native mode unlocks real-time sync/offline that Datastore mode disables.
+- ❌ You need analytics/reporting, many-table JOINs, or globally-relational ACID across arbitrary rows (use BigQuery, Cloud SQL, or Spanner).
+- ❌ You can't control indexing cost — every property is auto-indexed, multiplying write and storage cost.
+
 ## Identity
 - **Taxonomy / data model:** Document/entity store (NoSQL). Data is organized into *kinds* (≈ tables), *entities* (≈ rows, schemaless property bags), grouped into *entity groups* via *ancestor paths*. Not relational, not a KV store — closer to a hierarchical document model. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Underlying engine is Firestore's storage layer, built on Google's distributed infrastructure (historically Megastore/Bigtable lineage; ⚠️ unverified — current internal storage substrate is not publicly documented in detail). LSM-style on-disk behavior is implied by the Bigtable heritage ([lsm-vs-btree](../concepts/lsm-vs-btree.md)) but not officially specified. All queries are index-backed: every property is auto-indexed, and composite indexes are explicitly declared.

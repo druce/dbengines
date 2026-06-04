@@ -13,6 +13,20 @@ confidence: high
 
 > A PostgreSQL extension (not a fork) that turns Postgres into a shared-nothing sharded cluster — great for multi-tenant SaaS and real-time analytics, but cross-shard transactions are atomic without distributed snapshot isolation.
 
+## When to use
+
+**Use Citus if:**
+- ✅ You have a Postgres app that has outgrown one node and your access pattern is naturally shardable
+- ✅ Your workload is multi-tenant SaaS (shard by tenant id — the sweet spot, most queries stay single-shard), real-time analytics, or time-series
+- ✅ You want to keep full Postgres SQL, types ([postgresql](postgresql.md)), drivers, and tooling with no app rewrite
+- ✅ You want optional columnar storage (3x–10x compression) for the analytical side
+
+**Avoid Citus if:**
+- ❌ You need globally serializable cross-shard transactions or a consistent multi-shard snapshot — cross-shard reads are atomic-but-not-snapshot-isolated (the biggest gotcha)
+- ❌ Your joins span shards unpredictably (non-co-located joins require repartitioning and are slower)
+- ❌ Your data fits comfortably on one Postgres node (sharding is pure overhead)
+- ❌ You need geo-distributed multi-region writes
+
 ## Identity
 - **Taxonomy / data model:** Relational. Citus is a Postgres *extension*, so it inherits the full Postgres type system and is fully compatible with [postgresql](postgresql.md). Three table kinds: **distributed** (hash-sharded across workers by a distribution column), **reference** (full copy replicated to every node, for small dimension tables / joins), and **local** (ordinary Postgres tables on the coordinator). ([Concepts](https://docs.citusdata.com/en/stable/get_started/concepts.html))
 - **Storage model:** Row-store by default (Postgres heap, B-tree indexes; see [lsm-vs-btree](../concepts/lsm-vs-btree.md)). Since Citus 10 it also offers **columnar** table storage with zstd compression (3x–10x ratios, column projection skipping), but columnar tables are append-mostly: no UPDATE/DELETE, no foreign keys, batch load via COPY/INSERT..SELECT only. ([Citus 10 columnar](https://www.citusdata.com/blog/2021/03/06/citus-10-columnar-compression-for-postgres/))

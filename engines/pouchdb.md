@@ -13,6 +13,20 @@ confidence: high
 
 > An embedded JavaScript document database that emulates the [couchdb](couchdb.md) API and replicates over the CouchDB replication protocol, so apps can read/write offline locally and sync bidirectionally when connectivity returns.
 
+## When to use
+
+**Use PouchDB if:**
+- ✅ You're building an offline-first web/mobile app or PWA whose per-user data must work offline and sync bidirectionally
+- ✅ Your backend is in the CouchDB family (self-hosted CouchDB, IBM Cloudant, Couchbase Sync Gateway)
+- ✅ You want optimistic local UIs with read-your-writes locally and a small embedded JS library (Apache 2.0, no fees)
+- ✅ You want flexible schemaless JSON CRUD with Mango/map-reduce queries in the browser or Node
+
+**Avoid PouchDB if:**
+- ❌ Your app doesn't detect `_conflicts` and merge intentionally — the automatic conflict "winner" is deterministic but arbitrary, not semantically correct, so users will silently lose edits
+- ❌ You need multi-document transactions or strong cross-replica consistency — writes are single-document atomic only (`bulkDocs` is not atomic)
+- ❌ You need a server-side primary database, large per-client datasets, heavy analytics, or relational joins
+- ❌ You're not on the CouchDB replication protocol — there's no generic CDC/Kafka/dbt sync path, and browser storage quotas can silently evict data
+
 ## Identity
 - **Taxonomy / data model:** Schemaless JSON document store; documents keyed by `_id`, versioned by `_rev`. Conceptually a client-side port of [couchdb](couchdb.md) ([docs](https://pouchdb.com/guides/)). Multi-master by design.
 - **Storage model:** Pluggable adapter pattern over a key-value backend ([adapters](https://pouchdb.com/adapters.html)). Browser default is **IndexedDB**; Node.js default is **LevelDB** (an [LSM-tree](../concepts/lsm-vs-btree.md) via `leveldown`). WebSQL adapter is deprecated as of v7.0.0. In-memory, LocalStorage (experimental), and Cordova/Capacitor SQLite adapters exist. On-disk format is whatever the underlying adapter uses — PouchDB does not define its own file format.

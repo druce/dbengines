@@ -13,6 +13,20 @@ confidence: high
 
 > An embedded, object-oriented, zero-copy mobile database (Core Data / SQLite replacement) whose headline feature — Atlas Device Sync — MongoDB has deprecated, leaving the on-device engine as an open-source orphan.
 
+## When to use
+
+**Use Realm if:**
+- ✅ You want a fast, ergonomic local object store on mobile (iOS/Swift, Android/Kotlin, React Native, .NET/MAUI, Flutter) as a Core Data or SQLite replacement
+- ✅ You value live, lazily-evaluated, auto-updating query results (`Results`) with change notifications for reactive UIs
+- ✅ You want zero-copy mmap reads (no marshaling) and full multi-statement ACID within a single device file
+- ✅ You're fine with an Apache-2.0, self-contained embedded engine and don't need SQL
+
+**Avoid Realm if:**
+- ❌ You're starting a new project that needs managed cloud sync — MongoDB deprecated Atlas Device Sync (and the Device SDKs) with end-of-life 2025-09-30, so you'd build on a sunset platform without active vendor support
+- ❌ You need a server-side/backend datastore, SQL, ad-hoc analytics, multi-writer concurrency, or horizontal scale
+- ❌ You hold long-lived read transactions — pinned MVCC versions cause unbounded file growth (a classic Realm bloat gotcha)
+- ❌ You pass live objects across threads — objects/Results are thread-confined and require a thread-safe reference or freezing
+
 ## Identity
 - **Taxonomy / data model:** Embedded object database. Data is modeled as language-native objects (classes/structs) persisted in Tables; objects can hold Lists, Sets, and Dictionaries. Closest to a [document-data-model](../concepts/document-data-model.md) but objects are *live* — accessors point at the store, not a deserialized copy. See [embedded-databases](../concepts/embedded-databases.md).
 - **Storage model:** Column-oriented on-disk layout — each property stored contiguously via adaptive-width Arrays and B+Trees, with a `SlabAlloc` allocator ([lsm-vs-btree](../concepts/lsm-vs-btree.md) — it is B-tree-family, not LSM). The file is **memory-mapped** for zero-copy reads: an object accessor dereferences directly into the mmap'd file, no serialize/deserialize step ([dbdb.io](https://dbdb.io/db/realm)).

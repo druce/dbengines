@@ -13,6 +13,20 @@ confidence: high
 
 > An embedded, serverless, single-file relational database that runs inside your process — choose it when the database lives next to the app and one writer at a time is fine; avoid it when you need concurrent writers across a network.
 
+## When to use
+
+**Use SQLite if:**
+- ✅ The database can live in the same process/host as the app — local/desktop/mobile apps, edge, embedded/IoT, browser storage, test fixtures
+- ✅ Writes are not heavily concurrent (single-writer; WAL gives concurrent readers + one writer)
+- ✅ You want zero-config, zero-ops, tiny footprint, and an application file format with a stable, backward-compatible on-disk format
+- ✅ Read-heavy small-to-medium websites or caches with full ACID and excellent SQL support
+
+**Avoid SQLite if:**
+- ❌ Multiple machines must write over a network, or you need high write-throughput / horizontal scale / built-in HA (use [postgresql](postgresql.md) / [mysql](mysql.md))
+- ❌ You need OLAP over big columnar data (use [duckdb](duckdb.md))
+- ❌ The file would sit on NFS/SMB — broken locking semantics risk corruption (explicitly discouraged)
+- ❌ You assume "durable by default": in WAL + `synchronous=NORMAL` a just-committed transaction can be lost on power loss, and defaults vary by platform/build — set `synchronous` deliberately
+
 ## Identity
 - **Taxonomy / data model:** Relational (SQL). Embedded/in-process library, not a client-server DBMS — there is no daemon; the database is a single file and the engine is linked into the host application.
 - **Storage model:** Row-store on a B-tree on-disk format ([lsm-vs-btree](../concepts/lsm-vs-btree.md)). The entire database — tables, indexes, schema — is one cross-platform file ([file format is a documented, stable, backwards-compatible standard](https://sqlite.org/fileformat2.html)). Page-based; default page size 4 KB.

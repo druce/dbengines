@@ -13,6 +13,20 @@ confidence: medium
 
 > A single engine that is simultaneously a row/column SQL RDBMS and a serious RDF triplestore — the canonical home of DBpedia and the LOD Cloud — but its clustering, HA, and replication live behind the commercial license.
 
+## When to use
+
+**Use Virtuoso if:**
+- ✅ You need a production-grade SPARQL/RDF triplestore that can *also* speak SQL over the same data — it's the reference implementation behind DBpedia and the LOD Cloud
+- ✅ Your workload is RDF/Linked Data publishing, SPARQL endpoints, knowledge graphs, or ontology/reasoning
+- ✅ You want data virtualization/federation over heterogeneous SQL sources, or combined SQL+graph apps via SPASQL
+- ✅ Single-node vertical scaling (with the vectored column store) meets your capacity needs
+
+**Avoid Virtuoso if:**
+- ❌ You need free horizontal scale-out or HA — clustering, replication, and HA are commercial-only; the GPL edition is effectively single-node, so you can demo for free then hit a hard license wall (the biggest gotcha)
+- ❌ You just need a plain OLTP database — Postgres/MySQL is simpler without the RDF-stack complexity
+- ❌ You need ultra-low-latency key-value access (reach for a Redis-class store) or a document-first app (use MongoDB)
+- ❌ You expect random single-row access on the column store to be fast — it's slower than the row store, so pick layout per table
+
 ## Identity
 - **Taxonomy / data model:** Multi-model RDBMS. Native relational (SQL) plus RDF graph (SPARQL), with XML, free-text, JSON, and ORDBMS features layered in. RDF is stored as quads in a relational quad table, so the graph store is physically a special case of the relational store ([Virtuoso whitepaper](https://virtuoso.openlinksw.com/whitepapers/Virtuoso_a_Hybrid_RDBMS_Graph_Column_Store.html)). Also a virtual database (ODBC/JDBC federation), web/app server, and WebDAV file server. See [graph-data-model](../concepts/graph-data-model.md).
 - **Storage model:** Hybrid. Row-wise store (default) and, since v7, a column-wise compressed store using sorted multi-column projections with a row-wise sparse index on top; ~3x better compression than row store, automatically chosen among ~7 encodings (RLE, bitmap, dictionary, deltas) ([whitepaper](https://virtuoso.openlinksw.com/whitepapers/Virtuoso_a_Hybrid_RDBMS_Graph_Column_Store.html)). Disk-based with shared page cache; vectored execution (batches of ~10K–1M values). 8K pages, up to 32 TB per file set. RDF quads carry two covering indices (PSOG, POGS) plus OP/SP/GS projections. See [lsm-vs-btree](../concepts/lsm-vs-btree.md) (Virtuoso is B-tree/index-organized, not LSM) and [columnar-storage](../concepts/columnar-storage.md).

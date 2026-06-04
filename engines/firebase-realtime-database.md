@@ -13,7 +13,17 @@ confidence: high
 
 > A managed, schemaless single-region store holding all data as one big JSON tree that streams diffs to subscribed clients in real time — optimized for client sync and offline-first mobile, not for querying, large datasets, or horizontal scale.
 
-## Identity
+## When to use
+
+**Use Firebase Realtime Database if:**
+- ✅ You need dead-simple, ultra-low-latency (~10 ms typical) push sync of small JSON state to many mobile/web clients — presence, chat, live dashboards, game state.
+- ✅ You want offline-first mobile with local caching and automatic merge-on-reconnect, with minimal backend to run.
+- ✅ Your data and traffic stay within one database's ceilings (~200k connections, ~1k writes/sec, single region).
+
+**Avoid Firebase Realtime Database if:**
+- ❌ You need real queries — a query can sort or filter on one property but not both, there are no joins or aggregations, and reads are deep (you pay egress on the whole subtree, the biggest cost trap).
+- ❌ You have large datasets, need relational integrity, or must scale past one database — sharding is manual across separate databases in app code.
+- ❌ You want rich queries and better scaling — Google itself now usually steers new apps to [google-cloud-firestore](google-cloud-firestore.md).
 - **Taxonomy / data model:** NoSQL document store, but unusual: the *entire* database is one JSON tree, not a collection of documents. No tables or rows; data is nodes keyed by path ([docs](https://firebase.google.com/docs/database/web/structure-data)). See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Server-side storage format is proprietary and opaque (no on-disk format exposed; managed-only). Clients hold a local cache and receive incremental updates. Conceptually a tree-of-JSON, not row- or column-oriented.
 - **Workload:** OLTP-ish — small reads/writes synced to many clients. Emphatically **not** analytical: queries are deep by default and return entire subtrees ([rtdb-vs-firestore](https://firebase.google.com/docs/database/rtdb-vs-firestore)). No aggregation/OLAP path. Not HTAP.

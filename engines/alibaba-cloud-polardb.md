@@ -13,6 +13,18 @@ confidence: medium
 
 > Alibaba's answer to Amazon Aurora: storage-compute separation over a shared distributed filesystem (PolarFS), giving one primary plus up to 15 read replicas that all see the same disk — fast read scale-out and no data copying, but a single writer and a managed-only (mostly) deployment.
 
+## When to use
+
+**Use Alibaba Cloud PolarDB if:**
+- ✅ You're on Alibaba Cloud and want Aurora-style economics: one writer plus cheap elastic read replicas over shared storage, with RPO=0 within a region
+- ✅ You run MySQL/PostgreSQL/Oracle-compatible OLTP needing read scale-out and large storage (up to 500 TB) without re-sharding (new readers add in ~5 min, no data copy)
+- ✅ You're lifting off Oracle (Oracle-compat flavor) or need tunable read-replica consistency (session/global) per workload
+
+**Avoid Alibaba Cloud PolarDB if:**
+- ❌ Your bottleneck is write throughput — it's single-writer; for write scale-out you must move to the sharded [PolarDB-X](alibaba-cloud-polardb.md)
+- ❌ You need SERIALIZABLE on the MySQL flavor (unsupported), or independent third-party correctness verification (no public Jepsen report)
+- ❌ Cloud portability matters — the managed product is Alibaba-Cloud-locked; and beware read-only nodes serve stale data by default unless you choose session/global consistency (the biggest gotcha)
+
 ## Identity
 - **Taxonomy / data model:** Relational. Sold in three engine flavors: PolarDB for MySQL, PolarDB for PostgreSQL, and PolarDB for PostgreSQL (Compatible with Oracle). A separate product, **[PolarDB-X](alibaba-cloud-polardb.md)**, is the shared-nothing distributed-SQL sibling (do not conflate — different architecture).
 - **Storage model:** Row-store inheriting the upstream engine's on-disk format (InnoDB B-tree for MySQL; heap + WAL for PostgreSQL). See [lsm-vs-btree](../concepts/lsm-vs-btree.md). The distinguishing layer is **PolarFS**, a user-space distributed filesystem using RDMA, NVMe and SPDK to give near-local-SSD write latency over shared storage ([PolarFS, VLDB 2018](https://dl.acm.org/doi/10.14778/3229863.3229872)).

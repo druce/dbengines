@@ -13,6 +13,18 @@ confidence: medium
 
 > A proprietary, fully-managed enterprise and commerce search-as-a-service: you push or crawl content into Coveo's cloud index and consume search, recommendations, and generative answers via API — there is no self-hostable engine and no general-purpose query/storage interface.
 
+## When to use
+
+**Use Coveo if:**
+- ✅ You're an enterprise (often already on Salesforce/ServiceNow/Sitecore) wanting turnkey, security-trimmed search over many fragmented content silos without operating any search infra.
+- ✅ You need ML relevance, recommendations, and grounded GenAI answering (RGA/RAG) with 55+ prebuilt connectors out of the box.
+- ✅ You can absorb quote-based enterprise pricing and accept that content freshness is bounded by crawl/refresh cadence.
+
+**Avoid Coveo if:**
+- ❌ You want a system-of-record, OLTP, transactional writes, SQL, or an analytics warehouse — it is a proprietary secondary index, not a database.
+- ❌ You need self-hosting, source availability, or to export the engine — it is cloud-only with strong vendor lock-in.
+- ❌ Your scale is small, you need predictable costs, or a self-managed Elasticsearch/OpenSearch/Solr plus your own RAG would do.
+
 ## Identity
 - **Taxonomy / data model:** [full-text-search](../concepts/full-text-search.md) engine delivered as SaaS, layered with [vector-search-ann](../concepts/vector-search-ann.md) semantic retrieval, ML ranking, recommendations, and RAG ("Relevance Generative Answering"). It is a search/relevance platform, not a system-of-record database — content lives in source systems (Salesforce, ServiceNow, Sitecore, websites, file shares) and Coveo indexes a copy.
 - **Storage model:** proprietary binary inverted index stored on encrypted volumes ([Coveo content security docs](https://docs.coveo.com/en/1779/)); not row/column/document-store in the DB sense, and the on-disk format is closed. Underlying index technology is proprietary and undocumented publicly (⚠️ unverified — Coveo does not state whether the modern Cloud index derives from its older on-prem CES engine or a rewrite). Document chunks are also embedded into a vector space for semantic/RGA retrieval ([Semantic Encoder docs](https://docs.coveo.com/en/nb6a0483/leverage-machine-learning/about-semantic-encoder-se)).

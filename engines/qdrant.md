@@ -13,6 +13,20 @@ confidence: high
 
 > A Rust-native vector database whose differentiator is fast filtered ANN search over rich JSON payloads, with metadata coordinated by Raft but vector data using best-effort replication and explicitly tunable consistency.
 
+## When to use
+
+**Use Qdrant if:**
+- ✅ You need a dedicated, high-performance vector search engine with rich payload filtering (filterable HNSW applies filters during graph traversal)
+- ✅ You want hybrid dense+sparse search, multi-vectors, server-side fusion/reranking, and multi-stage query
+- ✅ You need multi-tenant vector search with per-tenant payload filtering and custom shard keys
+- ✅ You want Apache-2.0 OSS you can self-host at any scale (or managed Qdrant Cloud with no per-query charge)
+
+**Avoid Qdrant if:**
+- ❌ You need durable, strongly-consistent vector replication out of the box — defaults optimize for speed/availability (`write_ordering=weak`, consistency factor 1, single-replica reads), Raft only protects *metadata*, and there's no Jepsen report
+- ❌ You need a system of record with ACID transactions or strict serializable cross-record consistency
+- ❌ You want an analytics warehouse, relational joins, or rich aggregations — only facets/counts
+- ❌ You already run Postgres with modest vector volume — pgvector may avoid a separate engine
+
 ## Identity
 - **Taxonomy / data model:** Purpose-built vector database (see [vector-search-ann](../concepts/vector-search-ann.md)). Each record ("point") is a vector (or several named vectors) plus an arbitrary JSON "payload" used for filtering. Not a general-purpose store. Related: [oltp-olap-htap](../concepts/oltp-olap-htap.md) — neither; it is an ANN serving engine.
 - **Storage model:** Segment-based. Each segment is self-contained: vector storage, payload storage, an [HNSW](../concepts/full-text-search.md) index, and an ID mapper. Vectors live in RAM or memory-mapped on disk (`on_disk: true` / `memmap_threshold`); payload can be InMemory or OnDisk (Gridstore). Not a B-tree or [LSM](../concepts/lsm-vs-btree.md) engine — the primary index is the [HNSW graph](https://qdrant.tech/documentation/concepts/indexing/), with optional scalar/product/binary quantization for RAM reduction.

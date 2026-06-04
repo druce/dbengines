@@ -15,6 +15,20 @@ confidence: high
 
 > A distributed, columnar **storage engine** (not a query engine) that supports both fast OLAP scans and low-latency random inserts/updates/deletes — built to replace the awkward HDFS+Parquet ("immutable") plus HBase ("mutable") two-system pattern for changing analytic data.
 
+## When to use
+
+**Use Apache Kudu if:**
+- ✅ You have fast-arriving, frequently-updated structured data that must also be scanned analytically in near-real-time (IoT/time-series, CDC feeds, mutable fact/dimension tables)
+- ✅ You're already in an Impala/Spark/Cloudera stack on local SSD and want SQL via a query engine on top
+- ✅ You need the unique "mutable + columnar + scannable" combination in one engine (bridging Parquet and HBase)
+- ✅ You want CP per-tablet consistency with Raft-replicated, WAL-durable, majority-acked writes
+
+**Avoid Apache Kudu if:**
+- ❌ You can't keep clocks tightly NTP-synced — consistency relies on synchronized clocks and excessive skew can crash tablet servers outright (biggest gotcha)
+- ❌ You want a standalone database — it has no SQL of its own and needs Impala/Spark on top
+- ❌ You need general OLTP / rich multi-row ACID — multi-tablet transactions are INSERT-only, read-committed
+- ❌ You want a cloud-native lakehouse on object storage — Kudu wants local SSD, not S3, and open-table-format stacks have absorbed much of its mind-share
+
 ## Identity / role
 - **What it is:** a storage engine for structured, mutable, analytic data. Tables have a fixed schema, a typed primary key, and are range/hash-partitioned into **tablets**; each tablet is Raft-replicated across tablet servers. Columnar on-disk layout for scan speed.
 - **What it is NOT:** it is *not* a SQL engine, not a general OLTP database, and not a file format. You almost always pair it with [apache-impala](apache-impala.md) (or [apache-spark-sql](apache-spark-sql.md)) for SQL — Kudu itself exposes only an insert/scan/mutate API plus predicate pushdown. Contrast with [real-time-olap](../concepts/real-time-olap.md) stores like [clickhouse](clickhouse.md)/[apache-druid](apache-druid.md)/[starrocks](starrocks.md) that bundle storage + query in one process.

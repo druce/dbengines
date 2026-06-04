@@ -13,6 +13,18 @@ confidence: high
 
 > A daemon-based, massively-parallel SQL **query engine** (not a database) that runs low-latency analytic queries directly over data sitting in HDFS, S3/ADLS/Ozone, Kudu, HBase, and Iceberg — bring your own storage, durability, and consistency.
 
+## When to use
+
+**Use Apache Impala if:**
+- ✅ You already run a Hadoop or Cloudera lakehouse and need fast, concurrent, interactive SQL/BI over Parquet/[apache-iceberg](apache-iceberg.md)/[apache-kudu](apache-kudu.md) without standing up a separate warehouse
+- ✅ You want low-latency dashboarding via JDBC/ODBC BI tools over a data lake, with MPP execution and LLVM codegen instead of MapReduce startup tax
+- ✅ You need near-real-time analytics over mutable data by pairing Impala on top of [apache-kudu](apache-kudu.md)
+
+**Avoid Apache Impala if:**
+- ❌ You expect a database — it owns no storage, has no multi-statement transactions (only insert-only atomicity), and delegates all durability/consistency to the backing store
+- ❌ You need OLTP, high-rate single-row writes, tiny point lookups, or fault-tolerant mid-query ETL — use Kudu/HBase or [apache-spark-sql](apache-spark-sql.md) instead
+- ❌ You can't budget memory carefully — queries that outgrow their memory limit historically fail rather than degrade, and admission control + `COMPUTE STATS` discipline are mandatory chores
+
 ## Identity
 - **Taxonomy / data model:** Relational, SQL-on-Hadoop / lakehouse MPP query engine. It is a compute layer, not a storage engine — it queries data in external stores ([HDFS, S3, ADLS, Ozone, Kudu, HBase, Iceberg](https://impala.apache.org/)).
 - **Storage model:** No native storage. Reads columnar [Parquet]/[ORC], plus Avro, RCFile, text; columnar Parquet is the performance default ([db-engines / docs](https://impala.apache.org/)). For mutable data it leans on [apache-kudu](apache-kudu.md) (its sister project) or [apache-iceberg](apache-iceberg.md) table format. See [columnar-storage](../concepts/columnar-storage.md), [lsm-vs-btree](../concepts/lsm-vs-btree.md).

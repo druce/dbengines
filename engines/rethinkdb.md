@@ -13,6 +13,18 @@ confidence: high
 
 > The first mainstream "push" database — its changefeeds stream live query result deltas to clients — but the company shut down in 2016, and despite an Apache relicense it remains a niche, low-momentum project.
 
+## When to use
+
+**Use RethinkDB if:**
+- ✅ You specifically want live, composable query subscriptions (changefeeds) for real-time apps — live dashboards, collaborative/multiplayer apps, chat, presence.
+- ✅ You want a schemaless JSON document store with unusually rich server-side joins, aggregations, and secondary indexes via ReQL.
+- ✅ It is a self-hosted, low-stakes context where you can accept an essentially unmaintained project.
+
+**Avoid RethinkDB if:**
+- ❌ It is a new production system in 2026 — the company died in 2016, there is no commercial backing, and you are betting against the calendar.
+- ❌ You need multi-document transactions, heavy analytics, very high write throughput, or a managed cloud offering.
+- ❌ You rely on default linearizability — `read_mode=single` (the default) is *not* linearizable; you must combine `majority` read + `majority` acks + `hard` durability.
+
 ## Identity
 - **Taxonomy / data model:** distributed JSON document store. Schemaless documents, organized in tables and databases. The headline feature is **changefeeds**: subscribe to a query and receive a stream of changes as the underlying data mutates ([changefeeds docs](https://rethinkdb.com/docs/changefeeds/ruby/)).
 - **Storage model:** custom log-structured storage engine with a B-tree index layer, inspired by BTRFS; uses block-level [mvcc](../concepts/mvcc.md) (snapshots the B-tree per shard so reads and writes proceed concurrently) ([dbdb.io](https://dbdb.io/db/rethinkdb)). On-disk format is RethinkDB-proprietary, not [LSM](../concepts/lsm-vs-btree.md).

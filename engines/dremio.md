@@ -15,6 +15,18 @@ confidence: medium
 
 > A distributed SQL engine that queries Iceberg/Parquet on object storage directly, fronting it with a virtual-dataset semantic layer and auto-substituted "Reflections" so BI tools get warehouse-like speed without ETL into a warehouse.
 
+## When to use
+
+**Use Dremio if:**
+- ✅ You want BI-grade interactive SQL directly on an open Iceberg lakehouse without copying data into a warehouse.
+- ✅ The auto-substituting Reflections + governed semantic layer justify running it over plain [trino](trino.md) ("warehouse experience, lake economics, open formats").
+- ✅ You need federation/joins across object storage plus RDBMS/Mongo/Elasticsearch through one semantic layer, keeping data open in Iceberg.
+
+**Avoid Dremio if:**
+- ❌ You need OLTP, low-latency point lookups, or high-concurrency real-time serving (use [clickhouse](clickhouse.md)/[apache-druid](apache-druid.md)/[starrocks](starrocks.md)).
+- ❌ You're already standardized on [databricks](databricks.md)/[snowflake](snowflake.md) and don't want to run a second engine.
+- ❌ You won't manage Reflections — they are both the performance story and the operational tax; over-/under-building or stale refreshes is where deployments go sideways, and without them latency is closer to ordinary Trino.
+
 ## Identity / role
 - **What it is:** an MPP **SQL query engine** for the [lakehouse](../concepts/lakehouse.md) — coordinator + executor nodes (Java) that read/write [Iceberg](../concepts/open-table-formats.md), Parquet, and federated sources, plus a built-in **semantic layer** (virtual datasets/views) and an Iceberg-based **catalog**. It competes most directly with [trino](trino.md), [Spark SQL](apache-spark-sql.md), [starrocks](starrocks.md) (lakehouse mode), and as a query layer against [databricks](databricks.md)/[snowflake](snowflake.md).
 - **What it is NOT:** not a storage engine and not a database in the [OLTP](../concepts/oltp-olap-htap.md) sense — it owns no primary data format; data lives in your object store as Iceberg/Parquet. It is also not just a connector: it adds query acceleration (Reflections), caching, and a governed semantic layer on top of the lake.

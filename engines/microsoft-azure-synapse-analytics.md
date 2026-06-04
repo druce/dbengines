@@ -13,6 +13,20 @@ confidence: high
 
 > Azure's columnar MPP data-warehouse engine (the former SQL DW) plus a serverless-SQL-over-data-lake and Spark workspace — now effectively frozen, with Microsoft steering all new work to [microsoft-fabric](microsoft-fabric.md).
 
+## When to use
+
+**Use Microsoft Azure Synapse Analytics if:**
+- ✅ You already run a dedicated SQL pool in production on Azure and need to keep it operating
+- ✅ You need a mature columnar MPP warehouse for enterprise data warehousing and star-schema Power BI dashboards
+- ✅ You want one workspace bundling provisioned MPP, serverless SQL over lake files, and Spark pools in the Microsoft stack
+- ✅ Your queries are high-throughput batch scans over TB–PB and you can tune the distribution key
+
+**Avoid Microsoft Azure Synapse Analytics if:**
+- ❌ You are starting a greenfield project — Microsoft has frozen feature work and steers all new work to [microsoft-fabric](microsoft-fabric.md)
+- ❌ You need OLTP, high concurrency, low-latency point lookups, serializable isolation, or enforced constraints
+- ❌ You overlook the biggest gotcha: the dedicated pool **defaults to READ UNCOMMITTED** (dirty reads unless you enable snapshot)
+- ❌ You can't invest in distribution-key design — a bad key silently drowns queries in DMS data movement
+
 ## Identity
 - **Taxonomy / data model:** Relational analytical warehouse, exposed via T-SQL. It is a *workspace* bundling three compute engines: **dedicated SQL pool** (provisioned MPP warehouse, formerly Azure SQL Data Warehouse), **serverless SQL pool** (query-on-demand over data-lake files), and **Apache Spark pools** ([apache-spark-sql](apache-spark-sql.md)). It is not a single database engine — the dimensions below mostly describe the dedicated SQL pool, the warehouse core.
 - **Storage model:** Column-store. Dedicated pool tables default to **clustered columnstore indexes** (compressed column segments) on Azure Storage; row-store heap/clustered-index and replicated tables are also available. Serverless pool reads external **Parquet/CSV/Delta** files directly from ADLS Gen2 — no ingestion. Not [lsm-vs-btree](../concepts/lsm-vs-btree.md); this is classic warehouse columnar storage ([columnar-storage](../concepts/columnar-storage.md)).

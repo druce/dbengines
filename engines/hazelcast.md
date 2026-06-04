@@ -13,6 +13,18 @@ confidence: high
 
 > A JVM-embedded in-memory data grid that gives you fast partitioned AP maps/caches plus an integrated stream-processing engine (ex-Jet), with a separate Raft-based CP subsystem you must explicitly use when you need real linearizability.
 
+## When to use
+
+**Use Hazelcast if:**
+- ✅ You need a fast, elastic, JVM-native distributed cache or data grid (cache-aside in front of an RDBMS, session/state clustering, fast key-value serving).
+- ✅ You want integrated stream/batch processing (ex-Jet) alongside your cached data, with sub-millisecond in-memory reads/writes.
+- ✅ You need a small set of linearizable primitives (locks, atomics, semaphores) and explicitly opt into the Raft-backed, Jepsen-tested CP subsystem for them.
+
+**Avoid Hazelcast if:**
+- ❌ You treat the default `IMap`/`ICache` as a durable system of record — they are AP and Jepsen confirmed they lose writes under partition (the biggest gotcha).
+- ❌ You need serializable multi-key transactions, strong cross-region consistency (WAN replication is async), or large-scale OLAP over cold data.
+- ❌ You cannot afford to keep the working set in cluster RAM, or you need durability without Enterprise persistence plus synchronous backups.
+
 ## Identity
 - **Taxonomy / data model:** distributed in-memory data grid (IMDG); primarily a partitioned key-value store (`IMap`, `ICache`) plus distributed collections (queue, set, list, ringbuffer), concurrency primitives (locks, semaphores, atomics), pub/sub, and a SQL/stream engine. Multi-model in practice but key-value at the core. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** in-memory primary store, data partitioned across cluster members (271 partitions by default) with one configurable backup replica. Not LSM/B-tree — it is a hash-partitioned heap/off-heap store, not a disk engine ([lsm-vs-btree](../concepts/lsm-vs-btree.md) is largely N/A). Optional on-disk **Persistence** (Enterprise) and **Tiered Storage** spill memory to disk; the High-Density (off-heap) store avoids GC pressure.

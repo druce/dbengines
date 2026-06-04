@@ -13,6 +13,20 @@ confidence: medium
 
 > Memory-first distributed cache/compute grid with a SQL veneer — strong as a transactional key-value grid in front of a system of record, weak and rough as a primary transactional SQL database.
 
+## When to use
+
+**Use Apache Ignite if:**
+- ✅ You need a horizontally-scalable, ACID-capable distributed in-memory key-value / data grid to accelerate or front a system of record
+- ✅ You want a compute grid for co-located parallel processing (compute-to-data affinity)
+- ✅ You need read-through/write-through caching, session/state store, or high-speed KV with the working set in RAM
+- ✅ Your team has JVM and distributed-systems operational depth (GC, off-heap, WAL/checkpoint, baseline topology tuning)
+
+**Avoid Apache Ignite if:**
+- ❌ You treat it as a drop-in primary transactional SQL database — distributed transactional SQL was shipped beta then removed in 2.x; strong ACID lives in the key-value API, not distributed SQL (biggest gotcha)
+- ❌ You need rock-solid, independently-verified distributed consistency — no official Jepsen report exists
+- ❌ Your workload is pure OLAP/data-warehouse — there is no separate columnar engine, so "HTAP" just means SQL over the same row caches
+- ❌ You run 2.x without split-brain protection config, or lack the RAM the in-memory story assumes
+
 ## Identity
 - **Taxonomy / data model:** Multi-model. Primarily a distributed key-value store / in-memory data grid (IMDG), with a SQL layer over the same caches, plus compute grid, service grid, and streaming. Often used as a caching/compute tier rather than a primary database. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Row-oriented, page-based off-heap "durable memory" allocator. Ignite 2.x persists via WAL + checkpointed page store. Ignite 3 (GA Feb 2025) offers an LSM-tree-based storage option (RocksDB-backed) alongside a B-tree/page store ([GridGain: Ignite 3 Alpha 3 — Calcite, Raft, LSM-Tree](https://www.gridgain.com/resources/blog/apache-ignite-3-alpha-3-apache-calcite-raft-and-lsm-tree)). See [lsm-vs-btree](../concepts/lsm-vs-btree.md).

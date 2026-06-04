@@ -13,6 +13,18 @@ confidence: high
 
 > A bargain-priced, schemaless NoSQL store inside an Azure Storage account, addressed by a two-part `(PartitionKey, RowKey)` key — fast and cheap when you query by key, painful the moment you need a secondary index, a cross-partition transaction, or rich querying.
 
+## When to use
+
+**Use Microsoft Azure Table Storage if:**
+- ✅ You need dirt-cheap, durable, massively scalable storage of simple records addressed by a known `(PartitionKey, RowKey)`.
+- ✅ Your access is overwhelmingly by key — logs, telemetry, audit/event records, session/metadata, Dapr state stores.
+- ✅ You want predictable low cost at scale with no provisioned-throughput tier and near-zero operational burden.
+
+**Avoid Microsoft Azure Table Storage if:**
+- ❌ You need secondary indexes, joins, aggregations, server-side sorting, or cross-partition transactions (EGTs are single-partition only).
+- ❌ You need a latency SLA or rich/ad-hoc queries — non-key queries degrade to full-table/partition scans.
+- ❌ Your `PartitionKey` choice is uncertain — it's a one-way door dictating both transaction boundary and the ~2,000 entities/sec hot-partition ceiling.
+
 ## Identity
 - **Taxonomy / data model:** Wide-column / key-value. Entities (rows) live in tables; each entity is a flat bag of up to 252 typed properties plus the mandatory `PartitionKey`, `RowKey`, and `Timestamp`. Different entities in the same table can have different property sets — schema lives in app code. Often described as wide-column because columns are per-row and sparse; in practice it behaves as a partitioned key-value store. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Row-oriented entities; `PartitionKey` + `RowKey` form a clustered index, the only index that exists ([Table service data model](https://learn.microsoft.com/en-us/rest/api/storageservices/understanding-the-table-service-data-model)). On-disk format is the opaque internal Azure Storage stamp engine (not documented publicly; the WAS design paper covers the underlying architecture).

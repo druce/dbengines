@@ -15,6 +15,18 @@ confidence: high
 
 > Debezium tails a database's write-ahead/replication log and emits each committed row change as a structured event — it is a CDC pipeline, not a database or a query engine.
 
+## When to use
+
+**Use Debezium if:**
+- ✅ You need reliable, low-impact, log-based CDC out of a mainstream OLTP database (Postgres/MySQL/MongoDB/SQL Server are the most mature connectors).
+- ✅ You want an open, vendor-neutral capture layer feeding Kafka, a lakehouse, or a stream processor without dual-writes.
+- ✅ You're building replication, cache invalidation, search-index sync, or event sourcing from the source DB's transaction log.
+
+**Avoid Debezium if:**
+- ❌ You expect turnkey exactly-once — the default is at-least-once; exactly-once is conditional on Kafka Connect with EOS enabled, so build idempotent consumers.
+- ❌ You can't operate Kafka/Connect and monitor source-side log retention — a stalled Postgres replication slot or expired MySQL binlog can fill disks or permanently lose changes.
+- ❌ You want it to store, transform/join, or serve queries — it is only the capture stage and needs a transport plus a sink/processor.
+
 ## Identity / role
 - **What it is:** a log-based [change-data-capture](../concepts/change-data-capture.md) platform. Source-database connectors read the transaction log (Postgres logical WAL/`pgoutput`, MySQL/MariaDB binlog, Oracle LogMiner/OpenLogReplicator, SQL Server CDC tables, MongoDB oplog/change streams) and produce one row-level `INSERT`/`UPDATE`/`DELETE` event per change, with `before`/`after` images plus source metadata (LSN, transaction id, timestamp).
 - **What it is NOT:** not a database, not a message broker, not a stream processor, not a query engine. It is the *capture* stage. It does not store data long-term, does not transform/join streams beyond lightweight single-message transforms (SMTs), and does not serve queries. Pair it with a transport ([apache-kafka](apache-kafka.md), Pulsar, Kinesis) and a sink/processor ([apache-flink](apache-flink.md), [apache-spark-sql](apache-spark-sql.md), a warehouse, [clickhouse](clickhouse.md)).

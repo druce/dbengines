@@ -13,6 +13,18 @@ confidence: high
 
 > A small, fast, pure-Java relational engine (HSQLDB) that embeds in-process or runs as a single-node server, with the widest SQL-standard coverage of any open-source DB — best known as the JVM's default in-memory test database, not as a scalable production server.
 
+## When to use
+
+**Use HyperSQL if:**
+- ✅ You need a real SQL database inside a JVM process for fast in-memory tests, desktop apps, or small embedded systems (ships as one ~1.5 MB JAR).
+- ✅ You value unusually deep SQL-standard coverage (SQL:2023 core, window functions, recursive CTEs, MERGE, SQL/PSM and Java stored procedures).
+- ✅ You want a fully permissive (BSD 3-clause) embedded engine with low lock-in and low day-2 burden (there is no cluster to operate).
+
+**Avoid HyperSQL if:**
+- ❌ You need high write concurrency, horizontal scale, or HA/replication — these are explicit non-goals (it is single-node with no clustering).
+- ❌ You rely on durability of the last sub-second of commits — the default `WRITE DELAY` of 0.5 s means a crash can lose committed transactions unless you set it to 0 (the biggest gotcha).
+- ❌ You assume true serializability — under MVCC, REPEATABLE READ and SERIALIZABLE are snapshot isolation, so plan for serialization-failure retries.
+
 ## Identity
 - **Taxonomy / data model:** Relational (SQL), single-node. Pure Java; ships as one ~1.5 MB JAR with a JDBC driver. Also commonly called HSQLDB.
 - **Storage model:** Per-table choice. `MEMORY` tables live entirely in RAM (the default; persisted by replaying a SQL `.script`/`.log` on startup). `CACHED` tables are disk-based, partially loaded, B-tree-indexed row store written to a `.data` file. `TEXT` tables map to external CSV/delimited files with in-memory indexes. Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM — it is a row store with B-tree indexes and a SQL/operation log for durability ([HyperSQL Features](https://hsqldb.org/web/hsqlFeatures.html)).

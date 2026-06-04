@@ -13,6 +13,18 @@ confidence: high
 
 > An in-process, single-file columnar SQL engine for analytics — think SQLite's deployment model with a vectorized OLAP engine bolted on; superb on one machine, not a distributed warehouse or a write-concurrent OLTP store.
 
+## When to use
+
+**Use DuckDB if:**
+- ✅ You want fast analytical SQL on one machine with zero operational overhead — querying Parquet/CSV/JSON/Arrow, notebooks, data apps, dbt transforms, ETL staging.
+- ✅ You need an embedded, in-process engine (linked as a library, even in-browser via WASM) with no server, daemon, or port.
+- ✅ You're crunching larger-than-memory data on a single box (out-of-core spill) and want a near-Postgres SQL dialect.
+
+**Avoid DuckDB if:**
+- ❌ You need a multi-writer shared database server — the native file tolerates only one read-write process at a time (or many read-only); point multiple writers at it and you risk blocking, errors, or corruption.
+- ❌ You need an OLTP backend with high write concurrency.
+- ❌ You need horizontal scale-out, HA/replication/failover, or durability of an in-memory instance — reach for [clickhouse](clickhouse.md)/[snowflake](snowflake.md)/[google-bigquery](google-bigquery.md) or [postgresql](postgresql.md).
+
 ## Identity
 - **Taxonomy / data model:** relational, embedded (in-process library, not a server). Primary use is analytical SQL. See [oltp-olap-htap](../concepts/oltp-olap-htap.md) and [embedded-databases](../concepts/embedded-databases.md).
 - **Storage model:** columnar / column-store on disk; data lives in a single `.duckdb` file (or purely in-memory). Hierarchy is RowGroupCollection → RowGroup (~120K rows) → ColumnData → ColumnSegment (the compressed physical unit with per-segment statistics) ([DuckDB internals](https://duckdb.org/why_duckdb), [dbdb.io](https://dbdb.io/db/duckdb)). Compressed columnar format, not [lsm-vs-btree](../concepts/lsm-vs-btree.md) — no LSM, no row B-tree heap. See [columnar-storage](../concepts/columnar-storage.md).

@@ -13,6 +13,18 @@ confidence: high
 
 > The most popular open-source time-series database, now in its third, ground-up rewrite (v3 / "IOx") on Apache Arrow + DataFusion + Parquet — solving v1/v2's cardinality wall but fragmenting users across three incompatible generations.
 
+## When to use
+
+**Use InfluxDB if:**
+- ✅ You need a popular, well-integrated time-series store for metrics/IoT/observability with first-class Telegraf and Grafana integration.
+- ✅ v1/v2's high-cardinality cardinality wall hurt you — v3's Arrow/Parquet/object-storage columnar engine is designed precisely to fix that and claims unbounded series cardinality.
+- ✅ You want object-storage-backed, storage-compute-separated time-series with SQL (via DataFusion) and cheap storage at scale.
+
+**Avoid InfluxDB if:**
+- ❌ You depend on Flux or are unsure which generation to run — it is really three incompatible databases (v1 TSM/InfluxQL, v2 TSM/Flux, v3 IOx/SQL); migrating is a re-platforming decision, not an upgrade (the biggest gotcha).
+- ❌ You need a general-purpose or transactional store — there are no multi-statement transactions or isolation levels; it is append-oriented.
+- ❌ You need long-range full-history analytical scans on the free Core edition — the full compactor that enables them is Enterprise-only (Core caps queries at ~72 h).
+
 ## Identity
 - **Taxonomy / data model:** purpose-built time-series database. Data is organized as *measurements* (≈ tables) with *tags* (indexed string dimensions), *fields* (values), and a *time* column. See [time-series-storage](../concepts/time-series-storage.md), [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** **Generation-dependent — this is the central fact about InfluxDB.**

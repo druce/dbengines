@@ -13,6 +13,19 @@ confidence: high
 
 > A tiny embedded key-value library (a memory-mapped, copy-on-write B+tree) that gives full ACID, lock-free MVCC reads, and corruption-proof crash recovery in exchange for one hard limit: a single writer at a time.
 
+## When to use
+
+**Use LMDB if:**
+- ✅ One process needs a fast, dead-simple, crash-proof embedded key-value store with rock-steady read latency
+- ✅ You want zero operational ceremony — no daemon, no compaction, no GC tuning, no WAL replay
+- ✅ Your workload is read-heavy with cheap ordered range/prefix scans via cursors
+- ✅ You want genuine serializable ACID and lock-free MVCC reads under a permissive license
+
+**Avoid LMDB if:**
+- ❌ A forgotten long-running read transaction stops page reclamation and lets the file balloon — keep read txns short and size the map generously
+- ❌ Your workload is write-heavy or write-concurrent (the single writer is a hard ceiling)
+- ❌ You need queries, secondary indexes, replication, sharding, or built-in compression — reach for [rocksdb](rocksdb.md)/[leveldb](leveldb.md) or [sqlite](sqlite.md)
+
 ## Identity
 - **Taxonomy / data model:** embedded ordered key-value store. Keys and values are opaque byte strings; keys are kept sorted (memcmp order by default, custom comparators allowed). Supports "sub-databases" (named B+trees in one env) and duplicate values per key (`MDB_DUPSORT`). See [embedded-databases](../concepts/embedded-databases.md).
 - **Storage model:** single memory-mapped file holding a B+tree, on-disk format. **Copy-on-write, append-style** updates — modified pages are written to *new* locations, never overwriting live data, so the on-disk image is always a valid tree ([Symas/Howard Chu interview](https://www.symas.com/post/getting-down-and-dirty-with-lmdb)). Not an LSM and not a conventional in-place B-tree; see [lsm-vs-btree](../concepts/lsm-vs-btree.md). Reads return pointers directly into the mmap — zero-copy, no malloc/memcpy on the read path ([LMDB docs](http://www.lmdb.tech/doc/)). A second internal B+tree (the "free list") tracks pages freed by old transactions for reuse, which is why LMDB needs **no compaction, no checkpointing, no WAL** replay.

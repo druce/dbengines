@@ -13,7 +13,17 @@ confidence: high
 
 > A globally-distributed, serverless document-relational database whose Calvin-based transaction engine delivered strict serializability without synchronized clocks — now defunct as a service (shut down May 30, 2025), with the core being open-sourced.
 
-## Identity
+## When to use
+
+**Use Fauna if:**
+- ✅ Essentially never for new projects — the hosted service shut down May 30, 2025; consider it only if the post-shutdown open-source core (Apache-2.0) matures into a production-ready self-hosted build.
+- ✅ You are studying clock-free strict serializability — its Calvin-based protocol ordered transactions via a global log without TrueTime-style synchronized clocks.
+- ✅ You have an existing Fauna workload to migrate off, in which case prefer [google-cloud-spanner](google-cloud-spanner.md), [cockroachdb](cockroachdb.md), or [mongodb](mongodb.md).
+
+**Avoid Fauna if:**
+- ❌ You are starting any new system — the managed service is dead (shut down May 2025) and the open-sourced core had no packaged/production-ready build as of mid-2025.
+- ❌ You need analytics/OLAP, heavy aggregate scans, or latency-critical single-region OLTP where local Postgres wins.
+- ❌ You can't accept deep, non-portable FQL lock-in and HTTP-only access — migrating off requires rewriting the data layer.
 - **Taxonomy / data model:** Multi-model "document-relational" — JSON-like documents in collections, with native relations, indexes, and joins resolved server-side. Marketed as combining document flexibility with relational capability.
 - **Storage model:** Distributed, log-structured, append-only temporal store. Every document keeps version history (bitemporal: data is versioned by transaction timestamp), enabling time-travel queries. Closer to [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM lineage than B-tree page-store; on-disk format proprietary.
 - **Workload:** OLTP-oriented operational database for app backends; not an analytics/OLAP engine. Not HTAP — no columnar/analytical side. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).

@@ -13,6 +13,19 @@ confidence: high
 
 > The default heavyweight OLTP/HTAP relational database for large enterprises: extremely capable and operationally mature, but its "SERIALIZABLE" is really snapshot isolation, and its per-core, options-priced-separately licensing makes cost — not technology — the dominant decision factor.
 
+## When to use
+
+**Use Oracle if:**
+- ✅ You have high-value, high-stakes enterprise OLTP (or HTAP via In-Memory) — core banking, ERP, telco billing — needing the deepest feature set
+- ✅ You need its unmatched online-DDL (Edition-Based Redefinition), RMAN/Flashback recovery tooling, and Active Data Guard HA
+- ✅ You can afford the license plus a skilled DBA team and want 24×7 commercial support and PL/SQL maturity
+
+**Avoid Oracle if:**
+- ❌ Cost-efficiency or audit-risk avoidance matters — per-core licensing with separately-priced, accidentally-enabled options (Partitioning, In-Memory, Diagnostics/Tuning Packs) is a TCO-and-audit minefield
+- ❌ You're a cost-sensitive startup or want cheap cloud-native horizontal scale-out ([postgresql](postgresql.md), [cockroachdb](cockroachdb.md), or a managed service fit better)
+- ❌ You need pure analytics at scale (a warehouse like [snowflake](snowflake.md) or [google-bigquery](google-bigquery.md) wins)
+- ❌ You assume `SERIALIZABLE` prevents write skew — it is snapshot isolation, not true serializability (use `SELECT ... FOR UPDATE`)
+
 ## Identity
 - **Taxonomy / data model:** Relational at the core; multi-model in practice — native JSON (incl. JSON-relational duality views in 23ai), XML, spatial, graph (property + RDF), text/search, and AI vector search added in 23ai. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Row-store on disk (heap tables, B-tree indexes); optional columnar via **Database In Memory** (a separate in-memory column store populated alongside the row store) and **Exadata** columnar flash/storage-cell offload. Undo + redo logs underpin [mvcc](../concepts/mvcc.md); not [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM-based.

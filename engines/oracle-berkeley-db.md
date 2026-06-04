@@ -13,6 +13,19 @@ confidence: high
 
 > A 30-year-old embedded ACID key-value storage library (B-tree/hash/queue/recno) that runs inside your application process — technically solid, but the 2013 switch from the permissive Sleepycat license to AGPLv3 effectively killed it for new open-source adoption.
 
+## When to use
+
+**Use Oracle Berkeley DB if:**
+- ✅ You already depend on it and need an in-process ACID key-value engine with no separate DB server
+- ✅ You need mature B-tree/hash/queue/recno access methods with serializable 2PL isolation (or opt-in MVCC snapshots)
+- ✅ You can accept AGPLv3 obligations or will buy a commercial Oracle license
+
+**Avoid Oracle Berkeley DB if:**
+- ❌ You're starting fresh and want permissive licensing — the 2013 Sleepycat→AGPLv3 switch can force your whole linking application open or into a paid Oracle contract
+- ❌ You need SQL/ad-hoc queries, horizontal write scaling, or a multi-tenant network database ([postgresql](postgresql.md), [redis](redis.md), [etcd](etcd.md))
+- ❌ You want a modern permissive embedded KV — pick [sqlite](sqlite.md), [rocksdb](rocksdb.md), or [leveldb](leveldb.md) instead
+- ❌ Your team won't operate log/checkpoint internals — unmanaged transaction logs silently fill the disk
+
 ## Identity
 - **Taxonomy / data model:** [Embedded](../concepts/embedded-databases.md) ordered/unordered **key-value** store. Keys and values are opaque byte strings; no native schema or query language. A SQL layer (a fork of SQLite's API/parser on top of the BDB storage engine) and an XML layer (Berkeley DB XML, XQuery) exist as separate products.
 - **Storage model:** Disk-backed pages with an in-memory buffer pool (Mpool, LRU). Multiple **access methods**: **B-tree** (sorted, range scans — see [lsm-vs-btree](../concepts/lsm-vs-btree.md)), **Hash** (linear hashing for exact-match), **Queue** (fixed-length records, FIFO), and **Recno** (record-number/variable-length sequential). Not an LSM engine — it is a classic page/B-tree store.

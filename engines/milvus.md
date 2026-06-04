@@ -13,6 +13,20 @@ confidence: high
 
 > Open-source (Apache 2.0) distributed vector database that scales ANN search to billions of vectors via stateless compute over object storage and a log-broker WAL — pick it for large-scale similarity search, not as a system of record.
 
+## When to use
+
+**Use Milvus if:**
+- ✅ You need similarity search over tens of millions to billions of vectors with scalar metadata filtering (RAG, semantic/image/audio search, recommendation, dedup)
+- ✅ You want cloud-native scale with storage/compute disaggregation — stateless compute over object storage scales independently
+- ✅ You want tunable per-query read consistency (Strong, Bounded, Session, Eventually) and a full menu of ANN indexes (HNSW, IVF, DiskANN, GPU/CAGRA)
+- ✅ You want a permissive Apache 2.0 core (or managed Zilliz Cloud) with no relicensing rug-pull
+
+**Avoid Milvus if:**
+- ❌ You need a transactional system of record — there are no real transactions and durability-plus-strong-reads is not multi-statement ACID
+- ❌ Your dataset is small — the distributed machinery is overkill; use Milvus Lite/Standalone, pgvector, or FAISS
+- ❌ You need joins, SQL analytics, or strict relational integrity (API-only, minimal aggregation)
+- ❌ You'd be tripped by the gotchas: **plain inserts don't dedup** (duplicate PKs), batch writes can **partially succeed**, and operating the distributed mode means running etcd + object store + a log broker + multiple node types
+
 ## Identity
 - **Taxonomy / data model:** Vector database. Stores collections of entities = primary key + one or more vector fields + scalar fields; supports vector similarity search with scalar metadata filtering. See [vector-search-ann](../concepts/vector-search-ann.md). Multi-model-lite: scalar fields, JSON (with JSON shredding/indexing in 2.6), arrays, and full-text/BM25 sparse-vector search in recent versions, but it is not a general-purpose document or relational store.
 - **Storage model:** Hybrid log-structured. Incoming writes land in **growing segments** in memory fed from a write-ahead log broker; these are sealed into immutable **sealed segments** persisted as columnar files in object storage, then indexed ([Milvus segments are immutable, "write once, read many"](https://milvus.io/docs/architecture_overview.md)). Conceptually closer to [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM (append + compaction) than B-tree. ANN indexes (HNSW graph, IVF lists, DiskANN, etc.) are built per sealed segment.

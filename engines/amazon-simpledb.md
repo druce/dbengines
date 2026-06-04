@@ -13,6 +13,18 @@ confidence: high
 
 > A pre-DynamoDB AWS NoSQL store where every attribute is auto-indexed and everything is a string — historically interesting, long superseded, and closed to new customers since July 2024.
 
+## When to use
+
+**Use Amazon SimpleDB if:**
+- ✅ You're a legacy user with an existing domain that works — there is essentially no reason to newly adopt it
+- ✅ You needed a tiny schemaless attribute store where auto-indexing every attribute avoided index design (historical metadata/index store alongside S3)
+- ✅ Your data and queries fit the hard caps (10 GB / 1 billion attributes per domain) and you want per-read tunable consistency plus conditional-write CAS
+
+**Avoid Amazon SimpleDB if:**
+- ❌ It's any new project — it's closed to new customers (since July 2024), feature-frozen 10+ years; use [amazon-dynamodb](amazon-dynamodb.md) or [amazon-aurora](amazon-aurora.md)/RDS instead
+- ❌ You have numeric/date-heavy data — everything is stored as UTF-8 strings, so sorting and ranges silently break unless the app zero-pads and ISO-encodes every value (the single biggest gotcha)
+- ❌ You need joins, aggregations beyond `count(*)`, multi-item transactions, large/analytical workloads, or high write throughput
+
 ## Identity
 - **Taxonomy / data model:** schemaless attribute-value store. Hierarchy is *domain → item → (attribute, value) pairs*; an item can have up to 256 name/value pairs and attributes may be **multi-valued** ([attribute name-value pairs per item = 256](https://docs.aws.amazon.com/AmazonSimpleDB/latest/DeveloperGuide/SDBLimits.html)). Sits between key-value and document. There is no native schema — attributes appear per-item.
 - **Storage model:** managed, opaque. Every attribute is **automatically indexed** — there is no concept of a primary-vs-secondary index, and **all values are stored and compared as UTF-8 strings**, so numbers/dates must be zero-padded and ISO-formatted by the application to sort/range correctly. On-disk format and engine internals are undocumented AWS internals.

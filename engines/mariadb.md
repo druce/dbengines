@@ -13,6 +13,19 @@ confidence: high
 
 > A community-governed, drop-in MySQL fork that stays GPLv2 forever and adds pluggable storage engines (Aria, ColumnStore) and multi-primary Galera clustering — but its distributed mode delivers far less consistency than it advertises ([Jepsen 12.1.2, 2026](https://jepsen.io/analyses/mariadb-galera-cluster-12.1.2)).
 
+## When to use
+
+**Use MariaDB if:**
+- ✅ You want a mature, genuinely-GPLv2, non-Oracle MySQL drop-in for single-node or read-replicated OLTP
+- ✅ You want MySQL-compatible SQL plus extras: window functions, CTEs, `RETURNING`, temporal/system-versioned tables, Oracle mode, native vector search
+- ✅ You run web/app/CMS/LAMP backends (WordPress etc.) and want broad MySQL-protocol driver/ORM compatibility
+- ✅ You need pluggable engines (InnoDB OLTP, ColumnStore OLAP) under one server
+
+**Avoid MariaDB if:**
+- ❌ Galera multi-primary's advertised consistency diverges sharply from reality — [Jepsen 2026](https://jepsen.io/analyses/mariadb-galera-cluster-12.1.2) found lost updates, stale reads, and lost committed transactions even in healthy clusters
+- ❌ You need write scaling — Galera scales reads, not writes (every node certifies every write), and its "safe" durability setting can enable data loss
+- ❌ You need correctness-critical distributed SQL (use [cockroachdb](cockroachdb.md)/[tidb](tidb.md)) or heavy OLAP on InnoDB (use ColumnStore or a real warehouse)
+
 ## Identity
 - **Taxonomy / data model:** primarily relational; multi-model in the [mysql](mysql.md) tradition via pluggable storage engines (InnoDB for OLTP, Aria for crash-safe non-transactional, ColumnStore for columnar OLAP, Spider for sharding, plus native JSON functions, computed columns, and a system-versioned "temporal" tables feature).
 - **Storage model:** default **InnoDB** is a row-store on a clustered B+tree ([lsm-vs-btree](../concepts/lsm-vs-btree.md)); **Aria** is row-store/heap (MyISAM successor, crash-safe but not ACID by default); **ColumnStore** is true columnar with extent-map storage for OLAP. On-disk format is InnoDB-compatible but has diverged from MySQL since ~5.7.

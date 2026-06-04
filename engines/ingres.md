@@ -13,6 +13,18 @@ confidence: high
 
 > A foundational 1970s relational DBMS — academic ancestor of [postgresql](postgresql.md) and others — that survives as Actian's single-node OLTP product: solid, conventional, and chosen mainly to keep decades-old applications running.
 
+## When to use
+
+**Use Ingres if:**
+- ✅ You already run it and need to maintain or extend long-lived enterprise/government OLTP applications built on Ingres.
+- ✅ You want a mature, stable, conventional single-node relational engine with full multi-statement ACID and a cost-based optimizer, commercially supported by Actian.
+- ✅ You want optional HTAP within one database — classic row engine for OLTP plus the embedded X100/Vector columnar engine for analytics, with cross-engine joins.
+
+**Avoid Ingres if:**
+- ❌ It is a new greenfield project — [postgresql](postgresql.md) gives the same relational heritage with a vastly larger ecosystem, real licensing freedom, and modern types.
+- ❌ You assume "SERIALIZABLE" is truly serializable — under MVCC it is snapshot isolation (first-committer-wins, `E_US125B`) and admits write-skew (the biggest gotcha).
+- ❌ You need web-scale horizontal scale-out, cloud-native distributed HA, storage-compute separation, or modern document/JSON/vector workloads.
+
 ## Identity
 - **Taxonomy / data model:** Relational (SQL, and historically QUEL — the query language [postgresql](postgresql.md)'s predecessor also used). Originated at UC Berkeley (Stonebraker/Wong, 1973), commercialized 1980, now owned by Actian. The "Actian X" brand (Ingres + Vector's X100 columnar engine, introduced 2017) was withdrawn in mid-2024; its hybrid capabilities were folded into the current **Actian Ingres 12.0** release (launched 2024-06-04) ([Actian press release](https://www.actian.com/company/press-releases/actian-launches-ingres-12-0-database/), [dbdb.io](https://dbdb.io/db/ingres), [Wikipedia](https://en.wikipedia.org/wiki/Ingres_(database))).
 - **Storage model:** Disk-oriented row-store (N-ary storage model) by default. Actian Ingres bundles a second engine, **X100** (the columnar/vectorized engine from actian-vector), so a single database can hold both traditional row (Ingres) tables and X100 columnar tables and join across them in one query — row tables for OLTP, column tables for analytics ([Actian docs — Hybrid Transaction and Analytics Processing](https://docs.actian.com/actianingres/12.0/DatabaseAdmin/Hybrid.htm), [dbdb.io](https://dbdb.io/db/ingres)). See [lsm-vs-btree](../concepts/lsm-vs-btree.md) — Ingres is B-tree/ISAM-family, not LSM. On-disk default index structure is **ISAM**; B+tree, hash, and R-tree are also offered.

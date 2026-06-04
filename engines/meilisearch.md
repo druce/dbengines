@@ -13,6 +13,19 @@ confidence: high
 
 > A Rust + LMDB search engine optimized for instant typo-tolerant "search-as-you-type" with built-in hybrid (keyword + vector) search — Algolia ergonomics, self-hosted. The free Community Edition is single-node MIT; horizontal sharding and replication exist as of v1.37 (2026) but require the paid BUSL Enterprise Edition, and even then use a simple leader-follower model with no consensus.
 
+## When to use
+
+**Use Meilisearch if:**
+- ✅ You want Algolia-style instant, typo-tolerant, search-as-you-type that you can self-host under a permissive MIT license
+- ✅ You need built-in hybrid (BM25 keyword + vector) search via a tunable `semanticRatio` for on-site/e-commerce/docs search or RAG
+- ✅ Your data fits comfortably on one beefy NVMe node and a real database remains your source of truth
+- ✅ You value strong DX and a simple HTTP/JSON REST API with official SDKs
+
+**Avoid Meilisearch if:**
+- ❌ Indexing is asynchronous — documents are not searchable the instant you write them (no immediate read-your-writes)
+- ❌ You need built-in HA/auto-failover — the free MIT CE has none, and even sharding/replication require the BUSL Enterprise Edition with a leader-follower model, no consensus, and no documented auto-failover
+- ❌ You want a primary store/system of record, analytics/aggregation workloads, joins, or SQL — index data that lives authoritatively in e.g. [postgresql](postgresql.md)
+
 ## Identity
 - **Taxonomy / data model:** dedicated [full-text-search](../concepts/full-text-search.md) engine with documents (JSON objects) grouped into *indexes*; not a general-purpose database. Adds [vector-search-ann](../concepts/vector-search-ann.md) (hybrid keyword + semantic), faceted filtering, geosearch.
 - **Storage model:** built on **LMDB** (Lightning Memory-Mapped Database), a memory-mapped, copy-on-write **B+tree** transactional key-value store — *not* an [LSM](../concepts/lsm-vs-btree.md) design. The search-specific structures (inverted indexes, the `milli` crate) sit on top of LMDB. Data is served straight from the memory map with no copy on read ([docs](https://www.meilisearch.com/docs/resources/internals/storage)). The LMDB wrapper is the in-house `heed` Rust crate; recent releases patched LMDB (with LMDB author Howard Chu) for nested read transactions on uncommitted writes, speeding the vector store ~3x ([blog](https://www.meilisearch.com/blog/3xfaster-vector-store)).

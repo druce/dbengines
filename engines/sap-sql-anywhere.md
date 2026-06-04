@@ -13,6 +13,18 @@ confidence: high
 
 > A low-administration, embeddable SQL engine whose real differentiator is data synchronization (MobiLink, SQL Remote, UltraLite) for thousands of edge/mobile databases feeding a central consolidated store — not raw single-node performance.
 
+## When to use
+
+**Use SAP SQL Anywhere if:**
+- ✅ You need a zero-admin, embeddable SQL database that ships inside an application or onto offline/edge/mobile devices
+- ✅ You must reliably synchronize thousands of remote databases to a central consolidated store — the MobiLink/SQL Remote/UltraLite sync stack is its genuine edge
+- ✅ You want point-of-sale, field-service, or OEM-embedded OLTP with tunable HA mirroring (synchronous/asynchronous) and self-tuning queries
+
+**Avoid SAP SQL Anywhere if:**
+- ❌ You need large-scale analytics/data-warehousing — it is OLTP-oriented with no columnar/HTAP engine
+- ❌ You want open-source, cloud-native horizontally-sharded OLTP, or a large talent pool — it is proprietary, mindshare is declining (rank ~85), and there is no first-party SaaS
+- ❌ You assume clean reads out of the box — the default isolation level is READ UNCOMMITTED (0) for native connections, so raise it or enable snapshot isolation first
+
 ## Identity
 - **Taxonomy / data model:** relational (SQL), single-file embedded/server RDBMS. Lineage: Watcom SQL (1992) → SQL Anywhere → Adaptive Server Anywhere → SQL Anywhere again (v10, 2006); acquired by Sybase, then SAP ([SQL Anywhere history](https://www.sqlanywhere.info/EN/sql-anywhere/sql-anywhere-history.html), [Wikipedia](https://en.wikipedia.org/wiki/SQL_Anywhere)). Versions 13–15 skipped; current major release is **v17** (GA July 2015), still actively patched via Support Packages (17.0 SP1 builds through 2025) and supported until 2028 ([SQL Anywhere release/update history](https://www.sqlanywhere.info/EN/sql-anywhere/sql-anywhere-release-history.html)).
 - **Storage model:** row-store B-tree pages in a single database file plus a separate transaction log; classic page-based engine (not [LSM](../concepts/lsm-vs-btree.md)). It is **OLTP-oriented**; it does *not* market itself as a columnar/HTAP analytics engine, so treat any analytics use as secondary. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).

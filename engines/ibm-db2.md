@@ -13,6 +13,18 @@ confidence: high
 
 > Decades-old, battle-tested commercial RDBMS with two distinct code bases (z/OS mainframe and Linux/Unix/Windows); strong ACID OLTP and an optional in-memory columnar engine (BLU) for analytics, but proprietary, expensive, and mostly chosen by organizations already invested in IBM.
 
+## When to use
+
+**Use IBM Db2 if:**
+- ✅ You are already an IBM/mainframe shop and need proven z/OS OLTP reliability for core banking, insurance, or transaction systems
+- ✅ You want one engine handling ACID OLTP plus columnar analytics via BLU Acceleration, under commercial IBM support
+- ✅ You need explicitly tunable durability (HADR SYNC/NEARSYNC/ASYNC/SUPERASYNC) and either shared-disk active-active (pureScale) or shared-nothing MPP (DPF)
+
+**Avoid IBM Db2 if:**
+- ❌ You are greenfield or cost-sensitive — commercial per-core/PVU licensing and scarce, aging DBA talent make Postgres or cloud-native engines a better fit
+- ❌ You need web-scale horizontal sharding or cloud-elastic analytics — [cockroachdb](cockroachdb.md)/[amazon-dynamodb](amazon-dynamodb.md) and [snowflake](snowflake.md)/[google-bigquery](google-bigquery.md) fit better
+- ❌ You reason about concurrency by isolation-level name — Db2's "Repeatable Read" is actually serializable and "Cursor Stability" is read committed, so naming alone will burn you
+
 ## Identity
 - **Taxonomy / data model:** Primarily relational/SQL. Multi-model in practice: native XML (pureXML), JSON document functions, and column-organized analytic tables. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Hybrid. Default is a **row-store** B-tree/page-organized engine. **BLU Acceleration** (Db2 LUW 10.5+) adds **column-organized tables** with dictionary/frequency compression and SIMD/vectorized scan in the same database, table spaces, and buffer pools as row tables ([IBM Redbooks: Db2 with BLU Acceleration](https://www.redbooks.ibm.com/abstracts/tips1204.html); [VLDB 2013 paper](https://dl.acm.org/doi/abs/10.14778/2536222.2536233)). Not LSM-based; see [lsm-vs-btree](../concepts/lsm-vs-btree.md) and [columnar-storage](../concepts/columnar-storage.md).

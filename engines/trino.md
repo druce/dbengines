@@ -13,6 +13,20 @@ confidence: high
 
 > A massively-parallel, storage-less SQL **query engine** (forked from Presto) that runs interactive analytics across heterogeneous data sources you already have — it stores nothing itself, so its consistency and durability are entirely those of the connected systems.
 
+## When to use
+
+**Use Trino if:**
+- ✅ You need fast, standard ANSI SQL over data scattered across a lake plus several databases, without first centralizing it via ETL
+- ✅ You want interactive BI/ad-hoc analytics over a lakehouse (Iceberg/Delta/Hive on object storage)
+- ✅ You need to federate-join a warehouse, an RDBMS, and a search index in one query, or run SQL ETL into Iceberg/Delta with fault-tolerant execution
+- ✅ You want fully decoupled compute over storage queried in place, scaling workers independently
+
+**Avoid Trino if:**
+- ❌ You need a system of record — it stores nothing; durability, isolation, and consistency are entirely inherited from each connected source (the biggest gotcha)
+- ❌ Your workload is OLTP, high-concurrency low-latency point lookups, or chatty per-row updates/deletes
+- ❌ You expect cross-source ACID or cross-catalog transactions — there is no distributed 2PC across connectors
+- ❌ A federated join touches a slow/weak source — it is only as fast and safe as the slowest source it touches
+
 ## Identity
 - **Taxonomy / data model:** relational query engine over external sources via pluggable **connectors**; presents everything as catalogs/schemas/tables with ANSI SQL. It is explicitly **not a database** — no native storage layer ([Trino overview](https://trino.io/docs/current/overview.html)).
 - **Storage model:** none of its own. Storage characteristics ([lsm-vs-btree](../concepts/lsm-vs-btree.md), file/columnar format) belong to the backing source — most commonly columnar lake formats (Parquet/ORC) via [apache-iceberg](apache-iceberg.md), Delta Lake, Hive; also RDBMSs ([postgresql](postgresql.md), [mysql](mysql.md)), [apache-cassandra](apache-cassandra.md), [mongodb](mongodb.md), [elasticsearch](elasticsearch.md), [clickhouse](clickhouse.md), object stores, Kafka, etc. See [columnar-storage](../concepts/columnar-storage.md).

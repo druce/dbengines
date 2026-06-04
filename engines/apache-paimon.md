@@ -15,6 +15,20 @@ confidence: medium
 
 > An open lakehouse table format that puts an LSM-tree on top of object storage so streaming engines can do high-rate primary-key upserts and emit a native changelog — trading some batch-read efficiency for streaming freshness that [apache-iceberg](apache-iceberg.md)/[delta-lake](delta-lake.md) don't match natively.
 
+## When to use
+
+**Use Apache Paimon if:**
+- ✅ You need high-throughput streaming upserts/deletes by primary key directly into a lake table
+- ✅ You need the lake table to emit a correct CDC changelog for downstream streaming consumers
+- ✅ Flink is already your processing engine (its native ingest home) and you want minute/second-level upsert freshness
+- ✅ Its LSM design's continuous-mutation freshness genuinely beats Iceberg/Delta/Hudi for your workload
+
+**Avoid Apache Paimon if:**
+- ❌ Your workload is batch-only analytics or broad multi-engine BI interop (Iceberg has wider engine/catalog support)
+- ❌ You've already standardized on Iceberg or want the biggest, most diverse community
+- ❌ You can't commit to continuous compaction management — get it wrong and read latency degrades
+- ❌ You'd misconfigure `changelog-producer` — the wrong choice silently emits incorrect downstream change streams
+
 ## Identity / role
 - Paimon is a **table format / lake storage layer**, not a query engine and not a streaming transport. It defines how data and metadata files sit in object storage and how engines ([apache-flink](apache-flink.md), [Apache Spark](apache-spark-sql.md)/[apache-spark-sql](apache-spark-sql.md), [trino](trino.md), [starrocks](starrocks.md), [clickhouse](clickhouse.md), Doris, Hive, Presto) read and write them. It is the same layer of the [lakehouse](../concepts/lakehouse.md) stack as [Iceberg, Delta, and Hudi](../concepts/open-table-formats.md).
 - What it is **not**: it is not a database (no own compute/optimizer), not a message bus (it is a table, not a log — though it can produce a changelog stream), and not a catalog by itself (it ships a catalog API backed by filesystem/Hive/JDBC/REST).

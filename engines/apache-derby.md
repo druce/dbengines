@@ -13,6 +13,20 @@ confidence: high
 
 > A 100% Java, zero-install embeddable relational database (also shipped by Oracle as Java DB) — handy for unit tests, demos, and small desktop apps, but the project was retired to read-only status in October 2025 and should not anchor new production systems.
 
+## When to use
+
+**Use Apache Derby if:**
+- ✅ You need a pure-Java, zero-install SQL database embedded in a JVM app or test suite (single jar, in-process)
+- ✅ Your workload is small, single-user, or low-concurrency (desktop apps, prototyping, teaching)
+- ✅ You want real SQL/JDBC semantics in unit/integration tests as a drop-in
+- ✅ You want full multi-statement ACID with standard JDBC commit/rollback on a single node
+
+**Avoid Apache Derby if:**
+- ❌ You are building a new long-lived production system — the project went read-only in Oct 2025, so no further releases or security fixes (biggest gotcha)
+- ❌ You need high write concurrency — lock-based (no MVCC) means readers and writers block at higher isolation levels
+- ❌ You need horizontal scale, sharding, analytics, or HA with automatic failover (the slave serves no reads, not even during replication)
+- ❌ You need non-JVM clients as first-class citizens or modern metrics/CDC/Kafka integration
+
 ## Identity
 - **Taxonomy / data model:** single-node relational SQL database, implemented entirely in Java. Embeds in any JVM via its JDBC driver; also runs as a standalone Network Server. ([Apache Derby](https://db.apache.org/derby/))
 - **Storage model:** row-store, B+-tree primary/secondary indexes; heap-organized tables stored in page-based "containers" (one file per conglomerate) with header, data, and allocation pages. Disk-based by default, with an in-memory backend option. See [lsm-vs-btree](../concepts/lsm-vs-btree.md) (Derby is firmly B-tree, not LSM). ([dbdb.io](https://dbdb.io/db/derby))

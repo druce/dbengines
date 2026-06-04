@@ -13,6 +13,19 @@ confidence: high
 
 > An embedded, single-process C++ library giving an ordered key→value byte-string map backed by an LSM tree — the original open-source LSM that seeded [rocksdb](rocksdb.md), now in maintenance mode.
 
+## When to use
+
+**Use LevelDB if:**
+- ✅ You need a small, fast, dependency-light embedded ordered key-value store inside a single-process application
+- ✅ You want LSM write throughput with zero operational footprint (no daemon, no wire protocol)
+- ✅ You value a clean permissive BSD-3-Clause license and a tiny API
+- ✅ You need ordered range scans over sorted keys (browser storage, local caches/indexes, blockchain node state)
+
+**Avoid LevelDB if:**
+- ❌ Default writes are not fsynced — a power loss can silently drop your last writes unless you set `sync=true` (and pay ~1000x latency)
+- ❌ You need a server, multiple concurrent processes (one process per DB dir), replication, or cross-key transactions
+- ❌ You need SQL/ad-hoc queries or sustained high-concurrency writes — and for most new embedded-LSM projects [rocksdb](rocksdb.md) is the better-maintained descendant
+
 ## Identity
 - **Taxonomy / data model:** Embedded ordered key-value store. Keys and values are arbitrary byte arrays; keys are kept sorted by a user-supplied comparator (lexicographic by default). It is a *library*, not a server — there is no daemon, no wire protocol, no client-server support ([readme](https://github.com/google/leveldb)). See [embedded-databases](../concepts/embedded-databases.md).
 - **Storage model:** Log-structured merge tree ([lsm-vs-btree](../concepts/lsm-vs-btree.md)). Writes land in an in-memory sorted skiplist (memtable) plus a write-ahead log; the memtable is flushed to immutable on-disk SSTable files organized into levels (L0..L6), merged by background compaction. On-disk format is SSTables (sorted blocks + index + optional Bloom filter); block compression via Snappy by default. Zstd support exists only on the unreleased `main` branch (added March 2023) and is **not** in the latest tagged release 1.23 (Feb 2021) ([readme](https://github.com/google/leveldb)).

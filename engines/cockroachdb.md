@@ -13,6 +13,20 @@ confidence: high
 
 > A horizontally-scalable, Postgres-compatible distributed SQL DB that defaults to true serializable isolation across Raft-replicated ranges — pick it for geo-distributed survivability, not for single-region low-latency OLTP.
 
+## When to use
+
+**Use CockroachDB if:**
+- ✅ You need a relational database that survives node, zone, or region failure with zero data loss (RPO≈0)
+- ✅ You want true SERIALIZABLE isolation by default, not snapshot dressed up as ACID
+- ✅ You can pin data geographically — multi-region SaaS, systems of record, and financial ledgers are the sweet spot
+- ✅ You want Postgres wire compatibility plus automatic sharding/rebalancing (no manual resharding)
+
+**Avoid CockroachDB if:**
+- ❌ You're a single-region low-latency app where plain [postgresql](postgresql.md)/MySQL suffice (you'd pay consensus latency for nothing)
+- ❌ You need an analytics/OLAP warehouse (no columnar storage — CDC out to one instead)
+- ❌ Your app can't handle retryable `40001` serialization errors, or you'd use naive monotonic primary keys that create write hotspots (the biggest gotcha)
+- ❌ You require an OSI open-source license — it shifted to the source-available, license-key-gated CSL in 2024
+
 ## Identity
 - **Taxonomy / data model:** Relational (NewSQL), PostgreSQL wire-protocol compatible. Single monolithic ordered key space mapped to SQL tables/indexes.
 - **Storage model:** Row-oriented KV underneath. Storage engine is **Pebble**, an LSM-tree engine ([lsm-vs-btree](../concepts/lsm-vs-btree.md)) written in Go and inspired by/replacing RocksDB ([CRDB design](https://github.com/cockroachdb/cockroach/blob/master/docs/design.md)). [mvcc](../concepts/mvcc.md) versioning is timestamped via [hybrid logical clocks](../concepts/clocks-and-time.md).

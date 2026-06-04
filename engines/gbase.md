@@ -13,6 +13,18 @@ confidence: medium
 
 > A family of Chinese-domestic ("信创") databases from General Data Technology; the flagship and db-engines-ranked product is **GBase 8a**, a shared-nothing MPP **columnar analytical** warehouse — think a Greenplum/Vertica-class OLAP engine localized for Chinese government, telecom, and banking deployments.
 
+## When to use
+
+**Use GBase if:**
+- ✅ You need a mature, high-compression MPP analytical (OLAP) warehouse and operate in the Chinese market where domestic-vendor (信创) procurement mandates rule out [oracle](oracle.md)/Teradata/US-cloud warehouses.
+- ✅ You want a localized Teradata/Greenplum/Vertica alternative with Chinese-language support and large existing government/telecom/finance reference deployments.
+- ✅ Your workload is bulk-load-then-scan BI/decision-support over large structured datasets (GBase 8a, columnar).
+
+**Avoid GBase if:**
+- ❌ You run OLTP / high-rate transactional workloads or need enforced PK/FK/unique constraints — 8a is a load-and-scan warehouse (use the separate, unrelated 8s engine instead).
+- ❌ You need English documentation, a global community, or independently-verified distributed-correctness — claims are vendor-stated with no Jepsen/third-party verification available to outside readers.
+- ❌ You expect one engine — "GBase" is three unrelated engines (8a/8s/8c) under one brand that don't share a storage engine; benchmark before betting on it.
+
 Note on scope: "GBase" is a brand covering several distinct engines — **8a** (MPP analytics, columnar), **8s** (OLTP; an Informix-lineage transactional DB), and **8c** (distributed/cloud-native, [postgresql](postgresql.md)/openGauss-lineage), plus the GCDW cloud warehouse. They do not share a storage engine. This page describes **GBase 8a** unless noted, since it is the product that defines GBase's db-engines presence and analytical reputation. Treat cross-product claims with care.
 
 ## Identity

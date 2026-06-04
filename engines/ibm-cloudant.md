@@ -13,6 +13,18 @@ confidence: medium
 
 > Fully managed, CouchDB-API-compatible JSON document database whose defining feature is master-master replication and offline-first sync — at the cost of eventual consistency and app-managed write conflicts.
 
+## When to use
+
+**Use IBM Cloudant if:**
+- ✅ You want a hands-off, CouchDB-API-compatible JSON store and your killer requirement is robust offline-first replication/sync (mobile, edge, PouchDB).
+- ✅ You need multi-region eventually-consistent JSON storage or IoT ingestion of independent documents, and your app can handle write conflicts in code.
+- ✅ You want managed operations (IBM handles upgrades, backups, compaction) with a CouchDB escape hatch for self-hosting to avoid lock-in.
+
+**Avoid IBM Cloudant if:**
+- ❌ You need multi-document transactions, strong cross-region consistency, server-side joins, or ad-hoc analytics — atomicity is per single document only.
+- ❌ You have high write contention on the *same* document — Cloudant silently accumulates conflicting revisions in `_conflicts` that your app must resolve or suffer bloat and "lost" updates (the biggest gotcha).
+- ❌ You count on the FoundationDB-based Transaction Engine for in-region strong consistency — IBM de-funded it in 2022 and removed the docs; the mainstream engine remains eventually consistent.
+
 ## Identity
 - **Taxonomy / data model:** [document-data-model](../concepts/document-data-model.md) store of schemaless JSON documents, each addressed by an `_id` and versioned by a `_rev`. API- and wire-compatible with [couchdb](couchdb.md); Cloudant is essentially CouchDB-as-a-service with IBM's clustering layer (historically BigCouch) on top.
 - **Storage model:** append-only, copy-on-write B-tree per database file (the CouchDB on-disk format); writes never overwrite in place, which is what enables [mvcc](../concepts/mvcc.md) and crash-only design. Not [LSM](../concepts/lsm-vs-btree.md). A "Cloudant on Transaction Engine" variant — the commercial productization of the FoundationDB-based next-generation CouchDB (intended as CouchDB 4.x) — was announced in 2020, but **IBM de-funded the FoundationDB-based CouchDB rewrite in March 2022 and refocused on CouchDB 3.x** ([The Register, 2022-03-15](https://www.theregister.com/2022/03/15/ibm_cloudant_couchdb/)); the TE docs have since been removed from IBM's docs repo. Treat TE as a discontinued/legacy path, not a current default.

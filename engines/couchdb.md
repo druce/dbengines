@@ -13,6 +13,18 @@ confidence: high
 
 > An Erlang document database whose entire design centers on multi-master replication and offline-first sync — choose it when devices/sites must work disconnected and reconcile later, not when you need cross-document transactions or rich queries.
 
+## When to use
+
+**Use CouchDB if:**
+- ✅ You need offline-first mobile/edge clients (with PouchDB) that take local writes and reconcile later via the CouchDB Replication Protocol.
+- ✅ You want multi-master, partition-tolerant availability across sites that each accept local writes.
+- ✅ Your documents are self-contained content/config records and you can consume changes via the resumable `_changes` feed.
+
+**Avoid CouchDB if:**
+- ❌ You need multi-document transactions — "ACID" here is per-document only; concurrent edits surface as conflicts your app must detect and resolve.
+- ❌ You need joins, ad hoc analytical queries, or strong/linearizable consistency (it is AP, eventually consistent).
+- ❌ You need low-latency, high-throughput OLTP — the HTTP-per-operation model and JS view server add overhead.
+
 ## Identity
 - **Taxonomy / data model:** schemaless JSON document store; documents are addressed by ID and carry an explicit `_rev` revision token. Each document version is immutable. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** per-database **append-only B-tree** keyed by document ID and by an update-sequence ID; index/data updates are written only at the end of the file ([overview](https://docs.couchdb.org/en/stable/intro/overview.html)). Not LSM and not in-place B-tree updates — see [lsm-vs-btree](../concepts/lsm-vs-btree.md). Old revisions accumulate until [compaction](https://docs.couchdb.org/en/stable/intro/overview.html) rewrites the file. On-disk format is the `.couch` file plus separate view-index files.

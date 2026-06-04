@@ -13,6 +13,20 @@ confidence: high
 
 > The de facto open-source standard for infrastructure/application metrics monitoring: a single-node pull-scraping time-series DB with PromQL and alerting, deliberately not a durable distributed store — long-term/HA needs Thanos/Mimir/Cortex on top.
 
+## When to use
+
+**Use Prometheus if:**
+- ✅ You need battle-tested, open-source operational metrics monitoring and alerting for cloud-native/Kubernetes systems
+- ✅ You want pull-based scraping, PromQL, recording/alerting rules (with Alertmanager), and SLO dashboards via Grafana
+- ✅ You want a single static Go binary with an enormous ecosystem (hundreds of exporters, OpenMetrics/OTLP, CNCF-graduated)
+- ✅ Recent operational data (default ~15d retention) on a single node meets your needs
+
+**Avoid Prometheus if:**
+- ❌ You emit unbounded/high-cardinality labels (user IDs, per-request data) — the single biggest gotcha is cardinality explosions silently exhausting memory and OOMing the server
+- ❌ You need a durable, accurate system of record — it's single-node, can lose up to ~2h of data on disk loss, and is explicitly "not 100% accurate" for billing-grade use
+- ❌ You need production HA, long-term storage, or global cross-cluster queries out of the box — that requires bolting on Thanos/Mimir/Cortex
+- ❌ You want event logging, transactions, joins, or JSON/geospatial/vector types — wrong tool
+
 ## Identity
 - **Taxonomy / data model:** [time-series-storage](../concepts/time-series-storage.md) database purpose-built for operational monitoring metrics, not a general DBMS. Data model is label-set + sample: a metric is identified by a name plus a set of key/value labels, and each series is a stream of `(int64 timestamp, value)` points. Values were historically `float64` only; [native histograms](https://prometheus.io/docs/specs/native_histograms/) add a sparse-bucket composite sample type.
 - **Storage model:** custom append-optimized columnar-ish chunk store ("the TSDB"). Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) in the classic sense: recent samples live in an in-memory **head block** (mutable, ~2h), backed by a [wal-and-durability](../concepts/wal-and-durability.md) WAL; older data is flushed to immutable on-disk **2-hour blocks** (chunks + inverted index mapping labels→series), then [merged by compaction](https://prometheus.io/docs/prometheus/latest/storage/) into larger blocks. See [columnar-storage](../concepts/columnar-storage.md).

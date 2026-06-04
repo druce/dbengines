@@ -13,6 +13,20 @@ confidence: high
 
 > Microsoft's all-in-one SaaS analytics platform: multiple compute engines (T-SQL Warehouse, Spark Lakehouse, KQL Real-Time, Power BI) sharing one Delta-Parquet lake (OneLake), billed against a single pool of "capacity units" — not a database engine so much as a bundled analytics estate.
 
+## When to use
+
+**Use Microsoft Fabric if:**
+- ✅ You are a Microsoft/Power BI shop wanting one governed SaaS analytics estate — lake, T-SQL warehouse, Spark, real-time, and BI sharing one Delta store
+- ✅ You want "one copy of data, many engines" — warehouse, Spark, and BI read the same OneLake Delta files with no copy
+- ✅ You want Power BI-centric BI at scale via Direct Lake (Import-mode speed without an Import refresh)
+- ✅ You prefer a SaaS platform with no infrastructure to manage and open Delta/Parquet storage you can read externally
+
+**Avoid Microsoft Fabric if:**
+- ❌ You need OLTP / transactional apps — the Warehouse is not for high-concurrency row writes (use [microsoft-sql-server](microsoft-sql-server.md) or [postgresql](postgresql.md))
+- ❌ You have cost- or latency-sensitive small/spiky workloads where a shared capacity gets throttled
+- ❌ You want node-level control or a non-Microsoft BI stack (heavy Azure/Entra/Power BI lock-in)
+- ❌ You can't handle the biggest gotcha: the Warehouse enforces **snapshot isolation with table-level write-conflict detection** — concurrent UPDATE/DELETE/MERGE on the same table abort and must be retried in app code
+
 ## Identity
 - **Taxonomy / data model:** Not a single engine. It is a SaaS platform that packages several engines over a common store. Primary face is the **Warehouse** (T-SQL, relational, OLAP) and **Lakehouse** (Spark + SQL endpoint). Also includes a KQL real-time store (Eventhouse / [microsoft-azure-data-explorer](microsoft-azure-data-explorer.md) lineage), an [microsoft-sql-server](microsoft-sql-server.md)-derived OLTP "SQL database in Fabric," and Power BI semantic models. See [oltp-olap-htap](../concepts/oltp-olap-htap.md) — the platform is overwhelmingly **OLAP/analytics**; OLTP is a bolted-on mirror, not the core.
 - **Storage model:** Everything lands in **OneLake** as **Delta Lake tables (Parquet files + a `_delta_log` transaction log)** ([Lakehouse and Delta tables](https://learn.microsoft.com/en-us/fabric/data-engineering/lakehouse-and-delta-tables)). Columnar Parquet; Microsoft adds "V-Order" write-time optimization for VertiPaq read speed. OneLake is built on Azure Data Lake Storage (ADLS) Gen2 ([Fabric overview](https://learn.microsoft.com/en-us/fabric/fundamentals/microsoft-fabric-overview)). Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) — it is immutable-file log-structured columnar storage.

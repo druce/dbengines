@@ -15,6 +15,20 @@ confidence: high
 
 > A self-contained, MySQL-wire-compatible MPP columnar OLAP warehouse that does sub-second analytics, real-time upserts, and external-catalog lakehouse queries without bolting on ZooKeeper or external coordinators.
 
+## When to use
+
+**Use Apache Doris if:**
+- ✅ You want a single MySQL-compatible MPP warehouse doing both high-throughput aggregation and real-time row-level upserts/CDC serving
+- ✅ You want fewer moving parts than ClickHouse (no ZooKeeper in integrated mode) and easier SQL/joins than Druid
+- ✅ You need sub-second analytics with window functions, CTEs, complex joins, and a cost-based optimizer over the MySQL protocol
+- ✅ You want lakehouse federation over external Hive/Iceberg/Hudi/JDBC catalogs alongside its own columnar store
+
+**Avoid Apache Doris if:**
+- ❌ You need an OLTP system of record — it is READ COMMITTED only with no serializable/snapshot multi-statement guarantees (and no Jepsen-grade verification)
+- ❌ Your write pattern is high-frequency tiny imports — merge-on-write upserts plus many small loads create compaction pressure that punishes naive patterns (biggest gotcha; batch your loads)
+- ❌ You need a stream transport/bus — it is a serving/analytics sink, not Kafka
+- ❌ You need rich multi-statement transactional app workloads
+
 ## Identity / role
 - Apache Doris IS an analytical (OLAP) database — a clustered columnar query engine *and* its own storage. It is not just a query engine over someone else's tables (unlike [trino](trino.md)) and not a transactional store; it sits in the [real-time-olap](../concepts/real-time-olap.md) / [OLAP](../concepts/oltp-olap-htap.md) slot alongside [clickhouse](clickhouse.md), [apache-druid](apache-druid.md), and [starrocks](starrocks.md) (which forked from Doris and shares the FE/BE split).
 - It also functions as a federated query engine over external catalogs (Hive/[Iceberg](apache-iceberg.md)/Hudi/[open-table-formats](../concepts/open-table-formats.md), JDBC, [postgresql](postgresql.md), object storage), but its sweet spot is data physically ingested into its own merge-on-write columnar store.

@@ -13,6 +13,18 @@ confidence: high
 
 > AWS's serverless NoSQL workhorse: it trades SQL flexibility and joins for guaranteed single-digit-millisecond latency at effectively unbounded scale, as long as you design your keys around your queries up front.
 
+## When to use
+
+**Use Amazon DynamoDB if:**
+- ✅ You have a high-scale OLTP workload with known, stable access patterns — shopping carts, session/user state, IoT/event ingestion, gaming leaderboards, serverless backends
+- ✅ You want zero operational burden and predictable single-digit-ms latency at any scale; on-demand mode suits spiky, unpredictable traffic
+- ✅ You need per-request tunable read consistency and constrained serializable transactions (up to 100 items) within a region
+
+**Avoid Amazon DynamoDB if:**
+- ❌ You need ad-hoc queries, JOINs, analytics, or relational flexibility — large `Scan`s and cross-partition access are punished in cost and latency
+- ❌ You don't know your queries in advance — success is decided at data-modeling time, and a bad partition key produces hot partitions, throttling, and cost surprises no capacity can fix (the single biggest gotcha)
+- ❌ You cannot tolerate hard AWS lock-in (managed-only, proprietary single-table model) or accept silent last-writer-wins conflict loss in eventually-consistent global tables
+
 ## Identity
 - **Taxonomy / data model:** Key-value and document store; multi-model in the sense that items are schemaless JSON-like documents addressed by a primary key. Descended from the 2007 Dynamo paper but a distinct managed service since 2012.
 - **Storage model:** Distributed [LSM-tree](../concepts/lsm-vs-btree.md)-style partitioned storage; data is range-partitioned by partition-key hash across many storage nodes, each a B-tree/LSM hybrid internally (AWS does not fully expose the on-disk format). Replicated 3-way within a region across AZs ([USENIX ATC 2022 paper](https://www.usenix.org/conference/atc22/presentation/elhemali)).

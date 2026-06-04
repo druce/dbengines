@@ -13,6 +13,18 @@ confidence: high
 
 > A commercially-licensed PostgreSQL distribution from EnterpriseDB whose real selling points are Oracle-compatibility (PL/SQL, packages, SQL*Loader-alike) and enterprise add-ons (TDE, multi-master replication) — it *is* Postgres, with proprietary layers bolted on.
 
+## When to use
+
+**Use EDB Postgres if:**
+- ✅ You're migrating off Oracle and want PL/SQL, packages, and Oracle-compatible tooling (SPL, EDB*Plus, OCI-compatible drivers) so existing code mostly just runs.
+- ✅ You need a commercially-supported Postgres with TDE encryption-at-rest and active-active multi-master HA (PGD/BDR) in one package.
+- ✅ You're a regulated enterprise standardizing on Postgres but wanting a single commercial vendor to support it.
+
+**Avoid EDB Postgres if:**
+- ❌ You're building greenfield with no Oracle baggage — community [postgresql](postgresql.md) is free and equivalent for most needs.
+- ❌ You need analytics/OLAP (wrong engine) or a fully open-source, no-lock-in stack — the value-add layers are proprietary and create their own lock-in.
+- ❌ You assume single-node isolation extends across the mesh — multi-master PGD is asynchronous/eventually-consistent by default, and even vendor-run Jepsen-framework testing surfaced rare update-conflict data divergence.
+
 "EDB Postgres" is an umbrella for EnterpriseDB's distributions, most notably **EDB Postgres Advanced Server (EPAS)**. EPAS = upstream [postgresql](postgresql.md) + closed-source EDB enhancements. The lower tier, **EDB Postgres Extended Server (PGE)**, is closer to community Postgres but adds TDE and tighter [EDB Postgres Distributed](edb-postgres.md) integration ([EDB distributions](https://www.enterprisedb.com/docs/edb-postgres-ai/databases/postgres_distributions/)). Where this page says nothing EDB-specific, [postgresql](postgresql.md) semantics apply unchanged.
 
 ## Identity

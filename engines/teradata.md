@@ -13,6 +13,20 @@ confidence: high
 
 > The veteran shared-nothing MPP relational warehouse: hash-distributed across AMPs, lock-based (no MVCC) serializable SQL, built for big batch analytics and now retrofitted with storage/compute separation in VantageCloud Lake.
 
+## When to use
+
+**Use Teradata if:**
+- ✅ You already run it at enterprise scale and need rock-solid SERIALIZABLE concurrency on a big integrated warehouse
+- ✅ You need mature workload management (TASM/TIWM priority, throttles) for high-concurrency mixed BI/reporting workloads
+- ✅ You have the specialized DBAs to tune physical design (Primary Index, stats, partitioning) and value its deep ops/observability tooling (DBQL, Viewpoint)
+- ✅ You need petabyte-scale batch analytics with a sophisticated cost-based optimizer
+
+**Avoid Teradata if:**
+- ❌ You want it for OLTP or high-rate single-row writes — it's lock-based (no MVCC), optimized for set operations
+- ❌ You're greenfield and want cheap/elastic cloud analytics ([snowflake](snowflake.md), [google-bigquery](google-bigquery.md), [databricks](databricks.md) win on cost and zero-tuning elasticity) or open source
+- ❌ You can't manage Primary Index design — a poorly chosen PI silently causes AMP skew that destroys parallelism (the single biggest gotcha)
+- ❌ Your workload is small/cheap — cost and operational weight are high
+
 ## Identity
 - **Taxonomy / data model:** relational (SQL) analytical [OLAP](../concepts/oltp-olap-htap.md) warehouse. The current product line is "Vantage" — VantageCore (on-prem/appliance and IntelliFlex/VMware), VantageCloud Enterprise (lift-and-shift to AWS/Azure/GCP), and VantageCloud Lake (cloud-native). Bundles in-database analytics/ML functions and limited time-series/geospatial types beyond core relational.
 - **Storage model:** row-oriented by default, hash-distributed across AMPs; supports a **columnar** table format and multi-level **Partitioned Primary Index (PPI)** for partition elimination ([dwhpro PPI](https://www.dwhpro.com/teradata-partitioned-primary-index-ppi/)). Block-based on-disk format; not [LSM/B-tree](../concepts/lsm-vs-btree.md) — it is a custom MPP block store with hash buckets, not a single-node index engine.

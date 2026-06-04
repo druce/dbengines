@@ -15,6 +15,19 @@ confidence: high
 
 > A drop-in Kafka-protocol streaming log written in C++ (Seastar, thread-per-core), shipping as one self-contained binary with Raft replication instead of a JVM + ZooKeeper/KRaft stack — built for low tail latency and simpler ops, at the cost of being a single-vendor project.
 
+## When to use
+
+**Use Redpanda if:**
+- ✅ You want Kafka semantics with lower p99 latency and dramatically simpler ops — one binary, no JVM, no ZooKeeper/KRaft.
+- ✅ You run on a small number of fast-NVMe nodes where per-partition Raft + fsync-on-majority pays off.
+- ✅ Existing Kafka clients/connectors should work unchanged, and you want streams to land directly as Iceberg tables.
+
+**Avoid Redpanda if:**
+- ❌ You need ASF-governed open-source neutrality — the BSL forbids competing-service use and the project is single-vendor.
+- ❌ Your storage is slow or network-attached — the thread-per-core + fsync-on-majority design assumes fast local disks, and on slow storage you lose the latency advantage that justifies it.
+- ❌ You expect it to *process* data — it is a log, not a stream-processing or query engine; you still need Flink/clients downstream.
+- ❌ You need the Tiered Storage / Iceberg features for free — those are paid enterprise (RCL) add-ons.
+
 ## Identity / role
 - **What it is:** an append-only, partitioned, replicated **event log / streaming platform** that speaks the Kafka wire protocol. It is transport + durable buffer for event streams, the same role [apache-kafka](apache-kafka.md) plays. See [streaming-platforms](../concepts/streaming-platforms.md).
 - **What it is NOT:** not a database and not a query engine — you do not run analytical SQL over the log itself. It is a log, not a store you query; downstream consumers ([apache-flink](apache-flink.md), [clickhouse](clickhouse.md), [apache-spark-sql](apache-spark-sql.md), stream processors, materialized-view engines) do the computation. It is also not a stream-processing engine in the [apache-flink](apache-flink.md) sense — processing is done by external Kafka clients (its bundled **Redpanda Connect**, formerly Benthos, handles connectors/transforms; lightweight WASM "data transforms" run in-broker).

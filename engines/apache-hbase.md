@@ -13,6 +13,18 @@ confidence: high
 
 > Open-source clone of Google Bigtable: a horizontally-scalable sparse wide-column store layered on HDFS, strongly consistent per region (CP) but with a heavy, ZooKeeper/HDFS-dependent operational footprint and no SQL or multi-row transactions out of the box.
 
+## When to use
+
+**Use Apache HBase if:**
+- ✅ You have truly large (TB–PB), key-accessed, sparse data already living in a Hadoop/HDFS world.
+- ✅ You need strong per-row consistency (CP) with high write throughput and range scans by row key.
+- ✅ You have a platform team to run HDFS + ZooKeeper + JVM GC tuning (and Phoenix for SQL on top).
+
+**Avoid Apache HBase if:**
+- ❌ Your row keys are monotonic/sequential without salting — hotspotting one RegionServer is the classic failure mode.
+- ❌ You need ad-hoc SQL, joins, native secondary indexes, or multi-row ACID transactions.
+- ❌ You have small/medium data or a low-ops/serverless team — the operational tax is enormous.
+
 ## Identity
 - **Taxonomy / data model:** Wide-column store ([wide-column](../concepts/wide-column.md)), a near-direct implementation of the [Google Bigtable](https://research.google/pubs/pub27898/) model. Data is a sparse, distributed, multidimensional sorted map keyed by `(row key, column family, column qualifier, timestamp/version)`. No relational model, no native joins.
 - **Storage model:** [LSM-tree](https://lsm-vs-btree) — writes hit an in-memory MemStore + WAL, flush to immutable **HFiles** on HDFS, merged by background compaction. See [lsm-vs-btree](../concepts/lsm-vs-btree.md), [columnar-storage](../concepts/columnar-storage.md). Column-family-oriented on disk (each family is a separate set of HFiles), so it is *column-family* partitioned rather than true columnar.

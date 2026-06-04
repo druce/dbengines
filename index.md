@@ -231,3 +231,7 @@ Not db-engines-ranked, but they shape database decisions (see [CLAUDE](CLAUDE.md
 ### Change data capture (CDC)
 
 - **[debezium](engines/debezium.md)** (adjacent) — Open-source log-based CDC that turns a database's transaction log into an ordered stream of row-level change events.
+
+### Embedded / vector
+
+- **[lancedb](engines/lancedb.md)** (adjacent) — Embedded Apache-2.0 vector/multimodal store on the columnar Lance format ("SQLite/DuckDB for AI data"); runs in-process over local disk or S3, with a managed Enterprise tier for low-latency high-QPS serving.

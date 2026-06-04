@@ -13,6 +13,18 @@ confidence: medium
 
 > A decades-proven, low-administration object-relational SQL engine whose real edge is native time-series + spatial in one OLTP engine — useful for IoT/embedded, but locked into a proprietary stack with a thinning ecosystem.
 
+## When to use
+
+**Use Informix if:**
+- ✅ You already run it, or need rock-solid low-admin ("set it and forget it") OLTP on modest hardware.
+- ✅ You want native time-series and spatial (R-tree) in one engine for IoT/edge/embedded, smart-meter, retail POS, or manufacturing workloads.
+- ✅ You need a small-footprint, embeddable object-relational engine with full multi-statement ACID and a MongoDB-compatible document API.
+
+**Avoid Informix if:**
+- ❌ It is a greenfield project — it is proprietary with a shrinking talent pool and an unusual IBM-owns/HCL-develops arrangement (the biggest gotcha); [postgresql](postgresql.md) with TimescaleDB/PostGIS covers most of the same ground openly.
+- ❌ You need cloud-native elasticity, serverless, or web-scale horizontal scale-out — there is no first-party managed DBaaS and resharding is manual.
+- ❌ You need large-scale analytics (use a dedicated columnar warehouse) or an active open-source community and deep third-party tooling.
+
 ## Identity
 - **Taxonomy / data model:** Object-relational RDBMS, marketed as multi-model: SQL relational + user-defined types, native time-series, spatial (R-tree), and JSON/BSON document (MongoDB-compatible wire API). Native vector search is **not yet GA** — a "vector blade" with a native vector type is announced for HCL Informix 15, slated for **Summer 2026** ([Actian: Informix vector blade](https://www.actian.com/blog/databases/from-spatial-to-vectors-how-hcl-informix-brings-ai-to-your-existing-data/)), i.e. not shipped as of 2026-06-04. Multi-model claims are real but uneven in maturity — the time-series and spatial DataBlades are the well-trodden paths; document is a newer overlay and vector is forthcoming. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Primarily a **row-store** on a B-tree on-disk layout (see [lsm-vs-btree](../concepts/lsm-vs-btree.md)); data lives in dbspaces/chunks managed by the engine, not the filesystem. The **Informix Warehouse Accelerator (IWA)** is a separate in-memory **columnar** store (Huffman/dictionary-encoded) used to accelerate analytic queries ([IWA overview](https://docs.deistercloud.com/content/Databases.30/IBM%20Informix%20IWA.4/index.xml?embedded=true)).

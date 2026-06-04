@@ -13,6 +13,20 @@ confidence: high
 
 > A native, embedded, single-machine RDF triplestore for Java — the persistent storage layer under the Jena/Fuseki SPARQL stack, with serializable single-writer transactions but no built-in clustering or replication.
 
+## When to use
+
+**Use Apache Jena - TDB if:**
+- ✅ You need a free, standards-compliant single-machine RDF/SPARQL triplestore embedded in a Java app or behind Fuseki
+- ✅ You want genuine serializable ACID transactions (single-writer MRSW, consistent reader snapshots)
+- ✅ You're building knowledge graphs, RDF/linked-data publishing, or ontology-backed apps needing SPARQL + OWL/RDFS reasoning
+- ✅ Your dataset fits on one node and you can scale by adding RAM/faster disk
+
+**Avoid Apache Jena - TDB if:**
+- ❌ More than one JVM may touch the same files — concurrent multi-JVM access is unsupported and risks data corruption (biggest gotcha)
+- ❌ Your graph outgrows one server — there is no sharding, replication, or built-in HA
+- ❌ You have high-concurrency write workloads — there is exactly one writer at a time
+- ❌ You run TDB2 with long-lived read transactions and skip periodic compaction — dead blocks accumulate and disk bloats
+
 ## Identity
 - **Taxonomy / data model:** RDF triplestore / quad store (named graphs). Data is RDF terms organized as triples (S,P,O) or quads (G,S,P,O); queried with SPARQL. See [graph-data-model](../concepts/graph-data-model.md), [graph-data-model](../concepts/graph-data-model.md).
 - **Storage model:** Row-equivalent triple store. A **node table** dictionary-encodes every RDF term to an 8-byte NodeId (B+Tree-backed, heavily cached); triples/quads are stored in multiple covering **B+Tree indexes** (SPO/POS/OSP permutations for triples, more for quads), so each index alone answers a pattern with no secondary lookup ([architecture](https://jena.apache.org/documentation/tdb/architecture.html)). Custom B+Tree implementation, memory-mapped files on 64-bit JVMs. Some XSD types (integers, decimals, dates, booleans, floats) are inlined directly into the NodeId. Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM — it is B+Tree-based; TDB2 adds copy-on-write.

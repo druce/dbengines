@@ -13,6 +13,20 @@ confidence: medium
 
 > An Apache-2.0 vector/search database built for AI app developers — trivially embeddable for local RAG prototyping, with an object-storage-backed serverless cloud for scale; not a general-purpose database and weak on hard distributed-consistency guarantees.
 
+## When to use
+
+**Use Chroma if:**
+- ✅ You're building AI retrieval (RAG, semantic/hybrid search, agent or chatbot memory)
+- ✅ You want the shortest path from a laptop prototype to production — `pip install chromadb`, then the same API scales onto an object-storage-backed serverless cloud
+- ✅ You want Apache-2.0 licensing with low core-API lock-in
+- ✅ You want combinable native dense-vector ANN, sparse/full-text, regex, and metadata filtering in one query
+
+**Avoid Chroma if:**
+- ❌ You need a primary system of record, or OLTP/relational/analytics workloads (no joins, aggregations, or window functions)
+- ❌ You need audited serializable isolation or a Jepsen-validated consistency guarantee — its "strongly consistent reads" claim is unverified design intent (the biggest gotcha)
+- ❌ Your self-hosted single-node deployment would exceed ~10M records (the documented ceiling)
+- ❌ You need fine-grained, self-managed horizontal sharding control on-prem
+
 ## Identity
 - **Taxonomy / data model:** [vector](../concepts/vector-search-ann.md) database (the dominant model) that Chroma now positions as "search infrastructure for AI," unifying dense-vector ANN, sparse-vector/[full-text](../concepts/full-text-search.md), regex, and metadata filtering in one query API ([Chroma docs](https://docs.trychroma.com/), [GitHub](https://github.com/chroma-core/chroma)). Records are items with an ID, embedding, optional document text, and metadata, grouped into **collections** → **databases** → **tenants**.
 - **Storage model:** local/single-node mode stores metadata in **SQLite** and vectors in a custom binary format on disk; the whole DB is a single portable directory ([architecture](https://docs.trychroma.com/docs/overview/architecture)). Vector index is **HNSW** ([graph-based ANN](../concepts/lsm-vs-btree.md), not B-tree/LSM); the distributed system adds **SPANN** (head ANN + posting lists) and immutable **Arrow-backed blockfile segments** with copy-on-write ([Chroma Cookbook concepts](https://cookbook.chromadb.dev/core/concepts/)).

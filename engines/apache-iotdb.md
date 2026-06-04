@@ -13,6 +13,20 @@ confidence: medium
 
 > An Apache-licensed, write-optimized time-series database for industrial IoT that stores device telemetry in columnar TsFiles and lets you pick the consensus protocol per data type — strong (Raft) for metadata, weak/eventual (IoTConsensus) for time-series — making it fast and cheap but not a transactional store.
 
+## When to use
+
+**Use Apache IoTDB if:**
+- ✅ You have industrial/IoT time-series at scale — high-frequency sensor telemetry, manufacturing, energy/grid, vehicles, high cardinality and out-of-order arrivals
+- ✅ You want an Apache-licensed columnar, write-optimized store with an open file format (TsFile) and per-column encoding/compression
+- ✅ You want to dial consistency per data type (strong Raft for metadata, fast eventual IoTConsensus for time-series)
+- ✅ You need edge-to-cloud deployment, including lightweight edge nodes on constrained hardware
+
+**Avoid Apache IoTDB if:**
+- ❌ You need a transactional system of record — there are no multi-row/multi-statement transactions, only single-insert atomicity (biggest gotcha)
+- ❌ You assume linearizable, durable-on-ack data writes — the high-throughput default (IoTConsensus) gives only eventual/session consistency, with no independent Jepsen verification
+- ❌ You need relational joins, normalized models, or ad-hoc BI on non-time-series data
+- ❌ You need strong cross-replica read-after-write on the time-series path
+
 ## Identity
 - **Taxonomy / data model:** Time-series database for IoT. Two query models coexist: the original **tree model** (hierarchical paths `root.<group>.<device>.<measurement>`, schema partitioned by series family) and a newer **table model** (relational-style `SELECT ... FROM table` with tag/field columns) introduced in the 1.x line ([table-model query docs](https://iotdb.apache.org/UserGuide/latest-Table/Basic-Concept/Query-Data_apache.html)). See [time-series-storage](../concepts/time-series-storage.md).
 - **Storage model:** Columnar on disk via **TsFile**, IoTDB's open column-oriented time-series file format with per-column encoding and compression ([Apache TsFile](https://github.com/apache/tsfile)). Write path is **LSM-like** ([lsm-vs-btree](../concepts/lsm-vs-btree.md)): inserts land in an in-memory MemTable (multiple series sorted separately), flushed to immutable TsFiles, merged by background compaction ([SIGMOD 2023 paper](https://sxsong.github.io/doc/23sigmod-iotdb.pdf)).

@@ -13,6 +13,18 @@ confidence: medium
 
 > A long-lived column-store analytic RDBMS (formerly Sybase IQ) built for compressed, index-heavy data warehousing at terabyte–petabyte scale, with a shared-disk "multiplex" grid that scales compute and SAN storage independently — a batch-load OLAP engine, never an OLTP one.
 
+## When to use
+
+**Use SAP IQ if:**
+- ✅ You are an existing SAP/Sybase shop running a large, compressed, batch-loaded data warehouse on SAN storage.
+- ✅ You want columnar analytics at TB–PB scale without paying for an all-in-memory engine like [sap-hana](sap-hana.md) — data need not fit in RAM.
+- ✅ You want compute and SAN storage to scale independently via the shared-disk multiplex grid, and you have DBAs to tune per-column index types.
+
+**Avoid SAP IQ if:**
+- ❌ You need OLTP, high-rate single-row inserts/updates, or low-latency operational apps — its write model is built for bulk loads, and table-level write serialization (only partly relaxed by the RLV row store) chokes transactional throughput.
+- ❌ It is greenfield cloud-native analytics — consumption-priced columnar warehouses ([snowflake](snowflake.md), [google-bigquery](google-bigquery.md), [amazon-redshift](amazon-redshift.md), [clickhouse](clickhouse.md)) win on cost, elasticity, and operability.
+- ❌ You want a managed/serverless or k8s-idiomatic deployment — it is on-prem/IaaS lift-and-shift with shrinking mindshare and a concentrated talent pool.
+
 ## Identity
 - **Taxonomy / data model:** Relational, column-oriented. Marketed as an "RDBMS for big-data analytics." Descended from Expressway Technologies' 1990s column engine, productized by Sybase as Sybase IQ (1995), rebranded SAP IQ after SAP's 2010 Sybase acquisition ([Wikipedia: SAP IQ](https://en.wikipedia.org/wiki/SAP_IQ)).
 - **Storage model:** Column store, not [lsm-vs-btree](../concepts/lsm-vs-btree.md) B-tree style. Heavy reliance on bitmap and N-bit tiered indexes with LZW-style compression; columns are stored and compressed independently, and most query work is index-driven rather than full scans ([TechTarget](https://www.techtarget.com/searchdatamanagement/feature/A-look-inside-the-SAP-IQ-column-oriented-database)). See [columnar-storage](../concepts/columnar-storage.md). A separate in-memory **RLV (Row-Level Versioned) delta store** absorbs high-velocity writes before merge into the main column store ([SAP IQ RLV admin guide, 16.2](https://help.sap.com/doc/a89afcaa84f21015869c8dc6a82ff342/16.2.0/en-US/SAP_IQ_Administration_In-Memory_Row-Level_Versioning_en.pdf)).

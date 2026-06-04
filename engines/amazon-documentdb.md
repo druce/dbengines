@@ -13,6 +13,18 @@ confidence: high
 
 > A fully-managed AWS document store that emulates the MongoDB wire protocol on top of an Aurora-like distributed storage layer — pick it for MongoDB-API workloads you want AWS to operate, but only after checking the long list of unsupported MongoDB features.
 
+## When to use
+
+**Use Amazon DocumentDB if:**
+- ✅ You're committed to AWS and want a MongoDB-API document store fully operated by AWS with Aurora-grade durability (6-way / 3-AZ storage, snapshot-isolation transactions)
+- ✅ Your app stays within the supported MongoDB subset and you want tight IAM/VPC/KMS integration without running MongoDB yourself
+- ✅ Your workload is JSON-heavy OLTP (catalogs, content management, user profiles) with read scale-out via replicas
+
+**Avoid Amazon DocumentDB if:**
+- ❌ Your app relies on unsupported MongoDB features — text/vector search, GridFS, map-reduce, server-side JS, time-series, capped indexes (validate every operator first; the single biggest gotcha)
+- ❌ You need very high single-collection write throughput on standard (non-elastic) clusters, which are single-primary, or true MongoDB feature parity (prefer [mongodb](mongodb.md)/Atlas)
+- ❌ You want multi-cloud portability or to avoid IO-based billing surprises at scale (managed-only, AWS lock-in)
+
 ## Identity
 - **Taxonomy / data model:** [document-data-model](../concepts/document-data-model.md) (BSON/JSON documents in collections). Speaks the MongoDB 3.6 / 4.0 / 5.0 / 8.0 APIs and wire protocol ([AWS compatibility docs](https://docs.aws.amazon.com/documentdb/latest/developerguide/compatibility.html)). It is **not** MongoDB code — AWS built a new engine that emulates the Apache-2.0 MongoDB API ([AWS DocumentDB FAQs](https://aws.amazon.com/documentdb/faqs/)).
 - **Storage model:** compute is decoupled from a purpose-built distributed storage layer (the Aurora pattern — see [storage-compute-separation](../concepts/storage-compute-separation.md)). Storage is log-structured / redo-log-shipping: the primary writes a durable log to the cluster volume and ships *log records, not pages*, to replicas ([How it works](https://docs.aws.amazon.com/documentdb/latest/devguide/how-it-works.html)). Data is replicated 6 ways across 3 AZs. Underlying indexing is B-tree-style, not [LSM](../concepts/lsm-vs-btree.md).

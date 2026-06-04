@@ -13,6 +13,18 @@ confidence: high
 
 > AWS's managed, columnar, massively-parallel (MPP) relational data warehouse for OLAP — Postgres-dialect SQL with decoupled storage/compute (RA3) and a pay-per-RPU serverless option; great for analytics over large fact tables, wrong for high-concurrency OLTP.
 
+## When to use
+
+**Use Amazon Redshift if:**
+- ✅ Your analytics live in AWS and you want a mature columnar MPP warehouse with deep AWS-native integration (S3/Spectrum, Aurora zero-ETL, SageMaker, QuickSight)
+- ✅ Your workload is scan-heavy BI/reporting and large aggregations over big fact tables, where columnar storage and zone-map pruning shine
+- ✅ You want serverless (pay-per-RPU) to avoid cluster sizing/tuning, or reserved provisioned nodes at steady high utilization
+
+**Avoid Amazon Redshift if:**
+- ❌ You need OLTP, high-concurrency small transactions, frequent single-row writes, or sub-millisecond point lookups — it's a scan engine, not a transactional store
+- ❌ You rely on enforced primary-key/unique constraints — they are informational only, so your app must guarantee uniqueness (the single biggest gotcha)
+- ❌ You need vector/ANN search, or you require SERIALIZABLE without hitting "1023" serializable-isolation aborts on concurrent writers (default is now SNAPSHOT, which permits write-skew)
+
 ## Identity
 - **Taxonomy / data model:** Relational, SQL data warehouse. Forked long ago from PostgreSQL 8.0.2 wire protocol/syntax (ParAccel lineage); not a row of modern Postgres internally.
 - **Storage model:** Columnar (column-store), compressed in 1 MB blocks with per-column encodings; not B-tree or [lsm-vs-btree](../concepts/lsm-vs-btree.md). Uses **zone maps** (in-memory per-block min/max metadata) to skip blocks during scans ([RA3/managed-storage docs](https://docs.aws.amazon.com/whitepapers/latest/data-warehousing-on-aws/amazon-redshift-deep-dive.html)). RA3 nodes use **Redshift Managed Storage (RMS)**: hot blocks cached on local SSD, cold blocks tiered to S3 ([RA3 features](https://aws.amazon.com/redshift/features/ra3/)).

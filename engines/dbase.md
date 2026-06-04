@@ -13,6 +13,18 @@ confidence: high
 
 > The original PC database (1980): a single-file, file-share xBase environment whose lasting legacy is the .dbf format, not its largely-stagnant present-day product.
 
+## When to use
+
+**Use dBASE if:**
+- ✅ You must maintain or extend an existing legacy xBase/dBL line-of-business desktop app.
+- ✅ You need to read/write the still-ubiquitous `.dbf` interchange format (GIS shapefiles, government datasets, older tooling).
+- ✅ Your dataset is small, single-user, and lives on local disk.
+
+**Avoid dBASE if:**
+- ❌ You're starting anything new — almost any modern engine ([sqlite](sqlite.md), [postgresql](postgresql.md), [mysql](mysql.md)) is the right tool instead.
+- ❌ You need real transactions, enforced isolation, replication, or horizontal scale — none exist; concurrency safety rests entirely on the app calling locks correctly.
+- ❌ You run multi-writer over an SMB/network file share — there is no WAL, and an ill-timed crash can corrupt the `.dbf`/index set.
+
 ## Identity
 - **Taxonomy / data model:** Relational-ish flat-file "xBase" engine. Each table is one `.dbf` file with a fixed-width record layout; "relational" here means you can open multiple tables and relate them in app code, not a true relational engine with a query planner and referential integrity. The product bundles a DBMS, a forms/report engine, and the dBL programming language ([db-engines / Wikipedia](https://en.wikipedia.org/wiki/DBase)).
 - **Storage model:** Row-store, fixed-width records in a `.dbf` file with a self-documenting header (field names, types, widths, record count); variable-length text spills to a `.dbt`/`.fpt` memo file; indexes live in separate `.ndx` (single) or `.mdx` (multi-index, up to ~47/48 indexes per file) B-tree files ([.dbf format, Wikipedia](https://en.wikipedia.org/wiki/.dbf); [LoC DBF format description](https://www.loc.gov/preservation/digital/formats/fdd/fdd000325.shtml)). Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM — classic in-place B-tree indexing over flat data files.

@@ -13,6 +13,19 @@ confidence: medium
 
 > A proprietary, single-leader relational engine fused to the ABL (Progress 4GL) language — chosen because your application is *already written in ABL*, not on database merits.
 
+## When to use
+
+**Use OpenEdge if:**
+- ✅ You run or build on an ABL/Progress application — above all QAD ERP or a vendor ISV business app
+- ✅ You want an integrated, battle-tested 4GL-plus-RDBMS for OLTP where language and database were developed together
+- ✅ You need AppServer (PASOE) app-tier fan-out and async-replica read offload within a single-primary topology
+
+**Avoid OpenEdge if:**
+- ❌ It's a greenfield project with no ABL commitment — picking it standalone over [postgresql](postgresql.md) is rarely justified on DB merits
+- ❌ You want open-source, cloud-native, horizontally-sharded, or polyglot-driver ecosystems — it is proprietary, single-primary, vertically scaled, high lock-in
+- ❌ You can't enforce disciplined lock scoping — ABL defaults to SHARE-LOCK and is routinely written NO-LOCK (effectively read-uncommitted), so consistency is by convention
+- ❌ You need analytics/HTAP or a large pool of available developers (shrinking ABL talent)
+
 ## Identity
 - **Taxonomy / data model:** relational RDBMS, paired with the OpenEdge Advanced Business Language (ABL), formerly "Progress 4GL" through v9, renamed in 2006 ([Wikipedia: OpenEdge ABL](https://en.wikipedia.org/wiki/OpenEdge_Advanced_Business_Language)). It is sold as an application *platform* (language + database + tooling), not a standalone DB. ABL is procedural with OO support added in 10.1.
 - **Storage model:** row-store, B-tree indexes, fixed-size block/area on-disk layout. Modern "Type II" storage area architecture (vs. legacy "Type I") clusters records by object for better locality ([Progress: recovery mechanisms](https://docs.progress.com/bundle/openedge-database-management/page/Introduction-to-recovery-mechanisms.html)). Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM — it is a traditional update-in-place B-tree engine.

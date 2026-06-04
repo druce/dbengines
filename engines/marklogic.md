@@ -13,6 +13,19 @@ confidence: medium
 
 > A proprietary, multi-model (XML/JSON document + RDF triple + full-text search) NoSQL database that — unusually for NoSQL — offers real multi-document, multi-statement ACID transactions and a deep universal index, aimed at large enterprise/government data-integration workloads.
 
+## When to use
+
+**Use MarkLogic if:**
+- ✅ You must integrate messy heterogeneous documents (XML/JSON) plus a knowledge graph (RDF/SPARQL) and full-text search in one engine
+- ✅ You need genuine multi-document, multi-statement ACID transactions over semi-structured content (rare for NoSQL)
+- ✅ You are building an "operational data hub" for enterprise/government/publishing/finance, often search- and regulation-heavy
+- ✅ You have (or can fund) XQuery/MarkLogic specialist DBAs and enterprise budget
+
+**Avoid MarkLogic if:**
+- ❌ It is enterprise-priced and proprietary lock-in (XQuery + MarkLogic-specific index model), and its strong ACID claims are vendor-asserted with no public Jepsen verification
+- ❌ You need plain relational/KV OLTP (overkill and costly) or columnar analytics/BI warehousing
+- ❌ You are a cost- or talent-constrained team, or lack the discipline that forest/stand/merge tuning demands
+
 ## Identity
 - **Taxonomy / data model:** Multi-model. Primarily a [document-data-model](../concepts/document-data-model.md) (XML and JSON as first-class fragments) with a native RDF triple store ([graph-data-model](../concepts/graph-data-model.md), queryable via SPARQL), an integrated [full-text-search](../concepts/full-text-search.md) engine, and (from Server 12) native [vector](../concepts/vector-search-ann.md) embeddings. Grew out of an XML database lineage ([Wikipedia](https://en.wikipedia.org/wiki/MarkLogic)).
 - **Storage model:** Document/fragment store backed by an [LSM-like](../concepts/lsm-vs-btree.md) structure: documents land in an in-memory **stand**, are journaled, then flushed to immutable on-disk **stands** within a **forest**; background **merges** compact stands (forests cap at 64 stands or become unavailable) ([MarkLogic docs](https://docs.marklogic.com/9.0/guide/concepts/backup-replication)). On-disk fragments carry validity timestamp ranges for [MVCC](../concepts/mvcc.md). A "universal index" (term lists, structure, values, range, geospatial, reverse, triple indexes) is maintained on write.

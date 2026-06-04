@@ -13,6 +13,19 @@ confidence: medium
 
 > A Java distributed in-memory data grid that auto-partitions a key-value space across a cluster with one synchronous backup per partition for HA — fast and consistent for single-key ops, but it is a caching/compute tier, not a durable database of record.
 
+## When to use
+
+**Use Oracle Coherence if:**
+- ✅ You need a low-latency, horizontally scalable Java caching/compute grid in front of a system of record (read-through/write-behind)
+- ✅ You want data-local compute via entry processors (atomic single-key read-modify-write on the data member), HTTP session replication, or reference-data grids
+- ✅ You want automatic hash partitioning with auto-rebalancing on membership change, ideally on Kubernetes via the Coherence Operator
+
+**Avoid Oracle Coherence if:**
+- ❌ You treat it as your durable database — it is a **cache first**: without persistence enabled, a full-cluster restart loses everything
+- ❌ You need database-wide multi-key ACID by default (only opt-in via the Transaction Framework; otherwise per-entry atomicity only)
+- ❌ You run analytics/OLAP or relational/joins-heavy workloads, or datasets too large to keep in JVM heap
+- ❌ Your team can't operate large JVM clusters — GC pauses are the primary p99 tail risk
+
 ## Identity
 - **Taxonomy / data model:** Key-value store exposed as a Java `Map`/`NamedCache`, distributed as an in-memory data grid (IMDG). Values are typically serialized Java objects (POF — Portable Object Format — or Java serialization). Not relational. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Primarily in-memory (on-heap or off-heap/journal). Data is hash-partitioned across cluster members; each partition has a configurable number of synchronous backup copies (default 1) on other members. Optional disk persistence ([wal-and-durability](../concepts/wal-and-durability.md)) and elastic-data "flash/RAM journal" tiers extend capacity beyond heap. Not LSM/B-tree; it is a partition map of serialized entries, so the [lsm-vs-btree](../concepts/lsm-vs-btree.md) distinction does not apply at the storage core.

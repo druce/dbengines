@@ -13,6 +13,17 @@ confidence: high
 
 > A managed real-time indexing database that auto-built a row + columnar + inverted "Converged Index" over schemaless JSON so you could run low-latency SQL on fast-changing data — **now defunct: OpenAI acquired the team in June 2024 and shut the public service down (~30 Sep 2024).** ([OpenAI](https://openai.com/index/openai-acquires-rockset/), [The New Stack](https://thenewstack.io/rockset-users-stranded-by-openai-acquisition-now-what/))
 
+## When to use
+
+**Use Rockset if:**
+- ✅ (Historically) you needed sub-second SQL — including joins and aggregations — on fast-changing schemaless JSON without managing indexes.
+- ✅ (Historically) you wanted real-time operational dashboards, embedded analytics, or hybrid vector + text + metadata search via CDC ingest.
+
+**Avoid Rockset if:**
+- ❌ You are building anything new — the service is **defunct**: OpenAI acquired the team in June 2024 and shut the public service down (~30 Sep 2024), and it was never open source, so there is no self-hosted fallback.
+- ❌ You need transactional/OLTP workloads, large full-table scans, or global sorts — it indexed for selective access, not full-table scans.
+- ❌ You are cost-sensitive at large scale — indexing every field made storage cost grow faster than raw data size.
+
 ## Identity
 - **Taxonomy / data model:** document store with a "relational document model" — semi-structured JSON documents grouped into collections (≈ tables) inside workspaces, queried with SQL. Effectively multi-model: it served document, search, and analytical access from one index. ([InfoWorld review](https://www.infoworld.com/article/2263499/rockset-review-real-time-sql-for-operational-data.html))
 - **Storage model:** hybrid. Its signature **Converged Index** indexes every field of every document three ways at once — an inverted (search) index, a columnar index, and a row/document index — all stored as key-value pairs in [RocksDB-Cloud](https://rockset.com/blog/how-we-use-rocksdb-at-rockset/), an [LSM](../concepts/lsm-vs-btree.md)-tree engine. LSM (not B-tree) was chosen so that indexing many fields stays write-cheap; storage uses delta-encoding between keys, Zstandard dictionary compression, and bloom filters. ([Converged Index](https://medium.com/rocksetcloud/how-rocksets-converged-index-powers-real-time-analytics-c6c2e6066d9e))

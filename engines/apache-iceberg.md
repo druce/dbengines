@@ -15,6 +15,20 @@ confidence: high
 
 > A metadata layer over Parquet/ORC/Avro files in object storage that gives you ACID commits, schema/partition evolution, time travel, and snapshot isolation — readable and writable by many engines, owned by none.
 
+## When to use
+
+**Use Apache Iceberg if:**
+- ✅ You want one open copy of analytical data in object storage that many engines can safely read and write
+- ✅ You need ACID commits, schema/partition evolution, time travel, and snapshot isolation without warehouse lock-in
+- ✅ You want the broadest multi-engine interop (Spark/Flink/Trino/Snowflake/Dremio/StarRocks/DuckDB) — it's the safest default open table format in 2026
+- ✅ You back it with a transactional REST/Glue/Nessie catalog providing real atomic compare-and-swap
+
+**Avoid Apache Iceberg if:**
+- ❌ You use a bare "filesystem catalog" with concurrent writers — without a real CAS primitive it can silently lose commits (biggest gotcha)
+- ❌ You need OLTP, low-latency single-row lookups, or high-frequency tiny writes — that belongs in an OLTP or real-time-OLAP store
+- ❌ You won't schedule maintenance jobs — neglected compaction/snapshot-expiration quietly erodes read performance and cost
+- ❌ Your query engine only understands an older spec version (e.g. v2 can't read v3 deletion vectors)
+
 ## Identity / role
 - Iceberg is a **table format**, not a query engine, not a storage system, and not a database. It is a specification (plus reference Java/Python/Rust libraries) for laying out and tracking data files so that independent compute engines agree on what rows constitute "the table." The actual data lives as Parquet/ORC/Avro files; Iceberg adds the metadata tree that makes them a transactional table.
 - It sits in the **storage/table-format layer** of a [lakehouse](../concepts/lakehouse.md) (see [open-table-formats](../concepts/open-table-formats.md)): below query engines ([trino](trino.md), [apache-spark-sql](apache-spark-sql.md), [snowflake](snowflake.md), [clickhouse](clickhouse.md), [starrocks](starrocks.md), [duckdb](duckdb.md)), above object storage (S3/GCS/ADLS/HDFS). It is the principal alternative to [delta-lake](delta-lake.md) and [apache-hudi](apache-hudi.md).

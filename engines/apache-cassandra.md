@@ -13,6 +13,18 @@ confidence: high
 
 > A masterless, AP-leaning wide-column store ([replication-models](../concepts/replication-models.md) leaderless quorum) optimized for high write throughput and multi-region availability — at the cost of joins, ad-hoc queries, and strong transactions.
 
+## When to use
+
+**Use Apache Cassandra if:**
+- ✅ You have write-heavy time-series/event/IoT, messaging, or activity data with known, query-first access patterns.
+- ✅ You need always-on availability across multiple regions/datacenters (LOCAL_QUORUM, active-active) with per-query tunable consistency.
+- ✅ You have the team to model data query-first and operate compaction, repair, and GC tuning.
+
+**Avoid Apache Cassandra if:**
+- ❌ You need ad-hoc queries, joins, or strong cross-entity/multi-row serializable transactions (LWT is single-partition, slow, and historically Jepsen-broken).
+- ❌ Your dataset fits on one box, or you have queue-like workloads with high delete/tombstone churn.
+- ❌ You can't guarantee NTP discipline — clock skew silently drops writes under last-write-wins.
+
 ## Identity
 - **Taxonomy / data model:** Wide-column (partitioned row store, "Bigtable-style" + Dynamo distribution). Data lives in tables keyed by a partition key + clustering columns; columns are sparse and per-row. Modeled query-first, not relationship-first. See [wide-column](../concepts/wide-column.md).
 - **Storage model:** [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM-tree. Writes hit a commit log + in-memory memtable, flushed to immutable SSTables; reads merge SSTables + memtable. 5.0 adds trie-based memtables/SSTable index format (BTI) for lower memory and faster reads. Write-optimized; reads pay a merge/compaction cost.

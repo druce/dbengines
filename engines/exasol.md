@@ -13,7 +13,17 @@ confidence: high
 
 > A proprietary in-memory, shared-nothing MPP columnar relational database built purely for fast analytics (OLAP), where the engine auto-creates indexes and self-tunes, so DBAs do almost no physical design — at the cost of being closed-source and a poor fit for OLTP.
 
-## Identity
+## When to use
+
+**Use EXASOL if:**
+- ✅ You need a fast analytic SQL warehouse for BI/dashboards and want minimal physical tuning — it auto-creates/drops join indexes and self-tunes.
+- ✅ Your hot working set fits (mostly) in cluster RAM and you want in-memory MPP scan/join speed (TPC-H pedigree).
+- ✅ You want in-database analytics/ML via UDFs in Lua, Python, R, or Java.
+
+**Avoid EXASOL if:**
+- ❌ You run OLTP or any concurrent-writers workload — locking is at whole-table/schema granularity, so "serializable" means coarse object locks, not row-level MVCC.
+- ❌ You need non-relational (document, KV, graph, full-text, vector) models, or open source / no vendor lock-in.
+- ❌ Your data far exceeds affordable RAM — a disk/object-store columnar engine like [clickhouse](clickhouse.md), [snowflake](snowflake.md), or [google-bigquery](google-bigquery.md) is more cost-effective.
 - **Taxonomy / data model:** Relational SQL database, marketed as an "analytics database / data warehouse." Single data model (relational); not multi-model.
 - **Storage model:** Columnar storage with heavy compression (vendor claims ~2.5x typical; ratio is data-dependent). In-memory **processing** engine: hot data is held and processed in RAM, with column data persisted to disk and loaded into memory on demand. Note it is *not* a pure in-memory database — the working set does not have to fit entirely in RAM; more RAM improves performance but data is persisted on disk ([Exasol — In-Memory Database overview](https://docs.exasol.com/db/7.1/get_started/exasol_overview.htm)). On-disk format is a proprietary compressed columnar format. See [columnar-storage](../concepts/columnar-storage.md), [lsm-vs-btree](../concepts/lsm-vs-btree.md) (Exasol is neither classic LSM nor B-tree; it is a compressed columnar store with in-memory processing).
 - **Workload:** OLAP / analytical query serving, BI, and dashboards. Not an OLTP or HTAP system — it does bulk-load + read-heavy analytics, not high-rate small transactional writes. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).

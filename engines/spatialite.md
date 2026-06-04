@@ -13,6 +13,20 @@ confidence: high
 
 > SQLite plus a full OGC Simple Features geometry layer (GEOS, PROJ, R*Tree index) — a zero-config, single-file spatial database for desktop GIS and embedded use, not a server.
 
+## When to use
+
+**Use SpatiaLite if:**
+- ✅ You want PostGIS-style spatial SQL (`ST_*`, GEOS predicates) without running a server — desktop/offline GIS, QGIS-native format
+- ✅ You need a portable, single-file spatial dataset for mobile/embedded apps or spatial data interchange
+- ✅ GDAL/OGR-driven ETL, GeoServer, or GeoDjango's lightweight spatial backend fits the job
+- ✅ You want zero-ops, free, mature spatial analysis without standing up PostgreSQL/PostGIS
+
+**Avoid SpatiaLite if:**
+- ❌ You have multi-user concurrent-write or web-backend workloads — it is single-writer; reach for PostGIS instead
+- ❌ You need replication, HA, or horizontal scale-out (none native; copy the file)
+- ❌ You forget the R*Tree spatial index is NOT used automatically — queries must explicitly reference the spatial index virtual table or fall to full-table geometry scans
+- ❌ You run bulk GEOS geometry analysis over very large tables (single-threaded, CPU-bound)
+
 ## Identity
 - **Taxonomy / data model:** Relational with a spatial extension. It is not a standalone engine — it is a loadable extension (`mod_spatialite`) for [sqlite](sqlite.md) that adds geometry column types, ~hundreds of SQL spatial functions, and metadata tables conformant to the OGC Simple Features SQL spec ([SpatiaLite intro](https://www.gaia-gis.it/gaia-sins/splite-doxy-5.1.0/index.html)). Inherits SQLite's full relational SQL on top.
 - **Storage model:** Row-store B-tree on-disk (SQLite's single-file format); geometries stored as a SpatiaLite BLOB encoding (a variant of OGC WKB). See [lsm-vs-btree](../concepts/lsm-vs-btree.md) — SQLite is B-tree, not LSM. Spatial indexing is a separate R*Tree virtual table per geometry column.

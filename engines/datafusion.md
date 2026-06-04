@@ -15,6 +15,18 @@ confidence: high
 
 > An extensible, vectorized SQL and DataFrame query engine written in Rust on Apache Arrow, designed to be embedded as a *library* inside other data systems — it is the engine, not the database.
 
+## When to use
+
+**Use Apache DataFusion if:**
+- ✅ You are building a data system in Rust (a database, dataframe library, streaming/ML engine) and want a production-grade Arrow-native SQL planner + vectorized executor without writing one
+- ✅ You need an extensible engine — custom `TableProvider` data sources, scalar/aggregate/window UDFs, optimizer passes, and physical operators are all replaceable traits
+- ✅ You want a fast local file-querying tool via `datafusion-cli`, or zero-copy Arrow interop into pandas/Polars/Arrow Flight pipelines
+
+**Avoid Apache DataFusion if:**
+- ❌ You expect a finished database — there is no storage, no transactions, no server, and no client/JDBC protocol; those are your job
+- ❌ You want a turnkey managed service or a stable frozen API — there is no managed "DataFusion" and the fast release cadence brings breaking API changes
+- ❌ You run big joins/aggregations without wiring up the `MemoryPool` and disk-spill config — the default is unbounded memory use and OOM rather than graceful degradation
+
 ## Identity / role
 - **What it is:** a query engine library — a full pipeline of SQL/DataFrame frontends → logical plan → optimizer → physical plan → a columnar, multi-threaded, vectorized, streaming execution engine, all operating on the [Apache Arrow](../concepts/columnar-storage.md) in-memory format. Distributed across 40+ Rust crates, every layer of which is replaceable.
 - **What it is NOT:** not a standalone database, not a storage layer, not a service. It has no persistent storage, no transactions, no client/server protocol of its own ([the docs are explicit it "is not a database"](https://datafusion.apache.org/user-guide/introduction.html)). You bring storage, a catalog, and a deployment wrapper. It sits on the OLAP side of [oltp-olap-htap](../concepts/oltp-olap-htap.md) — built for analytic scans, not point-update OLTP.

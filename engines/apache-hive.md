@@ -13,6 +13,18 @@ confidence: high
 
 > A SQL compiler and metadata catalog that turns HiveQL into distributed batch jobs over files in HDFS/object storage — high-latency, high-throughput analytics, never an OLTP store.
 
+## When to use
+
+**Use Apache Hive if:**
+- ✅ You already run Hadoop/HDFS (or a data lake) and need throughput-oriented batch SQL ETL/ELT over huge (TB–PB) datasets at a permissive Apache 2.0 license
+- ✅ You need its ubiquitous Hive Metastore as a shared catalog that [trino](trino.md)/[presto](presto.md), [apache-spark-sql](apache-spark-sql.md), Impala, and Flink can all read from
+- ✅ You want SQL over open columnar formats (ORC/Parquet/[apache-iceberg](apache-iceberg.md)) with storage/compute already decoupled
+
+**Avoid Apache Hive if:**
+- ❌ You need anything interactive, transactional, low-latency, or high-concurrency — for interactive lake SQL use [trino](trino.md)/[presto](presto.md) or [apache-spark-sql](apache-spark-sql.md)
+- ❌ You need OLTP, serializable transactions, sub-second point lookups, or frequent single-row updates
+- ❌ You can't maintain the day-2 chores — "ACID" means snapshot-isolated managed ORC tables that require ongoing compaction, and the single-RDBMS Metastore is a SPOF that over-partitioning will bring to its knees
+
 ## Identity
 - **Taxonomy / data model:** relational SQL engine over the Hadoop ecosystem. Hive itself stores no data; tables are metadata (in the **Hive Metastore**) mapping schemas onto files in HDFS, S3, ADLS, GCS, etc. Increasingly used as a query engine over open table formats (ORC, Parquet, Avro, and native [apache-iceberg](apache-iceberg.md) tables since Hive 4.0).
 - **Storage model:** pluggable file formats; columnar **ORC** is the canonical format (and the only one supporting full ACID). Not an [lsm-vs-btree](../concepts/lsm-vs-btree.md) engine — there is no Hive-managed on-disk index structure; it relies on columnar file layouts, partition pruning, and ORC/Parquet stripe/footer statistics.

@@ -13,6 +13,18 @@ confidence: high
 
 > A PostgreSQL-based shared-nothing MPP data warehouse for multi-terabyte OLAP, now closed-source under Broadcom — the open-source future lives in its forks (apache-cloudberry, EDB WarehousePG).
 
+## When to use
+
+**Use Greenplum if:**
+- ✅ You need a mature, SQL-rich on-prem/private-cloud MPP warehouse with PostgreSQL compatibility over many terabytes to petabytes.
+- ✅ Your workload is OLAP/batch analytics and ELT-heavy, with in-database ML (MADlib) and geospatial (PostGIS) at scale.
+- ✅ You want familiar PostgreSQL SQL (window functions, CTEs, grouping sets) and parallel bulk loads via gpfdist/COPY.
+
+**Avoid Greenplum if:**
+- ❌ You need true SERIALIZABLE isolation — it silently degrades to REPEATABLE READ (no predicate locking), the load-bearing gotcha.
+- ❌ Your workload is OLTP, high-concurrency single-row writes, or low-latency point lookups — the coordinator bottleneck and heap MVCC bloat make it a poor fit.
+- ❌ You want an open-source future or elastic cloud-burst analytics — Broadcom closed-sourced it in 2024 (the OSS line is a dead-end upstream); evaluate apache-cloudberry, EDB WarehousePG, or a storage-compute-separated warehouse instead.
+
 ## Identity
 - **Taxonomy / data model:** Relational, SQL, [OLAP](../concepts/oltp-olap-htap.md). Built on PostgreSQL (Greenplum 7 tracks PostgreSQL 12, per [Broadcom/Tanzu Greenplum architecture docs](https://techdocs.broadcom.com/us/en/vmware-tanzu/data-solutions/tanzu-greenplum/7/greenplum-database/admin_guide-intro-arch_overview.html)). MPP = "shared-nothing": one coordinator plus many independent PostgreSQL segment instances, each owning a slice of every table.
 - **Storage model:** Hybrid. Default tables are PostgreSQL heap (row store). Append-optimized (AO) tables add column-orientation, compression (zlib/zstd/quicklz; RLE only on column-oriented AO), and per-block checksums ([Broadcom docs](https://techdocs.broadcom.com/us/en/vmware-tanzu/data-solutions/tanzu-greenplum/7/greenplum-database/admin_guide-intro-arch_overview.html)). It is **B-tree, not LSM** ([lsm-vs-btree](../concepts/lsm-vs-btree.md)); columnar AO is the analytics format, not a delta-merge store.

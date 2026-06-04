@@ -13,6 +13,19 @@ confidence: high
 
 > A small-footprint, low-administration relational engine that invented multi-version concurrency control and now survives as a commercial embedded/server DB inside the Embarcadero (Delphi/C++Builder) world, distinguished by built-in column-level encryption and "Change Views" change tracking.
 
+## When to use
+
+**Use InterBase if:**
+- ✅ You ship Delphi/C++Builder (RAD Studio) apps and need a near-zero-administration embedded SQL database
+- ✅ You need built-in column-level encryption with minimal DBA effort
+- ✅ You want the Change Views delta-tracking feature for occasionally-connected/field sync
+- ✅ You need a single engine that runs both embedded (ToGo) and as a small client/server
+
+**Avoid InterBase if:**
+- ❌ It is a proprietary, single-vendor, single-node engine with a shrinking ecosystem and no public benchmarks — you are betting on Embarcadero, not a community
+- ❌ You need analytics/OLAP, horizontal scale-out, or distributed multi-node writes (no native clustering/sharding)
+- ❌ You are greenfield with no Embarcadero tie — [firebird](firebird.md) (OSS sibling) or [postgresql](postgresql.md)/[sqlite](sqlite.md) usually serve better and cheaper
+
 ## Identity
 - **Taxonomy / data model:** single-model relational RDBMS, SQL-92-oriented. Deployable as an embedded library *or* a shared-everything client/server. ([dbdb.io](https://dbdb.io/db/interbase))
 - **Storage model:** disk-oriented, row-store; on-disk pages with a B-tree variant for indexes; index compression limited to prefix/suffix on keys. ([dbdb.io](https://dbdb.io/db/interbase)) Historically significant as the origin of [mvcc](../concepts/mvcc.md) — its "Multi-Generational Architecture" (MGA) keeps multiple row versions so readers never block writers. ([Embarcadero](https://www.embarcadero.com/products/interbase), [dbdb.io](https://dbdb.io/db/interbase)) See [lsm-vs-btree](../concepts/lsm-vs-btree.md).

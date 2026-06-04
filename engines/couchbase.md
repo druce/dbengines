@@ -13,6 +13,18 @@ confidence: high
 
 > A memory-first distributed document database that grew out of memcached + CouchDB: fast KV with a SQL++ (N1QL) query layer and multiple co-located services, durable and strongly consistent on a single cluster but LWW/clock-dependent across datacenters.
 
+## When to use
+
+**Use Couchbase if:**
+- ✅ You want sub-millisecond KV latency as both cache and durable system-of-record in one clustered system (user profiles, sessions, catalogs, real-time personalization).
+- ✅ You need a SQL++ query/search/analytics layer over JSON without bolting on separate engines, with independently scalable services (MDS).
+- ✅ You're building mobile/edge apps needing offline sync via Couchbase Lite + Sync Gateway.
+
+**Avoid Couchbase if:**
+- ❌ You need strong cross-region consistency — XDCR is last-write-wins on clock timestamps and can silently drop writes under NTP skew.
+- ❌ You need serializable isolation — only READ COMMITTED is offered, and writes are acknowledged from memory by default unless you set `durabilityLevel`.
+- ❌ Your working set vastly exceeds RAM budget without Magma planning, or your primary workload is heavy relational/multi-table OLAP.
+
 ## Identity
 - **Taxonomy / data model:** Multi-model. Primary model is JSON **document**; also a native **key-value** store (memcached lineage), **full-text search** ([full-text-search](../concepts/full-text-search.md)), **vector search** ([vector-search-ann](../concepts/vector-search-ann.md)), and a columnar **Analytics** service. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Per-bucket pluggable storage. Default **Couchstore** is a **copy-on-write (append-only) B-tree** ([Storage engines docs](https://docs.couchbase.com/server/current/learn/buckets-memory-and-storage/storage-engines.html); [lsm-vs-btree](../concepts/lsm-vs-btree.md)); **Magma** (introduced 7.1) is an LSM-tree + log-structured value-separation engine for datasets larger than RAM ([Magma paper, VLDB 2022](https://www.vldb.org/pvldb/vol15/p3496-lakshman.pdf)). KV operations are served from an in-memory managed cache; documents are written to memory first, then persisted asynchronously by default. On-disk format is append-only with background compaction.

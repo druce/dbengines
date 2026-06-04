@@ -13,6 +13,20 @@ confidence: high
 
 > Spark SQL is a distributed query *engine*, not a database: it executes SQL/dataframe jobs over data living in someone else's storage (files, object stores, JDBC, [delta-lake](delta-lake.md)/[apache-iceberg](apache-iceberg.md) tables), so most "database" properties — durability, ACID, isolation — come from the table format underneath, not from Spark.
 
+## When to use
+
+**Use Apache Spark (SQL) if:**
+- ✅ You have genuinely large data and need distributed batch or streaming compute over a lakehouse
+- ✅ You want one engine spanning SQL, Python (PySpark), Scala, and ML (MLlib)
+- ✅ You're building or querying [delta-lake](delta-lake.md)/[apache-iceberg](apache-iceberg.md) tables and want elastic, storage-compute-separated clusters
+- ✅ You can budget for shuffle/skew tuning as the dominant operational cost
+
+**Avoid Apache Spark (SQL) if:**
+- ❌ You need OLTP, interactive sub-second queries, point lookups, or high-concurrency serving (its per-query latency floor is seconds to minutes)
+- ❌ Your data is small — a single-node tool like [duckdb](duckdb.md) or [postgresql](postgresql.md) is faster and far simpler
+- ❌ You expect durability, ACID, time-travel, or schema enforcement from Spark itself — those come from the table format beneath it (the biggest gotcha)
+- ❌ You need real per-row transactions without a lakehouse format providing them
+
 ## Identity
 - **Taxonomy / data model:** Relational query engine on top of Spark Core. Exposes a SQL interface and the typed DataFrame/Dataset API over distributed collections (RDDs). It owns *computation*, not *storage* — db-engines lists it among DBMS but it is more accurately a compute/query layer.
 - **Storage model:** No native storage. Reads/writes columnar [Parquet](https://parquet.apache.org/) and ORC, plus CSV/JSON/Avro/text, JDBC sources, and lakehouse table formats ([delta-lake](delta-lake.md), [apache-iceberg](apache-iceberg.md), Apache Hudi) over HDFS/S3/GCS/ADLS. In-memory and shuffle representation is columnar/vectorized via Project Tungsten; on-disk format is whatever the source dictates. See [columnar-storage](../concepts/columnar-storage.md), [lsm-vs-btree](../concepts/lsm-vs-btree.md) (mostly N/A — Spark does not manage an LSM/B-tree itself).

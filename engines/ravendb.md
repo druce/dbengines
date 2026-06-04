@@ -13,6 +13,20 @@ confidence: high
 
 > A developer-friendly .NET document store that pairs ACID document writes with eventually-consistent background indexes, but whose marketed isolation guarantees did not hold up under [Jepsen](https://jepsen.io/analyses/ravendb-6.0.2) testing — read the consistency section before trusting "ACID" here.
 
+## When to use
+
+**Use RavenDB if:**
+- ✅ You're a .NET/C# shop wanting a document store with excellent tooling (Studio), built-in full-text search, time series, and easy embedding of related data
+- ✅ You run small-to-mid clusters where developer velocity matters
+- ✅ You want multi-model features (counters, time series, attachments, revisions, vector search in v7) with easy ETL out to SQL/OLAP/Kafka/Elasticsearch
+- ✅ You can use explicit optimistic concurrency and cluster-wide (Raft) transactions where correctness matters
+
+**Avoid RavenDB if:**
+- ❌ You rely on its "ACID" branding for multi-key correctness — [Jepsen 6.0.2](https://jepsen.io/analyses/ravendb-6.0.2) found silent lost updates under default settings and fractured reads even in cluster-wide "serializable" mode
+- ❌ You need a write to be immediately queryable — indexes are eventually consistent by design (queries can return stale results)
+- ❌ You need heavy ad-hoc analytics/OLAP or relational joins (joins are limited to includes/multi-map indexes)
+- ❌ You're outside the .NET ecosystem or planning very large multi-petabyte sharded deployments (sharding is still maturing)
+
 ## Identity
 - **Taxonomy / data model:** document database (JSON documents in named collections), multi-model — adds counters, [time-series](https://ravendb.net/features/time-series/distributed-time-series), attachments/blobs, a graph-query layer, and (since v7, Feb 2025) [vector search](https://ravendb.net/articles/ravendb-version-6-0-is-now-live). See [document-data-model](../concepts/document-data-model.md).
 - **Storage model:** B-tree-based; data persisted by RavenDB's in-house **Voron** managed storage engine, an mmap + copy-on-write B+tree with a write-ahead log ([docs](https://docs.ravendb.net/7.2/server/storage/storage-engine/)). Not LSM — see [lsm-vs-btree](../concepts/lsm-vs-btree.md). Search indexes are separate structures built by Lucene or RavenDB's native **Corax** engine ([docs](https://ravendb.net/docs/article-page/6.0/csharp/indexes/search-engine/corax)).

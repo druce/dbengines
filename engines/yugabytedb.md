@@ -13,6 +13,20 @@ confidence: high
 
 > A horizontally scalable, strongly consistent distributed SQL database that reuses real PostgreSQL query-layer code on top of a Spanner-style sharded, Raft-replicated storage engine — choose it when you need Postgres semantics that survive node loss and outgrow one machine, not for analytics or single-node simplicity.
 
+## When to use
+
+**Use YugabyteDB if:**
+- ✅ You have a PostgreSQL workload that must scale writes horizontally and survive node/zone/region failures with strong consistency (CP, synchronous Raft)
+- ✅ You need genuine Postgres query-layer compatibility (YSQL reuses upstream Postgres code) plus full multi-statement distributed ACID across shards
+- ✅ You're building geo-distributed/multi-region OLTP with data-residency needs (geo-partitioning) or Postgres apps hitting single-node ceilings
+- ✅ You want automatic sharding/rebalancing, global secondary indexes, and a permissive Apache 2.0 license
+
+**Avoid YugabyteDB if:**
+- ❌ You ignore clock-skew monitoring — correctness rests on bounded skew (HLC, not TrueTime), and distributed commit adds real WAN latency on geo-writes (the biggest gotcha)
+- ❌ Your workload is heavy analytics/OLAP — there is no columnar engine; CDC out to a warehouse instead
+- ❌ You have a simple single-node app — a plain Postgres node is far less operationally complex
+- ❌ You need transactional DDL or ultra-low-latency single-region writes where distributed-commit overhead isn't worth it
+
 ## Identity
 - **Taxonomy / data model:** Distributed relational ("distributed SQL" / NewSQL). Two query APIs share one storage engine: **YSQL** (PostgreSQL-wire-compatible, reuses upstream Postgres source) and **YCQL** (a Cassandra-CQL-like semi-relational API). ([key concepts](https://docs.yugabyte.com/stable/architecture/key-concepts/))
 - **Storage model:** Row-oriented document persistence in **DocDB**, a heavily customized fork of **RocksDB** — an [LSM-tree](../concepts/lsm-vs-btree.md) store. Rows are encoded as documents; on-disk format is RocksDB SSTables.

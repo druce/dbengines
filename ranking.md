@@ -192,3 +192,4 @@ Not part of the db-engines top-150, but covered because they materially shape da
 | catalog | Unity Catalog | done (2026-06-04) |
 | catalog | Apache Hive Metastore | done (2026-06-04) |
 | catalog | Apache Polaris | done (2026-06-04) |
+| vector | LanceDB | done (2026-06-04) |

@@ -13,6 +13,20 @@ confidence: high
 
 > A proprietary, schema-on-read engine for indexing and searching high-volume time-stamped machine data (logs, metrics, events) — the dominant log-analytics/SIEM platform, but an append-only search system, not an OLTP store.
 
+## When to use
+
+**Use Splunk if:**
+- ✅ You need a battle-tested SIEM (Splunk Enterprise Security), log analytics, or IT/observability platform with a best-in-class app ecosystem
+- ✅ You want schema-on-read ingest — onboard new sources without ETL and redefine field extractions retroactively
+- ✅ You need rich SPL analytics (`stats`, `timechart`, `tstats`) and correlation across high-volume time-stamped machine data
+- ✅ Splunkbase apps, HEC/forwarders, and OpenTelemetry integration fit your security/ops workflows
+
+**Avoid Splunk if:**
+- ❌ You need a transactional system of record, mutable records, or relational joins-as-business-logic (append-only, schema-on-read, no transactions or isolation)
+- ❌ Cost matters for high-volume low-value data — ingest-based pricing makes naive "log everything" brutally expensive (the "Splunk tax")
+- ❌ You need sub-millisecond point lookups or strong transactional consistency
+- ❌ Cheaper log stores ([elasticsearch](elasticsearch.md), [opensearch](opensearch.md), [clickhouse](clickhouse.md), Grafana Loki) would meet your needs
+
 ## Identity
 - **Taxonomy / data model:** [full-text-search](../concepts/full-text-search.md) engine over time-stamped event records. Splunk treats ingested data as immutable events keyed by `_time`, `host`, `source`, `sourcetype`; fields are extracted at search time (schema-on-read), not at ingest. Not relational; closer to a [time-series](../concepts/time-series-storage.md) / log index than a document store. SPL2 and Splunk's own materials describe schema-on-read as the core model ([What Splunk does](https://www.splunk.com/en_us/blog/learn/what-splunk-does.html)).
 - **Storage model:** custom inverted-index + raw-data format organized into **buckets** (hot → warm → cold → frozen). Each bucket holds compressed raw events (`rawdata`) plus time-series index files (`.tsidx`) — a keyword inverted index, not a B-tree or LSM table. Append-only; events are not updated in place. See [lsm-vs-btree](../concepts/lsm-vs-btree.md) for contrast.

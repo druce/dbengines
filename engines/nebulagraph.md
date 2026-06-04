@@ -13,6 +13,19 @@ confidence: high
 
 > A C++ distributed property-graph database that hash-shards a RocksDB key-value store under Multi-Raft to reach hundreds-of-billions of vertices, trading away general multi-statement transactions for horizontal scale.
 
+## When to use
+
+**Use NebulaGraph if:**
+- ✅ Your property graph is genuinely too big for one node and you need horizontal hash-sharding with Raft-backed HA
+- ✅ You need millisecond multi-hop traversals at hundreds-of-billions-of-vertices scale (fraud, recommendation, large knowledge graphs)
+- ✅ You want an Apache 2.0 distributed graph with openCypher-compatible nGQL and Spark/Flink connectors
+
+**Avoid NebulaGraph if:**
+- ❌ You need cross-entity ACID transactions as a system of record — there are no general multi-statement transactions, edge consistency is at best eventual via TOSS
+- ❌ The graph fits on one node (use [neo4j](neo4j.md) or an embedded engine instead)
+- ❌ You can't size partition count correctly up front — it is fixed at space creation, so growing means re-importing the whole space
+- ❌ You need heavy in-engine global graph analytics or rich ad-hoc full-text search (delegated to Elasticsearch with sharp limits)
+
 ## Identity
 - **Taxonomy / data model:** Native [graph-data-model](../concepts/graph-data-model.md) — directed property graph (vertices/tags, directed edges, both with typed properties). nGQL is openCypher-compatible. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Key-value under the hood. Each vertex and each edge becomes KV pairs in [lsm-vs-btree](../concepts/lsm-vs-btree.md)-style RocksDB (LSM-tree), the default and most-used store engine ([HBase historically supported](https://docs.nebula-graph.io/3.2.0/1.introduction/3.nebula-graph-architecture/4.storage-service/)). An edge is stored as **two KV rows** — an out-edge under the source partition and an in-edge under the destination partition — to make both-direction traversal a local prefix scan ([storage design](https://docs.nebula-graph.io/3.2.0/1.introduction/3.nebula-graph-architecture/4.storage-service/)). NebulaGraph ships its own per-partition WAL rather than RocksDB's ([storage engine intro](https://www.nebula-graph.io/posts/nebula-graph-storage-engine-overview)).

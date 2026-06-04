@@ -13,6 +13,19 @@ confidence: high
 
 > A proprietary multi-model data platform — successor to Caché — where SQL tables, objects, JSON documents, and key-value all sit on one MUMPS-derived multidimensional "global" store; powerful and battle-tested in healthcare, but with an unusual default of READ UNCOMMITTED isolation and a niche, closed ecosystem.
 
+## When to use
+
+**Use InterSystems IRIS if:**
+- ✅ You build healthcare/clinical/interoperability systems (IRIS for Health adds FHIR/HL7) or already run Caché/Ensemble
+- ✅ You want one engine serving SQL, objects, JSON documents, and KV over the same store with no mapping layer
+- ✅ You need proven low-latency, high-throughput transactional access from the globals engine
+- ✅ Your team has (or can hire) ObjectScript/M expertise
+
+**Avoid InterSystems IRIS if:**
+- ❌ SQL defaults to READ UNCOMMITTED — "ACID" here means atomic+durable journaled writes, not consistent reads unless you raise isolation or take locks
+- ❌ You value open source, commodity SQL skills, or transparent pricing (it is quote-only and deeply proprietary)
+- ❌ You want cloud-native object-store storage/compute separation or a simple drop-in OLAP warehouse
+
 ## Identity
 - **Taxonomy / data model:** [multi-model](../concepts/multi-model.md). One unified engine exposes the same data as relational (SQL), object, document (JSON), key-value, and the underlying multidimensional sparse array ("globals") simultaneously — InterSystems markets this as "store once, access as any model" with no mapping layer ([data models](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=PAGE_multimodel)). Lineage: IRIS (GA 2019) absorbs the capabilities of InterSystems Caché + Ensemble, both M/mumps-rooted.
 - **Storage model:** all data lives in **globals** — B-tree-backed, tree-structured sparse multidimensional arrays, accessed without an intervening file-system abstraction ([globals intro](https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=AFL_GLOBALS)). Effectively a B-tree / ordered-KV engine (not [LSM](../concepts/lsm-vs-btree.md)); row-oriented by default, with columnar storage available for analytic tables in recent versions.

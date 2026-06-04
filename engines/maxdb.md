@@ -13,6 +13,18 @@ confidence: medium
 
 > A mature single-leader relational engine that SAP shipped as the cheap DB option under its own apps; it works, but it is end-of-the-road software you only choose if SAP already chose it for you.
 
+## When to use
+
+**Use MaxDB if:**
+- ✅ You operate an existing SAP system (NetWeaver/ABAP, Content Server, liveCache base) that already runs on it
+- ✅ You need a stable, ACID, single-node OLTP store with strong online/hot backup and point-in-time recovery
+- ✅ You want a low-cost DB tier bundled into an existing SAP relationship
+
+**Avoid MaxDB if:**
+- ❌ It is end-of-life by SAP's own statement (no releases past 7.9, 7.9 maintenance through end of 2027, HANA is the successor) — any new bet is a bet on managed decline
+- ❌ You are greenfield, or need analytics/OLAP, horizontal scale-out, or JSON/vector/geospatial/modern SQL
+- ❌ You want a vibrant community, long-term roadmap, or managed cloud service — pick [postgresql](postgresql.md) or [sap-hana](sap-hana.md) instead
+
 ## Identity
 - **Taxonomy / data model:** classic relational RDBMS, ANSI SQL-92 entry-level compliant ([Wikipedia](https://en.wikipedia.org/wiki/MaxDB)). Written in C++.
 - **Storage model:** row-store (N-ary storage model / record-oriented per [dbdb.io](https://dbdb.io/db/maxdb)); on-disk data and indexes organized as B*-trees (see [lsm-vs-btree](../concepts/lsm-vs-btree.md) — it is firmly B-tree, not LSM). Pages live in "volumes"; a separate log volume holds the WAL.

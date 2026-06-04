@@ -13,6 +13,18 @@ confidence: high
 
 > A distributed, schema-on-read SQL engine for querying JSON/Parquet/CSV files and NoSQL stores in place across S3/HDFS/Mongo/HBase — it executes queries, it does not durably own, mutate, or transact your data.
 
+## When to use
+
+**Use Apache Drill if:**
+- ✅ You need ad-hoc ANSI-leaning SQL over heterogeneous self-describing files (JSON/Parquet/CSV) and NoSQL stores in place, with no ETL/load step and no schema definition
+- ✅ You want one-off cross-source joins in a single query (e.g. MongoDB joined to a Parquet file on S3)
+- ✅ Its specific schema-free nested-JSON handling or source plugins fit your data uniquely well
+
+**Avoid Apache Drill if:**
+- ❌ You want a data store — it has no transactions, no durability, no consistency model, and no managed storage; writes are limited to bulk CTAS that can't be appended or modified
+- ❌ You need a system of record, OLTP, frequent updates, or low-latency point lookups
+- ❌ You're choosing for the long term — the project is low-velocity and mindshare has shifted to [trino](trino.md)/[presto](presto.md) and [duckdb](duckdb.md), which won this niche; dirty/heterogeneous data also triggers schema-on-read runtime type errors
+
 ## Identity
 - **Taxonomy / data model:** Federated SQL query engine, not a storage engine. Schema-free / schema-on-read over external data sources (files, HDFS, S3/GCS/Azure Blob, MongoDB, HBase, Hive, RDBMS via JDBC). Internally uses a hierarchical JSON-like document model so it can represent nested/dynamic data ([architecture](https://drill.apache.org/docs/architecture-introduction/)). Modeled after Google Dremel, like [apache-impala](apache-impala.md) and a sibling concept to [presto](presto.md)/[trino](trino.md).
 - **Storage model:** No native on-disk format — Drill reads whatever the source provides (Parquet columnar, JSON, CSV, Avro, etc.). Execution uses a **shredded in-memory columnar representation** (vectorized value vectors) for columnar-speed processing of complex data ([drill.apache.org](https://drill.apache.org/)). Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) — Drill owns no persistent index or write path.

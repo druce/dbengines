@@ -15,6 +15,18 @@ confidence: high
 
 > A SQL veneer over [Kafka Streams](../concepts/streaming-databases.md) that turns continuous Kafka topic processing into `CREATE STREAM ... AS SELECT` statements — convenient for Kafka-centric ETL, but Kafka-bound and now in strategic maintenance behind [Flink](apache-flink.md).
 
+## When to use
+
+**Use ksqlDB if:**
+- ✅ You are already all-in on Kafka and want lightweight, SQL-expressed stream transforms and enrichments without writing Kafka Streams Java
+- ✅ You need simple Kafka-in/Kafka-out ETL with joins, windowed aggregations, and materialized key/range lookups (pull queries)
+- ✅ You want exactly-once processing within the Kafka boundary (`exactly_once_v2`)
+
+**Avoid ksqlDB if:**
+- ❌ It only knows Kafka and is on a maintenance track behind [Flink](apache-flink.md) — new complex pipelines risk a future migration
+- ❌ You need a general database for ad-hoc analytical queries (pull queries are key-lookups on materialized tables, not OLAP)
+- ❌ You need rich ANSI SQL, sources beyond Kafka, parallelism past your partition count, or a permissive OSI license (it is source-available Confluent Community)
+
 ## Identity / role
 - ksqlDB is a **stream processing database**: you write SQL against [Kafka](apache-kafka.md) topics and it continuously computes derived streams and materialized tables. It sits in the **compute** layer of a [streaming platform](../concepts/streaming-platforms.md), not storage — all durable state lives in Kafka topics.
 - What it is NOT: it is **not a general-purpose database** (no arbitrary OLTP/OLAP queries over external data), **not a standalone storage engine** (Kafka is the source of truth), and **not a transport/broker** (Kafka is). It is a thin, SQL-shaped front end to [Kafka Streams](../concepts/streaming-databases.md).

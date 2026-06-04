@@ -13,6 +13,18 @@ confidence: medium
 
 > A Google BigTable clone built on Hadoop/HDFS whose one differentiating feature is cell-level (column-visibility) access control — pick it for classified/multi-tenant data on a Hadoop stack, not for general use.
 
+## When to use
+
+**Use Apache Accumulo if:**
+- ✅ You must enforce per-cell access control via security labels (column visibility) — its genuine, near-unique strength.
+- ✅ You store large, sparse data on an existing Hadoop/HDFS stack and have ZooKeeper/HDFS operational expertise.
+- ✅ You need massive-scale indexing/search over sparse data (e.g. GeoMesa, Apache Fluo) with strong per-row (CP) consistency.
+
+**Avoid Apache Accumulo if:**
+- ❌ You don't specifically need cell-level security — HBase, Cassandra, or ScyllaDB are better-supported choices.
+- ❌ You need SQL, joins, or multi-row transactions — "atomic" means single-row only, with no independent Jepsen verification.
+- ❌ You have a small dataset or no Hadoop/HDFS/ZooKeeper team — there is no managed offering and cluster overhead is unjustified.
+
 ## Identity
 - **Taxonomy / data model:** Wide-column store, a near-direct clone of [Google BigTable](https://accumulo.apache.org/docs/2.x/getting-started/design). Keys are 5-tuples: Row ID, Column Family, Column Qualifier, **Column Visibility**, and Timestamp; values are opaque bytes. A sparse, sorted, multi-dimensional map. The Visibility element (a boolean expression of security labels) is the headline differentiator over [apache-hbase](apache-hbase.md) and BigTable. See [wide-column](../concepts/wide-column.md).
 - **Storage model:** [LSM-tree](../concepts/lsm-vs-btree.md). Writes hit a [WAL](../concepts/wal-and-durability.md) then an in-memory MemTable; minor compaction flushes sorted runs to **RFiles** (an ISAM-style indexed format with data/index/metadata blocks) stored in HDFS. Reads merge the MemTable with on-disk RFiles. Major compaction merges RFiles. See [lsm-vs-btree](../concepts/lsm-vs-btree.md).

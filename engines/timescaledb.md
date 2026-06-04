@@ -13,6 +13,20 @@ confidence: high
 
 > A PostgreSQL extension that adds time-series superpowers (auto-partitioning, columnar compression, continuous aggregates) without leaving SQL or the Postgres ecosystem — at the cost of inheriting Postgres's single-writer scaling ceiling now that distributed multi-node is gone.
 
+## When to use
+
+**Use TimescaleDB if:**
+- ✅ You have time-series or analytical workloads (metrics, IoT, financial tick, observability) and want to stay in PostgreSQL — full SQL, ACID, joins, Postgres tooling
+- ✅ You want auto-partitioning (hypertables), columnar compression, and continuous aggregates that vanilla Postgres lacks
+- ✅ You value genuine serializable isolation (SSI) and the entire Postgres driver/ORM/BI ecosystem unchanged
+- ✅ You need real OLTP/OLAP physical separation: recent chunks row-oriented for writes, aged chunks columnar for scans
+
+**Avoid TimescaleDB if:**
+- ❌ You need horizontal write scale across nodes — multi-node was removed in 2.14, so single-node (plus read replicas) is the ceiling (the single biggest gotcha)
+- ❌ You have pure-OLAP / extreme-cardinality workloads a purpose-built columnar engine like [clickhouse](clickhouse.md) would serve far cheaper
+- ❌ You need key-value or graph workloads, or petabyte-scale OLAP ([apache-druid](apache-druid.md) territory)
+- ❌ You intend to offer it as a hosted DBaaS — advanced features (compression, continuous aggregates, tiering) are under the source-available TSL
+
 ## Identity
 - **Taxonomy / data model:** Time-series database implemented as a [postgresql](postgresql.md) extension; relational underneath, so you also get full relational/JSON/geospatial modeling. Vendor (Timescale, rebranded **Tiger Data** in June 2025; the OSS extension keeps the name TimescaleDB) now positions it as general-purpose "modern Postgres" beyond time-series ([rebrand announcement](https://www.tigerdata.com/blog/announcing-the-new-timescale)).
 - **Storage model:** Hybrid row+columnar, branded **Hypercore** since v2.18 (Jan 2025) — the same engine previously surfaced only as "compression" ([Hypercore docs](https://docs.timescale.com/use-timescale/latest/hypercore/)). Recent data lives in Postgres row-store heap (B-tree, [lsm-vs-btree](../concepts/lsm-vs-btree.md)); older chunks are transactionally rewritten into a **columnar compressed** format (values grouped ~1,000 rows/column into arrays, then compressed with type-specific codecs: delta-of-delta, Gorilla for floats, dictionary for low-cardinality, run-length/simple-8b) ([compression methods](https://www.tigerdata.com/docs/learn/columnar-storage/compression-methods)). Core abstraction is the **hypertable**: a virtual table auto-partitioned by time (and optionally a space dimension) into **chunks**, each a real child Postgres table. See [columnar-storage](../concepts/columnar-storage.md), [time-series-storage](../concepts/time-series-storage.md).

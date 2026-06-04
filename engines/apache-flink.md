@@ -13,6 +13,20 @@ confidence: high
 
 > A distributed stateful stream-processing engine that provides exactly-once-effect guarantees over unbounded data via checkpointed snapshots — not a database you query, but a compute layer that consumes, transforms, and emits streams.
 
+## When to use
+
+**Use Apache Flink if:**
+- ✅ You need stateful, exactly-once stream processing at scale (continuous ETL, event-driven apps, CEP, CDC, streaming lakehouse)
+- ✅ You need event-time semantics with watermarks to handle out-of-order/late data correctly
+- ✅ You need native stateful joins, windowed/continuous aggregations, dedup, top-N, or pattern matching over unbounded data
+- ✅ Your team can absorb the operational complexity (checkpoint tuning, state management, savepoint-based upgrades)
+
+**Avoid Apache Flink if:**
+- ❌ You expect "exactly-once" to be automatic — it's effectively-once and only end-to-end if sources are replayable and sinks are transactional/idempotent (biggest gotcha)
+- ❌ You want a database to query or serve reads — it owns no data of record; point a sink store at it instead
+- ❌ You need ad-hoc interactive OLAP — use ClickHouse/Pinot/Druid downstream
+- ❌ You only need simple at-least-once Kafka transforms — Kafka Streams or a lighter tool suffices and Flink is operationally heavy for small teams
+
 ## Identity
 - **Taxonomy / data model:** Stream-processing engine, not a storage engine. It is listed by db-engines under "relational" because of its SQL/Table API surface, but it has **no primary persistent store of record** — it reads from and writes to external systems (Kafka, Pulsar, JDBC, object stores, [apache-paimon](apache-paimon.md)/Iceberg). Treat it as a compute engine adjacent to the database space.
 - **Storage model:** State is the only thing Flink durably owns. State backends: heap (HashMapStateBackend) or embedded RocksDB ([lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM-tree) on local disk for state larger than RAM. Flink 2.0 (March 2025) added **disaggregated state** via the **ForSt** store, keeping primary state in remote DFS/object storage with local disk as cache ([Flink 2.0 release](https://flink.apache.org/2025/03/24/apache-flink-2.0.0-a-new-era-of-real-time-data-processing/); [VLDB 2025 paper](https://www.vldb.org/pvldb/vol18/p4846-mei.pdf)). See [storage-compute-separation](../concepts/storage-compute-separation.md).

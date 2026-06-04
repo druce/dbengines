@@ -13,6 +13,20 @@ confidence: high
 
 > Fully managed MySQL-on-[Vitess] (and now Postgres) that turns schema changes into reviewable, non-blocking "deploy requests" and gives you Git-like database branching — best for teams that have outgrown a single MySQL node and value workflow over raw flexibility.
 
+## When to use
+
+**Use PlanetScale if:**
+- ✅ You run MySQL (or now Postgres) at a scale where a single node hurts and want managed Vitess sharding
+- ✅ You value a reviewable, non-blocking, branch-based schema-change workflow (deploy requests with safe revert)
+- ✅ You want Git-like database branching and CI for the database
+- ✅ You have high-connection serverless/edge apps (HTTP driver, Vercel/Cloudflare Workers integrations)
+
+**Avoid PlanetScale if:**
+- ❌ Your app depends on cross-shard transactions, cross-shard foreign keys, or heavy ad-hoc cross-shard joins — once sharded, the "it's just MySQL/ACID" model breaks (cross-shard atomicity is best-effort or 2PC-without-isolation)
+- ❌ It's a hobby/tiny project — it is paid-only (the free Hobby tier was removed in April 2024)
+- ❌ You need analytics/OLAP — no columnar store, no HTAP
+- ❌ You need superuser/extension freedom or scan-heavy query patterns — row-read billing can surprise unindexed workloads
+
 ## Identity
 - **Taxonomy / data model:** Relational. Two engines: (1) the original MySQL service built on **Vitess** (the YouTube-born MySQL sharding/clustering layer), and (2) **PlanetScale for Postgres** (GA in 2025), with a next-gen Postgres sharding layer called **Neki** ([InfoQ, Oct 2025](https://www.infoq.com/news/2025/10/planetscale-metal-postgres/), [PlanetScale Postgres GA](https://planetscale.com/blog/planetscale-for-postgres-is-generally-available)).
 - **Storage model:** Row-store. MySQL engine uses InnoDB (B-tree, see [lsm-vs-btree](../concepts/lsm-vs-btree.md)); Postgres engine uses PostgreSQL's heap + B-tree. **PlanetScale Metal** runs the database on local NVMe drives ("unlimited IOPS") rather than network-attached block storage, trading EBS-style durability semantics for latency ([PlanetScale Metal](https://planetscale.com/benchmarks/vitess)).

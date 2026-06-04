@@ -13,6 +13,19 @@ confidence: high
 
 > A drop-in-compatible Cassandra clone rewritten in C++ on a shard-per-core architecture for dramatically lower tail latency and higher density — an AP wide-column store that bolts strong consistency onto topology (Raft) and conditional writes (LWT/Paxos) without changing the core data path.
 
+## When to use
+
+**Use ScyllaDB if:**
+- ✅ You have a Cassandra- or DynamoDB-shaped workload (high write throughput, simple access patterns, horizontal scale) hurt by tail latency, JVM GC pauses, or node count/cost.
+- ✅ You want the C++/Seastar shard-per-core design's better p99/p999 and per-node density — fewer, denser nodes for lower TCO.
+- ✅ You can run on many cores + fast local NVMe (it pins cores and manages its own memory/IO).
+
+**Avoid ScyllaDB if:**
+- ❌ You need joins, OLAP, multi-key ACID transactions, or strong-consistency-by-default — plain CQL writes are **not isolated by design** (destructive per-cell upserts), and strong consistency is scoped to single-partition LWT CAS and Raft-backed metadata only.
+- ❌ You require a true OSS license — it moved to source-available in 2025.1; you are pinned to 6.2/AGPL forever otherwise.
+- ❌ Your storage is network-attached/EBS-style — that undermines the entire low-tail-latency value proposition.
+- ❌ Your workload is tombstone-heavy (frequent updates/deletes to the same row) or has unbounded partition growth.
+
 ## Identity
 - **Taxonomy / data model:** Wide-column / partitioned row store, CQL-compatible with Apache [apache-cassandra](apache-cassandra.md) (same data model, query language, SSTable format, drivers). Multi-model only loosely: it ships a [amazon-dynamodb](amazon-dynamodb.md)-compatible API (Alternator) and CQL.
 - **Storage model:** [LSM-tree](../concepts/lsm-vs-btree.md) on disk (SSTables, size-tiered/leveled/incremental/time-window compaction strategies), row-oriented within partitions. The differentiator is the runtime, not the storage: the Seastar framework gives a **shard-per-core, shared-nothing, thread-per-core** design with its own user-space scheduler, async I/O, and (optionally) a custom userspace memory allocator. Each CPU core owns a slice of data and runs without locks.

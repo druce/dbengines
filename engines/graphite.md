@@ -13,6 +13,18 @@ confidence: high
 
 > A 2008-era operational-metrics stack (Carbon + Whisper + graphite-web) that stores each metric as a fixed-size, RRD-like file with built-in retention/rollups — cheap and proven for dashboards, but it pre-allocates disk per series, fakes clustering with hash-ring relays, and has no transactions or strong consistency.
 
+## When to use
+
+**Use Graphite if:**
+- ✅ You have a bounded, known set of metric series and want dead-simple push-based ingest (StatsD → carbon) with fixed retention and automatic rollups.
+- ✅ You want a rich, composable graphing function library (sumSeries, movingAverage, summarize) and first-class Grafana integration at small/medium scale.
+- ✅ You value predictable, GC-free behavior — the fixed-size RRD design never compacts, so no background-merge p99 spikes.
+
+**Avoid Graphite if:**
+- ❌ You have high-cardinality / dynamic-label metrics — Whisper pre-allocates a fixed-size file per series at first write, so cardinality explosions silently eat disk (the biggest gotcha).
+- ❌ You need tags-first querying, pull-based scraping, or alerting rules — use [prometheus](prometheus.md) / [victoriametrics](victoriametrics.md).
+- ❌ You need elastic horizontal scaling, strong consistency, or transactions — "clustering" is manual hash-ring sharding with painful rebalancing and best-effort fire-and-forget replication.
+
 ## Identity
 - **Taxonomy / data model:** [time-series-storage](../concepts/time-series-storage.md) database for operational/monitoring metrics. Data model is dead simple: `(metric.path.dotted, value, unix_timestamp)`. Hierarchical dot-delimited metric names (`servers.web01.cpu.load`), no tags in the original design (tagging was bolted on later in Graphite 1.1).
 - **Storage model:** Row-of-floats per archive in a **fixed-size, file-based format** called Whisper (one `.whisper` file per metric series), modeled on RRDtool (round-robin database) ([Whisper docs](https://graphite.readthedocs.io/en/stable/whisper.html)). Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) — it is pre-allocated flat files of big-endian double + timestamp pairs, written in-place. An alternate backend, Ceres, exists but Whisper is the canonical store. Not [columnar-storage](../concepts/columnar-storage.md).

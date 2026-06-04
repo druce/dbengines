@@ -13,6 +13,20 @@ confidence: high
 
 > A bare-bones, multi-threaded, in-RAM string-blob cache that does one thing — fast get/set with LRU eviction — and intentionally nothing else; it is not a database and loses all data on crash.
 
+## When to use
+
+**Use Memcached if:**
+- ✅ You need a dead-simple, multi-threaded look-aside cache (DB results, rendered fragments, API responses, sessions) in front of a slower system of record
+- ✅ You can tolerate losing the entire cache at any moment — all data is disposable by design
+- ✅ You want to scale horizontally across cores and across independent nodes via client-side consistent hashing
+- ✅ You want minimal operational surface and a permissive BSD license with no lock-in
+
+**Avoid Memcached if:**
+- ❌ You need durability, replication, or HA — there is no persistence (everything is lost on crash) and no server-to-server replication
+- ❌ You need data structures, secondary indexes, range/scan queries, or values larger than 1 MB (default) — reach for [redis](redis.md) or a real database
+- ❌ You would treat it as a system of record — that is the single biggest mistake
+- ❌ You might expose it to the internet — unauthenticated instances are a documented UDP DDoS-amplification and data-leak hazard
+
 ## Identity
 - **Taxonomy / data model:** [key-value](../concepts/key-value-store.md) cache. Opaque keys (≤250 bytes) → opaque byte-string values (default ≤1 MB). No data types, no structure inside values (contrast [redis](redis.md), which has lists/sets/hashes). It is a cache, not a store of record.
 - **Storage model:** pure in-memory hash table + [slab allocator](../concepts/lsm-vs-btree.md)-managed memory (not LSM, not B-tree). Memory is carved into 1 MB pages split into fixed-size chunks grouped by "slab class"; an item lands in the smallest chunk that fits, which causes internal fragmentation and per-slab-class eviction ([slab/LRU docs](https://docs.memcached.org/features/slabs/)). **extstore** (1.6.0+) optionally spills *values* to flash while keeping keys/metadata in RAM ([extstore wiki](https://github.com/memcached/memcached/wiki/Extstore)) — this is overflow capacity, not durability.

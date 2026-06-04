@@ -13,6 +13,20 @@ confidence: high
 
 > MySQL-protocol-compatible distributed SQL engine (PingCAP) that decouples a stateless SQL layer from Raft-replicated row storage (TiKV) and an asynchronous columnar replica (TiFlash), giving horizontal scale + Snapshot Isolation for OLTP and real-time analytics in one cluster — at the cost of distributed-transaction latency.
 
+## When to use
+
+**Use TiDB if:**
+- ✅ You have a large MySQL-shaped OLTP workload that outgrew a single node and want automatic horizontal sharding without app-level sharding
+- ✅ You want genuine HTAP — fresh analytics on transactional data (columnar TiFlash) without an ETL-to-warehouse pipeline
+- ✅ You value MySQL wire-protocol compatibility (drop-in for many apps), online DDL, and Apache 2.0 / no-lock-in OSS
+- ✅ You need horizontal scale with automatic Region rebalancing and Raft-based HA
+
+**Avoid TiDB if:**
+- ❌ You have small/single-node workloads — multi-component cluster overhead and per-txn TSO + 2PC latency aren't worth it (use MySQL/PostgreSQL)
+- ❌ You need ultra-low-latency single-row OLTP (the TSO round-trip + distributed 2PC tax is real)
+- ❌ You need true SERIALIZABLE isolation — the default "Repeatable Read" is really Snapshot Isolation, so write skew is possible
+- ❌ You rely on MySQL stored procedures/triggers/foreign keys, or you'd re-enable transaction auto-retry (the Jepsen finding means doing so silently loses SI)
+
 ## Identity
 - **Taxonomy / data model:** Relational (NewSQL); MySQL-compatible SQL. Multi-model-ish via native vector search type for AI workloads. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Hybrid via two engines. **TiKV** = row-oriented distributed KV store built on RocksDB ([lsm-vs-btree](../concepts/lsm-vs-btree.md) — LSM under the hood); **TiFlash** = columnar store ([columnar-storage](../concepts/columnar-storage.md)) kept in sync as a Raft *learner* replica. Data is range-partitioned into "Regions" (default 256 MiB from v8.4.0; 96 MiB before) ([TiDB Region tuning docs](https://docs.pingcap.com/tidb/stable/tune-region-performance/)).

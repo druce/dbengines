@@ -13,6 +13,20 @@ confidence: high
 
 > The original spreadsheet-shaped MOLAP server: hypercubes, hierarchies, and write-back for finance/EPM workloads — a single-node analytic cube engine, not a transactional or general-purpose database.
 
+## When to use
+
+**Use Oracle Essbase if:**
+- ✅ You have a financial/EPM multidimensional model with write-back, complex allocations, and hierarchical consolidation
+- ✅ Analysts drive the analysis from Excel via Smart View ("Excel on steroids" slice/dice, budgeting, forecasting)
+- ✅ You need MOLAP cube semantics — BSO procedural calc/write-back or ASO on-demand aggregation over high-dimension data
+- ✅ You already run the Oracle EPM/Hyperion stack and have Essbase modeling expertise
+
+**Avoid Oracle Essbase if:**
+- ❌ You need a general-purpose database, OLTP store, real-time event ingestion, or a SQL warehouse — it is none of these
+- ❌ Your data is high-cardinality, free-form, or unstructured, or you need row-level transactions / relational integrity
+- ❌ You lack BSO design discipline — wrong dense/sparse and aggregation design causes data explosion, fragmentation, and runaway calc times
+- ❌ You want open-source, cloud-native scale-out, or to avoid proprietary cube-format / Calc-MDX-MaxL lock-in
+
 ## Identity
 - **Taxonomy / data model:** Multidimensional OLAP (MOLAP). Data is a hypercube; a value lives at the intersection of one member from each dimension, organized by an **outline** (a tree of dimensions and hierarchical members). Not relational, not document — see [oltp-olap-htap](../concepts/oltp-olap-htap.md) for the workload axis.
 - **Storage model:** Two distinct engines. **Block Storage Option (BSO)** splits dimensions into **dense** and **sparse**; it materializes data **blocks** (the dense-dimension cell matrix) only where sparse intersections actually have data, with an index over the sparse combinations ([Oracle: BSO/ASO storage](https://docs.oracle.com/en/database/other-databases/essbase/21/essdm/overview-multidimensional-databases.html)). **Aggregate Storage Option (ASO)** stores only input-level (and selectively materialized) cells and computes aggregations on demand, scaling to many more/larger dimensions but with limited write-back. There is also a **Hybrid** mode that runs BSO outlines with ASO-style on-demand aggregation, combining BSO procedural calc/write-back with ASO aggregation performance; in 21c hybrid mode is enabled by default for BSO queries ([Oracle: Hybrid Mode for Fast Analytic Processing](https://docs.oracle.com/en/database/other-databases/essbase/21/essdm/hybrid-mode-fast-analytic-processing.html)). This is a proprietary cube format, not a row/column-store and not [lsm-vs-btree](../concepts/lsm-vs-btree.md).

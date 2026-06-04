@@ -13,6 +13,18 @@ confidence: high
 
 > A fully-managed, Solr-backed AWS search service that hides cluster ops behind a REST API — but it is in maintenance mode (closed to new sign-ups since July 2024) and AWS now pushes [opensearch](opensearch.md) instead.
 
+## When to use
+
+**Use Amazon CloudSearch if:**
+- ✅ You already run an existing CloudSearch domain that works — closed to new customers, so this is a maintain-only case
+- ✅ You needed managed Solr-style faceted search (e-commerce, document/content search) with no cluster ops and no vector/semantic requirement
+- ✅ Your source documents are durably stored elsewhere, since CloudSearch is a derived index you re-upload to recover
+
+**Avoid Amazon CloudSearch if:**
+- ❌ It's any new project — AWS closed it to new customers in July 2024 and froze feature work, steering everyone to [opensearch](opensearch.md)
+- ❌ You need semantic/vector search, log/observability analytics, or to use it as a system of record (no embedding support, no transactions)
+- ❌ You require snapshot/PITR of the index — there is none; the only recovery path is re-uploading every document (the single biggest gotcha)
+
 ## Identity
 - **Taxonomy / data model:** Search engine (full-text/faceted document search), offered as a managed SaaS "search domain." Not a general-purpose database — it indexes documents you push to it; it is not the system of record. See [full-text-search](../concepts/full-text-search.md).
 - **Storage model:** Inverted-index search engine. The 2013-01-01 API generation is built on **Apache Solr** (Lucene) internals ([AWS CloudSearch FAQ](https://aws.amazon.com/cloudsearch/faqs/)); earlier 2011 API generations used AWS's own engine (A9). On-disk format is the managed Lucene index — not user-accessible. See [lsm-vs-btree](../concepts/lsm-vs-btree.md) for the inverted-index contrast (Lucene segments are immutable, merged like LSM SSTables).

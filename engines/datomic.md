@@ -13,6 +13,18 @@ confidence: high
 
 > An append-only, immutable database where every change is a timestamped fact (datom), queries run *inside your app* as a library, and you can query the database "as of" any past instant — at the cost of a single global writer.
 
+## When to use
+
+**Use Datomic if:**
+- ✅ History, auditability, and "as-of" time travel are first-class requirements (finance, healthcare, compliance — where the audit log *is* the product).
+- ✅ Your workload is read-heavy with moderate write volume, and you value reads that run in-process against cached immutable indexes.
+- ✅ Your team is comfortable with Clojure and Datalog and wants one of the few databases with a clean Jepsen result (isolation stronger than its docs claim).
+
+**Avoid Datomic if:**
+- ❌ You have high write throughput — the single transactor serializes all writes and is a hard ceiling.
+- ❌ You need large-scale OLAP/analytics, blob/time-series ingestion, or geospatial/vector workloads.
+- ❌ You compose transaction functions expecting serializability — within one transaction they execute against the start-of-transaction snapshot and can silently violate invariants.
+
 ## Identity
 - **Taxonomy / data model:** Relational, but modeled as immutable **datoms** — five-tuples of `[entity, attribute, value, transaction, added?]`. Closer to RDF/EAV than to a table-and-row store. Queried with **Datalog** (a logic query language), not SQL. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Not a row- or column-store in the usual sense. Datomic keeps four covering index trees sorted in different orders — **EAVT** (row-like), **AEVT** (column-like), **AVET** (value lookup), **VAET** (reverse refs / graph navigation) — persisted as immutable, structurally-shared sorted trees in a pluggable backing store ([docs](https://docs.datomic.com/datomic-overview.html)). Because nodes are immutable, it behaves like a copy-on-write persistent data structure rather than [LSM or in-place B-tree](../concepts/lsm-vs-btree.md) mutation; there is no overwrite and no [mvcc](../concepts/mvcc.md)-style vacuum of old versions — old facts are retained by design.

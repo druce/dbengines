@@ -13,6 +13,20 @@ confidence: high
 
 > The default document database: developer-friendly BSON/JSON model, single-leader replica sets, and horizontal sharding. Since 5.0 the default write concern is `w:majority` (durable by default), but the default read concern is still `local`, so "ACID"/causal-consistency claims still only fully hold when you also opt into `readConcern:majority`/`snapshot`; the weak `w:1` defaults that lost data in every Jepsen test (3.x–4.2) are no longer the out-of-box behavior.
 
+## When to use
+
+**Use MongoDB if:**
+- ✅ Your data is naturally document-shaped and the schema evolves fast (CMS/catalog, user profiles, IoT/event ingestion, mobile/app backends)
+- ✅ You want a developer-friendly BSON/JSON model with easy horizontal scale-out via sharding
+- ✅ You are on a modern version (5.0+) where the write default is `w:majority` (durable by default) and you'll set `readConcern:majority`/`snapshot` where guarantees matter
+- ✅ You want a rich driver/ODM ecosystem, Change Streams CDC, and a managed option (Atlas, with Search/Vector Search)
+
+**Avoid MongoDB if:**
+- ❌ Your workload is heavily relational/join-heavy or needs strict serializable multi-document transactions (it offers only snapshot isolation)
+- ❌ You need ad-hoc SQL analytics or a columnar OLAP engine
+- ❌ You'd run an older (<5.0) deployment or a PSA-arbiter topology that silently falls back to `w:1`
+- ❌ You assume defaults are safe: the biggest gotcha is **weak historical defaults** — even now the default *read* concern is `local` (stale/rollback-able reads), and causal/transaction guarantees require explicit majority concerns (Jepsen flagged this through 4.2)
+
 ## Identity
 - **Taxonomy / data model:** document (BSON — binary JSON with extra types). Multi-model in practice: also serves key-value, geospatial, time-series collections (5.0+), and vector search (via Atlas Vector Search). Not relational. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** WiredTiger is the default storage engine since 3.2 — a B-tree-based row/document store with MVCC and document-level concurrency, compressed (snappy default). Historically supported pluggable engines (MMAPv1 removed in 4.2; in-memory engine in Enterprise). Not LSM by default. See [lsm-vs-btree](../concepts/lsm-vs-btree.md), [mvcc](../concepts/mvcc.md).

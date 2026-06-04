@@ -15,6 +15,20 @@ confidence: high
 
 > A horizontally scalable, durable, replayable commit log for event streams — the default backbone for moving events between systems, with per-partition ordering and (opt-in) exactly-once semantics, but **not** a query engine or a system of record you ask questions of.
 
+## When to use
+
+**Use Apache Kafka if:**
+- ✅ You need a durable, ordered, replayable event backbone decoupling many producers from many consumers at high throughput
+- ✅ It's the transport for CDC (Debezium), log/metrics pipelines, or feeding real-time-OLAP stores and lakehouses
+- ✅ You want the industry-standard choice with the deepest ecosystem (Connect, Schema Registry, Kafka-compatible alternatives)
+- ✅ You configure durability deliberately — `acks=all` + `min.insync.replicas>=2`
+
+**Avoid Apache Kafka if:**
+- ❌ You assume the defaults are durable/exactly-once — `acks=1` + unclean leader election silently loses data, and EOS is a Kafka-boundary guarantee, not end-to-end into non-idempotent external sinks (biggest gotcha)
+- ❌ You want to use it as a database — no ad-hoc queries, secondary indexes, or joins over stored data
+- ❌ You need request/reply RPC or a low-volume task queue — its ops and cost overhead is disproportionate for small workloads
+- ❌ You need consumer parallelism beyond your partition count — parallelism is capped by partitions
+
 ## Identity / role
 - **What it is:** a distributed, partitioned, replicated **append-only log**. Topics are split into partitions; each partition is an ordered, immutable sequence of records addressed by monotonic offset. Producers append; consumers read by offset and can rewind/replay. Retention is by time or size (or compacted by key), independent of whether anyone has consumed — this replayability is the core differentiator from traditional message queues. See [streaming-platforms](../concepts/streaming-platforms.md).
 - **What it is NOT:** not a database — there is no ad-hoc query, no secondary indexes, no joins over stored data. You cannot "look up record X"; you read partitions sequentially from an offset. It is a **transport and buffer**, not a system of record, and not [OLTP/OLAP](../concepts/oltp-olap-htap.md) storage. Stream processing (joins, aggregations, windowing) requires a separate layer: Kafka Streams, [apache-flink](apache-flink.md), ksqlDB, or a [streaming database](../concepts/streaming-databases.md).

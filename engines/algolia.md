@@ -13,6 +13,18 @@ confidence: high
 
 > A proprietary, fully-managed search API that keeps each index in RAM on dedicated 3-node clusters for instant typo-tolerant search — fast and operationally turnkey, but a read-optimized secondary index you feed from your real database, not a system of record.
 
+## When to use
+
+**Use Algolia if:**
+- ✅ You want best-in-class instant, typo-tolerant search UX shipped fast — e-commerce product search, site/media search, docs search, autocomplete, faceted navigation
+- ✅ You want zero search-infra ops: fully-managed SaaS with no customer-side upgrades or patching, plus the InstantSearch front-end ecosystem
+- ✅ You'll keep your real system of record elsewhere and feed Algolia as a derived secondary index
+
+**Avoid Algolia if:**
+- ❌ You'd use it as a system of record, or for analytics, reporting, ad-hoc aggregation, or write-heavy/transactional workloads (no transactions, no joins, AP/eventually-consistent)
+- ❌ Cost at scale matters — the per-search-request + per-record model is cheap to start but can become the dominant line item for high-traffic or large-catalog sites (the single biggest gotcha)
+- ❌ You need data sovereignty or self-hosting — it's managed-only; consider self-hosted typesense, [meilisearch](meilisearch.md), or [opensearch](opensearch.md)
+
 ## Identity
 - **Taxonomy / data model:** dedicated **search engine** delivered as SaaS. Documents are schema-flexible JSON "records" stored in named indices. Since the September 2022 Search.io acquisition it also offers hybrid keyword + vector ("NeuralSearch", launched May 2023) retrieval ([Algolia](https://www.algolia.com/about/news/algolia-disrupts-market-with-search-io-acquisition-ushering-in-a-new-era-of-search-and-discovery)). Adjacent to [elasticsearch](elasticsearch.md), [opensearch](opensearch.md), typesense, [meilisearch](meilisearch.md); see [full-text-search](../concepts/full-text-search.md) and [vector-search-ann](../concepts/vector-search-ann.md).
 - **Storage model:** inverted index plus a custom on-the-fly radix tree; each index is held **entirely in RAM** for queries and persisted/synced to NVMe SSD; search performs no disk I/O ([High Scalability](https://highscalability.com/the-architecture-of-algolias-distributed-search-network/), [Algolia engineering](https://www.algolia.com/blog/engineering/inside-the-algolia-engine-part-2-the-indexing-challenge-of-instant-search)). Not a B-tree/LSM general store; see [lsm-vs-btree](../concepts/lsm-vs-btree.md) only by contrast.

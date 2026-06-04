@@ -13,6 +13,20 @@ confidence: high
 
 > The mature, full-featured commercial relational database for Windows-and-Linux shops: rock-solid single-node OLTP with optional columnstore HTAP, T-SQL everywhere, and per-core licensing that gets expensive fast at scale.
 
+## When to use
+
+**Use Microsoft SQL Server if:**
+- ✅ You have a Windows/.NET-centric enterprise and want a mature single-node OLTP database with deep tooling (Query Store, execution plans, Always On HA)
+- ✅ You want optional columnstore HTAP — analytic scans against live OLTP rows without a separate warehouse
+- ✅ You need rich multi-model features (native JSON/`vector` in 2025, XML, spatial, graph) and full T-SQL with CLR/Python/R extensibility
+- ✅ You can absorb per-core licensing (or fit within free Express/Developer editions)
+
+**Avoid Microsoft SQL Server if:**
+- ❌ You need native horizontal write-scale-out — there is no built-in automatic sharding
+- ❌ You need cloud-native separated storage/compute (use [microsoft-azure-sql-database](microsoft-azure-sql-database.md) Hyperscale) or petabyte cloud analytics (use a dedicated warehouse)
+- ❌ You are cost-sensitive at high core counts — per-core licensing inverts as you scale
+- ❌ You expect MVCC-style behavior: the biggest gotcha is the default is **locking READ COMMITTED**, so readers block writers until you enable RCSI (which then pressures `tempdb`)
+
 ## Identity
 - **Taxonomy / data model:** primarily relational (SQL), multi-model via native JSON (typed `json` data type added in SQL Server 2025), XML, spatial (geometry/geography), graph (`NODE`/`EDGE` tables), and vector search (native `vector` type GA in SQL Server 2025; DiskANN approximate vector indexing is in public preview, not GA, as of the 2025 RTM ([Azure SQL Dev Blog](https://devblogs.microsoft.com/azure-sql/sql-server-2025-embraces-vectors-setting-the-foundation-for-empowering-your-data-with-ai/))). See [oltp-olap-htap](../concepts/oltp-olap-htap.md) for the workload axis.
 - **Storage model:** default disk-based **row-store** B-tree (clustered/heap); optional **columnstore** indexes (clustered or nonclustered) for analytics; [lsm-vs-btree](../concepts/lsm-vs-btree.md) — SQL Server is B-tree-based, not LSM. In-Memory OLTP ("Hekaton") tables use lock-free hash and Bw-tree indexes ([Hekaton paper, Diaconu et al. 2013](https://www.microsoft.com/en-us/research/wp-content/uploads/2013/06/Hekaton-Sigmod2013-final.pdf)).

@@ -13,6 +13,20 @@ confidence: medium
 
 > Apple's serverless iCloud datastore for apps: a schema-light record store split into per-user private, app-wide public, and shared databases, with zero ops but total Apple lock-in.
 
+## When to use
+
+**Use CloudKit if:**
+- ✅ You're building an Apple-platform app and want per-user data sync "for free" with zero backend to operate
+- ✅ You want the private database to charge against each *user's* iCloud quota (genuinely hard to beat economically)
+- ✅ You need cross-device sync, app-wide read-mostly public catalogs, or CloudKit Sharing for collaboration
+- ✅ You want tight Core Data + CloudKit (`NSPersistentCloudKitContainer`) local-store sync
+
+**Avoid CloudKit if:**
+- ❌ You need cross-platform reach (no Android/web-first story; no non-Apple auth)
+- ❌ You need server-side joins, aggregations, full-text analytics, or server-side logic — it's a sync service, not a queryable database (the biggest gotcha)
+- ❌ You want an exit path or portability — lock-in to Apple's ecosystem is severe
+- ❌ You have write-heavy/high-fan-out workloads that hit per-second request limits, or need strong cross-zone transactions
+
 ## Identity
 - **Taxonomy / data model:** Document/record-oriented backend-as-a-service (BaaS), not a self-hostable database engine. Apps store `CKRecord` objects (key-value field bags) of a named `CKRecord.Type`, grouped into `CKRecordZone`s, inside `CKDatabase`s, inside a `CKContainer`. Record types are roughly tables, fields roughly columns ([Apple: Designing with CloudKit](https://developer.apple.com/icloud/cloudkit/designing/)).
 - **Storage model:** Opaque managed service. Apple has confirmed CloudKit is built on the [FoundationDB Record Layer](https://www.foundationdb.org/files/record-layer-paper.pdf) (a Protocol-Buffers structured-record layer over the FoundationDB ordered KV store), a fact Apple confirmed when it open-sourced the Record Layer in January 2019 ([FoundationDB blog: Announcing the Record Layer](https://www.foundationdb.org/blog/announcing-record-layer/)). CloudKit migrated off an earlier Cassandra-backed design — Cassandra had no concurrency within a zone and scoped multi-record atomic operations to a single partition ([Engineer's Codex: How Apple built iCloud](https://read.engineerscodex.com/p/how-apple-built-icloud-to-store-billions)). FoundationDB itself is an ordered KV store whose default on-disk engine is a **B-tree** ([lsm-vs-btree](../concepts/lsm-vs-btree.md)) — historically a SQLite-based engine (`ssd-2`), with the newer prefix-compressed B+tree "Redwood" engine; an optional RocksDB (LSM) engine also exists, but B-tree is the default, not LSM ([FoundationDB storage engines](https://apple.github.io/foundationdb/redwood.html)). On-disk format is not exposed to CloudKit developers.

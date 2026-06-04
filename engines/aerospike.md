@@ -13,6 +13,18 @@ confidence: high
 
 > A flash-optimized distributed key-value store that keeps the index in RAM and data on NVMe, delivering predictable sub-millisecond latency at terabyte-to-petabyte scale — fast and operationally lean, but a poor fit for ad-hoc analytics or rich relational queries.
 
+## When to use
+
+**Use Aerospike if:**
+- ✅ You have a large operational dataset (TB–PB) needing predictable sub-millisecond point reads/writes — user profiles, real-time bidding, fraud detection, feature/session stores
+- ✅ You want SSD economics: only the index must fit in RAM while data lives on NVMe, far cheaper than all-RAM Redis
+- ✅ You can opt into Strong Consistency mode for linearizable single-record (and, since 8.0, strict-serializable multi-record) transactions
+
+**Avoid Aerospike if:**
+- ❌ You need ad-hoc analytics, complex multi-table joins, heavy aggregation, full-text search, or rich SQL — there's no relational planner and no JOINs
+- ❌ Your durability/consistency is left at defaults: without `commit-to-device` and SC mode you can lose recently-acked writes on crashes (the single biggest gotcha)
+- ❌ You run SC deployments without controlling GC pauses and clock skew — Jepsen flagged residual data-loss risk under long process pauses / clock skew
+
 ## Identity
 - **Taxonomy / data model:** primarily a distributed [key-value store](https://en.wikipedia.org/wiki/Aerospike_(database)); also document-oriented via Collection Data Types (maps/lists holding JSON-like structures). Records live in *sets* within *namespaces* (a namespace ≈ a database/tablespace). Multi-model in practice (KV + document), not relational/graph.
 - **Storage model:** row-style records, not columnar. Signature design is **Hybrid Memory Architecture (HMA)**: the primary index is kept entirely in RAM (~64 bytes/record) and is *not* persisted, while record data sits on SSD/NVMe and is read directly from disk ([Aerospike docs: hybrid storage](https://docs.aerospike.com/server/architecture/storage.html)). On-disk format is log-structured — no in-place updates; **copy-on-write large-block writes** with background defragmentation to spread SSD wear (functionally [lsm-vs-btree](../concepts/lsm-vs-btree.md)-like log-structured, not a B-tree). Can also run all-in-memory or (newer) all-flash with index on SSD.

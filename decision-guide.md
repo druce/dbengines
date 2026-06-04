@@ -47,31 +47,36 @@ are premature.
 **Start here unless you have a specific reason to leave.**
 
 - **Default, self-hosted, permissive:** [postgresql](engines/postgresql.md) — real SERIALIZABLE via SSI, vast extension
-  ecosystem (JSON, [spatial](engines/postgis.md), pgvector). ✗ no built-in sharding; watch vacuum/bloat at scale.
-- **Ubiquitous, simple, huge hiring pool:** [mysql](engines/mysql.md) / [mariadb](engines/mariadb.md) — easy, battle-tested. ✗ default
+  ecosystem (JSON, [spatial](engines/postgis.md), pgvector). ❌ no built-in sharding; watch vacuum/bloat at scale.
+- **Ubiquitous, simple, huge hiring pool:** [mysql](engines/mysql.md) / [mariadb](engines/mariadb.md) — easy, battle-tested. ❌ default
   "REPEATABLE READ" is weaker than its name ([jepsen](concepts/jepsen.md)); MariaDB Galera consistency is overstated.
   [percona-server-for-mysql](engines/percona-server-for-mysql.md) for free enterprise-grade extras.
-- **Microsoft shop:** [microsoft-sql-server](engines/microsoft-sql-server.md) — mature, T-SQL, columnstore HTAP. ✗ per-core cost.
-- **Already on Oracle / extreme OLTP+options:** [oracle](engines/oracle.md) — deepest feature set. ✗ cost and
+- **Microsoft shop:** [microsoft-sql-server](engines/microsoft-sql-server.md) — mature, T-SQL, columnstore HTAP. ❌ per-core cost.
+- **Already on Oracle / extreme OLTP+options:** [oracle](engines/oracle.md) — deepest feature set. ❌ cost and
   audit/licensing traps; "SERIALIZABLE" is snapshot isolation.
+- **Enterprise / mainframe relational:** [ibm-db2](engines/ibm-db2.md) (Db2 LUW *and* z/OS mainframe, deep SQL, BLU
+  columnar HTAP), [sap-adaptive-server](engines/sap-adaptive-server.md) (Sybase ASE), [informix](engines/informix.md),
+  [ingres](engines/ingres.md)/[openedge](engines/openedge.md) (choose only if the app already mandates it). ❌ cost and shrinking
+  talent pools.
 - **Embedded / single-file / edge:** [sqlite](engines/sqlite.md) (the default; single-writer), [duckdb](engines/duckdb.md) (if the
   embedded workload is *analytical*), [h2](engines/h2.md)/[hypersql](engines/hypersql.md)/[apache-derby](engines/apache-derby.md) (JVM/test),
-  [realm](engines/realm.md)/[pouchdb](engines/pouchdb.md) (mobile/offline). See [embedded-databases](concepts/embedded-databases.md). ✗ not multi-writer servers.
+  [firebird](engines/firebird.md) (server *or* embedded), [sap-sql-anywhere](engines/sap-sql-anywhere.md) (edge/sync), [realm](engines/realm.md)/[pouchdb](engines/pouchdb.md)
+  (mobile/offline), [microsoft-access](engines/microsoft-access.md) (desktop/file, single-user). See [embedded-databases](concepts/embedded-databases.md). ❌ not multi-writer servers.
 - **Managed, minimal ops (cloud OK):** [amazon-aurora](engines/amazon-aurora.md) (MySQL/Postgres-compatible, disaggregated
-  storage), [microsoft-azure-sql-database](engines/microsoft-azure-sql-database.md), [alibaba-cloud-polardb](engines/alibaba-cloud-polardb.md), [edb-postgres](engines/edb-postgres.md). ✗ cloud
+  storage), [microsoft-azure-sql-database](engines/microsoft-azure-sql-database.md), [alibaba-cloud-polardb](engines/alibaba-cloud-polardb.md), [edb-postgres](engines/edb-postgres.md). ❌ cloud
   lock-in; AWS/Azure-only.
 
 ### Need to scale OLTP horizontally or across regions?
 - **Distributed SQL (NewSQL), strong consistency:** [cockroachdb](engines/cockroachdb.md) (serializable, Postgres-wire,
   survives region loss, BSL), [yugabytedb](engines/yugabytedb.md) (Postgres-wire, Apache-2.0, HLC clocks),
   [google-cloud-spanner](engines/google-cloud-spanner.md) (strict serializability via TrueTime, managed-only),
-  [tidb](engines/tidb.md) (MySQL-wire, HTAP), [oceanbase](engines/oceanbase.md) (financial-grade, MySQL/Oracle-compat). ✗ all pay a
+  [tidb](engines/tidb.md) (MySQL-wire, HTAP), [oceanbase](engines/oceanbase.md) (financial-grade, MySQL/Oracle-compat). ❌ all pay a
   consensus-latency tax ([consensus-raft-paxos](concepts/consensus-raft-paxos.md)); overkill below ~single-node-saturation scale.
 - **Shard an existing Postgres/MySQL:** [citus](engines/citus.md) (Postgres extension; cross-shard reads lack a
   distributed snapshot), [planetscale](engines/planetscale.md) (managed Vitess MySQL/Postgres; cross-shard txns
-  best-effort). ✗ you must pick shard keys well — see [sharding-partitioning](concepts/sharding-partitioning.md).
+  best-effort). ❌ you must pick shard keys well — see [sharding-partitioning](concepts/sharding-partitioning.md).
 - **Strict-serializable + immutability/audit:** [datomic](engines/datomic.md) (Datalog, time-travel, Jepsen-clean).
-  ✗ closed-source, single-writer transactor.
+  ❌ closed-source, single-writer transactor.
 
 ---
 
@@ -82,7 +87,7 @@ writes / point lookups.**
 
 - **Managed cloud warehouse, near-zero tuning:** [snowflake](engines/snowflake.md) (storage/compute separation, easy to
   overspend), [google-bigquery](engines/google-bigquery.md) (serverless, billed by bytes scanned), [amazon-redshift](engines/amazon-redshift.md),
-  [microsoft-fabric](engines/microsoft-fabric.md) / [microsoft-azure-synapse-analytics](engines/microsoft-azure-synapse-analytics.md) (Synapse now legacy → Fabric). ✗
+  [microsoft-fabric](engines/microsoft-fabric.md) / [microsoft-azure-synapse-analytics](engines/microsoft-azure-synapse-analytics.md) (Synapse now legacy → Fabric). ❌
   cost surprises; vendor lock-in.
 - **Lakehouse (own your open storage):** see the dedicated subsection just below.
 
@@ -92,10 +97,13 @@ a [catalog](concepts/data-catalog.md), queried by many decoupled engines. See [l
 - **Table format** — [apache-iceberg](engines/apache-iceberg.md) (vendor-neutral default, broadest engine support) ·
   [delta-lake](engines/delta-lake.md) (if you're on [databricks](engines/databricks.md)/Spark; UniForm exposes Iceberg metadata) ·
   [apache-hudi](engines/apache-hudi.md) / [apache-paimon](engines/apache-paimon.md) (streaming/CDC **upserts**: Hudi batch-leaning, Paimon
-  Flink-native LSM). ✗ table-format ACID is *table-level optimistic*, not row-level — bad for OLTP.
+  Flink-native LSM). ❌ table-format ACID is *table-level optimistic*, not row-level — bad for OLTP.
 - **Engine over it** — [databricks](engines/databricks.md) (managed Spark+Delta), [trino](engines/trino.md)/[presto](engines/presto.md) (federated SQL),
-  [apache-spark-sql](engines/apache-spark-sql.md) (batch/ETL), [dremio](engines/dremio.md) (Arrow, BI acceleration), [clickhouse](engines/clickhouse.md)/[starrocks](engines/starrocks.md)
-  (fast reads), [duckdb](engines/duckdb.md) (single-node), or even [snowflake](engines/snowflake.md) reading Iceberg. ✗ these are compute
+  [apache-spark-sql](engines/apache-spark-sql.md) (batch/ETL), [apache-impala](engines/apache-impala.md) (MPP low-latency SQL on HDFS/Iceberg),
+  [apache-hive](engines/apache-hive.md) (batch SQL, the legacy workhorse), [apache-drill](engines/apache-drill.md) (schema-free SQL over
+  files), [dremio](engines/dremio.md) (Arrow, BI acceleration), [clickhouse](engines/clickhouse.md)/[starrocks](engines/starrocks.md)
+  (fast reads), [duckdb](engines/duckdb.md) (single-node), [datafusion](engines/datafusion.md) (embeddable Rust/Arrow engine you build
+  on), or even [snowflake](engines/snowflake.md) reading Iceberg. ❌ these are compute
   layers — transactions come from the table format, not the engine.
 - **Catalog** — [apache-polaris](engines/apache-polaris.md) (open Iceberg REST, vendor-neutral) · [unity-catalog](engines/unity-catalog.md)
   (Databricks governance) · [hive-metastore](engines/hive-metastore.md) (legacy lingua franca). The catalog arbitrates
@@ -103,7 +111,7 @@ a [catalog](concepts/data-catalog.md), queried by many decoupled engines. See [l
 - **Self-hosted / real-time OLAP:** [clickhouse](engines/clickhouse.md) (blazing scans, eventually consistent),
   [starrocks](engines/starrocks.md) / [apache-druid](engines/apache-druid.md) (sub-second slice-and-dice), [exasol](engines/exasol.md) / [vertica](engines/vertica.md) /
   [greenplum](engines/greenplum.md) / [sap-iq](engines/sap-iq.md) / [teradata](engines/teradata.md) / [netezza](engines/netezza.md) / [gbase](engines/gbase.md) (MPP, legacy→modern spectrum).
-- **Embedded analytics:** [duckdb](engines/duckdb.md) — "SQLite for analytics", single-node, vectorized. ✗ not multi-user.
+- **Embedded analytics:** [duckdb](engines/duckdb.md) — "SQLite for analytics", single-node, vectorized. ❌ not multi-user.
 - **HTAP (one system for both):** [singlestore](engines/singlestore.md) (RC only), [sap-hana](engines/sap-hana.md) (RAM-priced), [tidb](engines/tidb.md)
   (row+columnar replica), [oracle](engines/oracle.md)/[microsoft-sql-server](engines/microsoft-sql-server.md) columnstore. Always verify the
   **physical separation** mechanism — see [oltp-olap-htap](concepts/oltp-olap-htap.md).
@@ -114,31 +122,41 @@ a [catalog](concepts/data-catalog.md), queried by many decoupled engines. See [l
 
 See [document-data-model](concepts/document-data-model.md).
 
-- **General document DB:** [mongodb](engines/mongodb.md) — dominant, easy scale-out. ✗ safe consistency needs
+- **General document DB:** [mongodb](engines/mongodb.md) — dominant, easy scale-out. ❌ safe consistency needs
   non-default `w:majority` + majority/snapshot reads; weak defaults lost data in every [jepsen](concepts/jepsen.md) test.
 - **Managed / serverless:** [google-cloud-firestore](engines/google-cloud-firestore.md) (serializable, mobile sync),
   [amazon-documentdb](engines/amazon-documentdb.md) (Mongo-API, real feature gaps), [microsoft-azure-cosmos-db](engines/microsoft-azure-cosmos-db.md) (multi-API,
-  five consistency levels), [ibm-cloudant](engines/ibm-cloudant.md), [cloudkit](engines/cloudkit.md) (Apple-only). ✗ lock-in.
+  five consistency levels), [ibm-cloudant](engines/ibm-cloudant.md), [cloudkit](engines/cloudkit.md) (Apple-only). ❌ lock-in.
 - **Offline-first / sync:** [couchdb](engines/couchdb.md) / [pouchdb](engines/pouchdb.md) / [ibm-cloudant](engines/ibm-cloudant.md) (CouchDB replication protocol),
   [couchbase](engines/couchbase.md) (memory-first, SQL++), [firebase-realtime-database](engines/firebase-realtime-database.md) (small realtime apps),
-  [realm](engines/realm.md) (mobile). ✗ AP/eventual; app-resolved conflicts (see [crdts](concepts/crdts.md)).
-- **.NET-native:** [ravendb](engines/ravendb.md). ✗ Jepsen found isolation claims overstated.
+  [realm](engines/realm.md) (mobile). ❌ AP/eventual; app-resolved conflicts (see [crdts](concepts/crdts.md)).
+- **.NET-native:** [ravendb](engines/ravendb.md). ❌ Jepsen found isolation claims overstated.
 
 ---
 
-## 4. Key-value / cache / coordination
+## 4. Key-value, wide-column & coordination
 
 See [key-value-store](concepts/key-value-store.md). **Most of these are caches, not systems of record.**
 
 - **In-memory cache / data structures:** [redis](engines/redis.md) / [valkey](engines/valkey.md) (Valkey = BSD fork after Redis
   relicensed), [memcached](engines/memcached.md) (minimalist, volatile), [hazelcast](engines/hazelcast.md) / [apache-ignite](engines/apache-ignite.md) /
-  [gemfire](engines/gemfire.md) / [oracle-coherence](engines/oracle-coherence.md) / [ehcache](engines/ehcache.md) / [infinispan](engines/infinispan.md) (JVM data grids). ✗ async
+  [gemfire](engines/gemfire.md) / [oracle-coherence](engines/oracle-coherence.md) / [ehcache](engines/ehcache.md) / [infinispan](engines/infinispan.md) (JVM data grids). ❌ async
   replication → poor system of record.
 - **Durable, scale-out KV:** [amazon-dynamodb](engines/amazon-dynamodb.md) (serverless, single-digit-ms, design for access
   patterns), [aerospike](engines/aerospike.md) (flash-optimized sub-ms, multi-record ACID since 8.0), [riak-kv](engines/riak-kv.md)
-  (Dynamo-style + [crdts](concepts/crdts.md); ✗ LWW default silently drops writes), [oracle-nosql](engines/oracle-nosql.md). 
+  (Dynamo-style + [crdts](concepts/crdts.md); ❌ LWW default silently drops writes), [oracle-nosql](engines/oracle-nosql.md),
+  [google-cloud-datastore](engines/google-cloud-datastore.md) (managed document-KV; ❌ every query needs a pre-built index),
+  [microsoft-azure-table-storage](engines/microsoft-azure-table-storage.md) (cheap managed KV; ❌ PartitionKey is a one-way design door).
+- **Wide-column / column-family (huge write throughput, sparse tables):** [apache-cassandra](engines/apache-cassandra.md) (AP,
+  leaderless, tunable consistency, linear write scale; ❌ no multi-row ACID, LWW drops concurrent writes under
+  clock skew), [scylladb](engines/scylladb.md) (C++ Cassandra-compatible, lower p99; ❌ source-available relicense),
+  [datastax-enterprise](engines/datastax-enterprise.md) (supported Cassandra + search/analytics/graph),
+  [apache-hbase](engines/apache-hbase.md) / [google-cloud-bigtable](engines/google-cloud-bigtable.md) (CP, strong per-row
+  consistency on HDFS/Colossus; ❌ row-key hotspotting and no secondary indexes), [apache-accumulo](engines/apache-accumulo.md)
+  (cell-level security), [apache-phoenix](engines/apache-phoenix.md) (SQL skin over HBase). ❌ all are wrong for ad-hoc
+  queries, joins, or multi-row transactions — you design around the row/partition key up front.
 - **Strongly-consistent config/coordination:** [etcd](engines/etcd.md) (strict-serializable Raft; the brain of
-  Kubernetes). ✗ small critical data only, not a general DB.
+  Kubernetes). ❌ small critical data only, not a general DB.
 - **Embedded storage engine (inside your app or another DB):** [rocksdb](engines/rocksdb.md) / [leveldb](engines/leveldb.md) (LSM),
   [lmdb](engines/lmdb.md) / [oracle-berkeley-db](engines/oracle-berkeley-db.md) (B-tree). See [lsm-vs-btree](concepts/lsm-vs-btree.md), [embedded-databases](concepts/embedded-databases.md).
 
@@ -148,14 +166,14 @@ See [key-value-store](concepts/key-value-store.md). **Most of these are caches, 
 
 See [graph-data-model](concepts/graph-data-model.md).
 
-- **Property graph, deep traversals:** [neo4j](engines/neo4j.md) (market leader, Cypher, index-free adjacency). ✗
+- **Property graph, deep traversals:** [neo4j](engines/neo4j.md) (market leader, Cypher, index-free adjacency). ❌
   single-leader, read-committed, doesn't shard a connected graph.
-- **In-memory / real-time graph:** [memgraph](engines/memgraph.md) (Neo4j-compatible Cypher). ✗ HA is Enterprise-only.
-- **Distributed / huge graphs:** [janusgraph](engines/janusgraph.md) (over Cassandra/HBase/Bigtable; ✗ not ACID on common
-  backends), [nebulagraph](engines/nebulagraph.md) (trillions of edges; ✗ no general ACID), [tigergraph](engines/tigergraph.md) (MPP analytics).
-- **Managed:** [amazon-neptune](engines/amazon-neptune.md) (property graph + RDF). ✗ single-writer, AWS lock-in.
+- **In-memory / real-time graph:** [memgraph](engines/memgraph.md) (Neo4j-compatible Cypher). ❌ HA is Enterprise-only.
+- **Distributed / huge graphs:** [janusgraph](engines/janusgraph.md) (over Cassandra/HBase/Bigtable; ❌ not ACID on common
+  backends), [nebulagraph](engines/nebulagraph.md) (trillions of edges; ❌ no general ACID), [tigergraph](engines/tigergraph.md) (MPP analytics).
+- **Managed:** [amazon-neptune](engines/amazon-neptune.md) (property graph + RDF). ❌ single-writer, AWS lock-in.
 - **RDF / knowledge graph / SPARQL + reasoning:** [graphdb](engines/graphdb.md), [stardog](engines/stardog.md), [virtuoso](engines/virtuoso.md),
-  [apache-jena-tdb](engines/apache-jena-tdb.md) (embedded, single-node). ✗ triplestores, not general app DBs.
+  [apache-jena-tdb](engines/apache-jena-tdb.md) (embedded, single-node). ❌ triplestores, not general app DBs.
 
 ---
 
@@ -163,13 +181,13 @@ See [graph-data-model](concepts/graph-data-model.md).
 
 See [time-series-storage](concepts/time-series-storage.md).
 
-- **Metrics & monitoring:** [prometheus](engines/prometheus.md) (pull-scrape, PromQL; ✗ single-node, not durable alone) →
+- **Metrics & monitoring:** [prometheus](engines/prometheus.md) (pull-scrape, PromQL; ❌ single-node, not durable alone) →
   scale/long-term with [victoriametrics](engines/victoriametrics.md) (high-cardinality, ~1s data-loss window). [graphite](engines/graphite.md)
   (legacy RRD-style).
-- **General TSDB with SQL:** [timescaledb](engines/timescaledb.md) (Postgres extension, full ACID; ✗ single-node now),
-  [influxdb](engines/influxdb.md) (v3 = columnar/Parquet rewrite), [questdb](engines/questdb.md) (fast ingest; ✗ HA Enterprise-only).
+- **General TSDB with SQL:** [timescaledb](engines/timescaledb.md) (Postgres extension, full ACID; ❌ single-node now),
+  [influxdb](engines/influxdb.md) (v3 = columnar/Parquet rewrite), [questdb](engines/questdb.md) (fast ingest; ❌ HA Enterprise-only).
 - **IoT/industrial:** [tdengine](engines/tdengine.md), [apache-iotdb](engines/apache-iotdb.md), [dolphindb](engines/dolphindb.md). **Finance/tick data:** [kdb](engines/kdb.md)
-  (the standard; ✗ closed, idiosyncratic q language, non-ACID), [dolphindb](engines/dolphindb.md).
+  (the standard; ❌ closed, idiosyncratic q language, non-ACID), [dolphindb](engines/dolphindb.md).
 - **Event analytics over time:** [apache-druid](engines/apache-druid.md), [microsoft-azure-data-explorer](engines/microsoft-azure-data-explorer.md) (Kusto/KQL),
   [clickhouse](engines/clickhouse.md).
 
@@ -184,8 +202,8 @@ record** (e.g. [elasticsearch](engines/elasticsearch.md) lost acknowledged write
   [opensearch](engines/opensearch.md) (Apache-2.0 fork), [apache-solr](engines/apache-solr.md) (mature, CP SolrCloud). 
 - **Managed / hosted:** [algolia](engines/algolia.md) (sub-50ms instant search), [microsoft-azure-ai-search](engines/microsoft-azure-ai-search.md)
   (full-text + vector + RAG), [coveo](engines/coveo.md) (enterprise/commerce), [amazon-cloudsearch](engines/amazon-cloudsearch.md) (legacy).
-- **Lightweight / single-node:** [meilisearch](engines/meilisearch.md) (typo-tolerant; ✗ weak HA/scale), [sphinx](engines/sphinx.md)
-  (frozen → Manticore fork). **Logs/SIEM at scale:** [splunk](engines/splunk.md) (schema-on-read; ✗ expensive).
+- **Lightweight / single-node:** [meilisearch](engines/meilisearch.md) (typo-tolerant; ❌ weak HA/scale), [sphinx](engines/sphinx.md)
+  (frozen → Manticore fork). **Logs/SIEM at scale:** [splunk](engines/splunk.md) (schema-on-read; ❌ expensive).
 
 ---
 
@@ -195,24 +213,29 @@ See [vector-search-ann](concepts/vector-search-ann.md). Decide: **dedicated vect
 (pgvector in [postgresql](engines/postgresql.md), [redis](engines/redis.md), [mongodb](engines/mongodb.md), [elasticsearch](engines/elasticsearch.md) — usually enough until high
 scale/QPS).
 
-- **Managed/serverless:** [pinecone](engines/pinecone.md) (API-only, no self-host). ✗ eventually consistent, lock-in.
+- **Embedded / in-process (no server):** [lancedb](engines/lancedb.md) — "SQLite/DuckDB for AI data": Apache-2.0,
+  ships inside your app/Lambda/notebook over local disk or S3, columnar Lance format with built-in
+  versioning, ideal for multimodal data. ❌ cold-object-store reads are hundreds of ms and a single
+  process tops out ~10–50 QPS — low-latency high-QPS serving needs the paid Enterprise tier; not a
+  transactional system of record.
+- **Managed/serverless:** [pinecone](engines/pinecone.md) (API-only, no self-host). ❌ eventually consistent, lock-in.
 - **Open-source, scale:** [milvus](engines/milvus.md) (billion-scale, disaggregated), [qdrant](engines/qdrant.md) (rich payload
   filtering, Rust), [weaviate](engines/weaviate.md) (hybrid BM25+vector, RAG modules), [chroma](engines/chroma.md) (dev-first, embeddable
-  → serverless cloud). ✗ none are ACID systems of record; pair with a primary store.
+  → serverless cloud). ❌ none are ACID systems of record; pair with a primary store.
 
 ---
 
 ## 9. Specialized & "it's not really a database"
 
 - **Spatial / GIS:** [postgis](engines/postgis.md) (the de facto open-source GIS engine, on [postgresql](engines/postgresql.md)),
-  [spatialite](engines/spatialite.md) (embedded, on [sqlite](engines/sqlite.md)). ✗ PostGIS has no native spatial sharding.
+  [spatialite](engines/spatialite.md) (embedded, on [sqlite](engines/sqlite.md)). ❌ PostGIS has no native spatial sharding.
 - **Stream processing / streaming / CDC:** see the dedicated **Streaming** section (§10) below.
-- **Multidimensional/MOLAP (financial planning):** [oracle-essbase](engines/oracle-essbase.md). ✗ single-node, proprietary.
+- **Multidimensional/MOLAP (financial planning):** [oracle-essbase](engines/oracle-essbase.md). ❌ single-node, proprietary.
 - **Content repository (CMS/DAM):** [apache-jackrabbit](engines/apache-jackrabbit.md) (JCR; engine under Adobe AEM).
-- **Multi-model "do several at once":** [arangodb](engines/arangodb.md) (doc+graph+KV, one query language; ✗ cluster
+- **Multi-model "do several at once":** [arangodb](engines/arangodb.md) (doc+graph+KV, one query language; ❌ cluster
   ACID only within a shard), [microsoft-azure-cosmos-db](engines/microsoft-azure-cosmos-db.md), [marklogic](engines/marklogic.md) (doc+RDF+search, real
-  multi-doc ACID; ✗ costly), [intersystems-iris](engines/intersystems-iris.md) (healthcare; ✗ defaults to READ UNCOMMITTED),
-  [fauna](engines/fauna.md) (✗ service shut down 2025). Read [multi-model](concepts/multi-model.md) first — one model is usually
+  multi-doc ACID; ❌ costly), [intersystems-iris](engines/intersystems-iris.md) (healthcare; ❌ defaults to READ UNCOMMITTED),
+  [fauna](engines/fauna.md) (❌ service shut down 2025). Read [multi-model](concepts/multi-model.md) first — one model is usually
   first-class and the rest bolted on.
 - **MultiValue / mainframe / legacy** (choose only if the app already requires it): [adabas](engines/adabas.md),
   [unidata-universe](engines/unidata-universe.md), [maxdb](engines/maxdb.md), [dbase](engines/dbase.md), [filemaker](engines/filemaker.md), [4d](engines/4d.md), [openedge](engines/openedge.md), [ingres](engines/ingres.md),
@@ -228,21 +251,21 @@ one tool for all of it. See [streaming-platforms](concepts/streaming-platforms.m
 
 - **Event log / transport (the backbone):** [apache-kafka](engines/apache-kafka.md) (de facto standard, huge ecosystem) ·
   [apache-pulsar](engines/apache-pulsar.md) (broker/storage separation, multi-tenant, geo) · [redpanda](engines/redpanda.md) (Kafka-API, C++,
-  no JVM/ZooKeeper, lower p99; ✗ single-vendor BSL). ✗ none is a queryable database or system of
+  no JVM/ZooKeeper, lower p99; ❌ single-vendor BSL). ❌ none is a queryable database or system of
   record — it's a replayable log.
 - **Get changes OUT of an operational DB (CDC):** [debezium](engines/debezium.md) (log-based, the standard) → onto
   Kafka or into [apache-flink](engines/apache-flink.md). Use for replication, cache/[search](engines/elasticsearch.md) sync, and
-  feeding the lake. ✗ ordering/exactly-once only hold end-to-end; sinks must dedupe/upsert.
+  feeding the lake. ❌ ordering/exactly-once only hold end-to-end; sinks must dedupe/upsert.
 - **Transform / compute on streams:** [apache-flink](engines/apache-flink.md) (stateful, event-time, exactly-once — the
-  heavyweight), Kafka Streams / ksqlDB (Kafka-native). ✗ processors aren't queryable stores by
+  heavyweight), Kafka Streams / ksqlDB (Kafka-native). ❌ processors aren't queryable stores by
   themselves.
 - **Continuously-fresh SQL views (streaming databases):** [materialize](engines/materialize.md) (Postgres-wire,
   strict-serializable incremental views) · [risingwave](engines/risingwave.md) (Postgres-wire, state on object storage) ·
   [ksqldb](engines/ksqldb.md) (Kafka-native; now largely superseded by Flink). Use when you want
-  `CREATE MATERIALIZED VIEW` that stays current. ✗ not for heavy ad-hoc OLAP.
+  `CREATE MATERIALIZED VIEW` that stays current. ❌ not for heavy ad-hoc OLAP.
 - **Serve fresh data for ad-hoc analytics (real-time OLAP sinks):** [apache-pinot](engines/apache-pinot.md) (high-QPS
   user-facing) · [apache-druid](engines/apache-druid.md) (time-series slice-and-dice) · [clickhouse](engines/clickhouse.md) (general fast scans) ·
-  [apache-doris](engines/apache-doris.md) / [starrocks](engines/starrocks.md) (MPP with real JOINs). See [real-time-olap](concepts/real-time-olap.md). ✗ append/ingest
+  [apache-doris](engines/apache-doris.md) / [starrocks](engines/starrocks.md) (MPP with real JOINs). See [real-time-olap](concepts/real-time-olap.md). ❌ append/ingest
   oriented — not OLTP, not a system of record.
 - **Mutable analytic storage:** [apache-kudu](engines/apache-kudu.md) (fast scans + random updates, paired with Impala/Spark)
   — when lake table formats' update story is too coarse.

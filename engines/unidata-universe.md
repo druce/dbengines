@@ -13,6 +13,20 @@ confidence: high
 
 > Two closely-related, commercially-supported descendants of the 1960s PICK operating system: single-node MultiValue ("nested relational") databases where records can hold multivalued attributes inline, queried via a 4GL BASIC dialect rather than SQL — still in production mainly because rewriting the apps built on them is harder than maintaining them.
 
+## When to use
+
+**Use UniData, UniVerse if:**
+- ✅ You already run one — the value is the decades of working MultiValue BASIC application code on top, not the engine itself
+- ✅ Your line-of-business records are naturally hierarchical/multivalued and benefit from embedding child data inline rather than joining
+- ✅ Keyed transactional access on a single node is the workload, and you can keep hashed files correctly sized
+- ✅ You want vendor-supported, mature OLTP for an existing ERP/distribution/healthcare/finance app
+
+**Avoid UniData, UniVerse if:**
+- ❌ You neglect file sizing — hashed-file overflow silently destroys p99 latency unless you actively run RESIZE maintenance (the biggest gotcha)
+- ❌ You assume "ACID" by default — isolation is real only if the app explicitly locks (READU) and transacts; the default NO.ISOLATION idiom gives no isolation
+- ❌ It's a greenfield project — single-node only, no native sharding, weak analytics/BI/CDC, and a shrinking talent pool
+- ❌ You need horizontal scale-out, cloud-native elasticity, or OLAP/ad-hoc BI at scale
+
 ## Identity
 - **Taxonomy / data model:** [MultiValue](../concepts/multivalue-data-model.md) / PICK-derived nested-relational DBMS. Data is stored as ASCII records identified by a unique record ID; fields (attributes) can themselves hold multiple values and sub-values, delimited by field marks (x'FE'), value marks (x'FD') and subvalue marks (x'FC') — i.e. one record can embed what a relational schema would normalize into child tables ([Rocket U2 / Wikipedia](https://en.wikipedia.org/wiki/Rocket_U2), [db-engines](https://db-engines.com/en/system/UniData,UniVerse)). Two products under the "U2" umbrella: **UniVerse** (originally VMARK) and **UniData** (originally Unidata Corp); similar model, different BASIC dialect and tooling.
 - **Storage model:** row-oriented hashed files. Records hash by ID into groups within a file; well-sized files give near-O(1) ID lookup, badly-sized ones degrade as groups overflow ("sizing" and periodic file resize/`RESIZE` is a classic day-2 chore). Non-hashed (directory/Type-1) files store source, XML, or text as OS files. On-disk format is pure ASCII, not binary. Not [LSM or B-tree](../concepts/lsm-vs-btree.md) at the primary level — it's hash-organized; secondary indexes are B-tree-like.

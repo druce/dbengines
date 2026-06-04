@@ -13,6 +13,18 @@ confidence: high
 
 > A managed lakehouse platform that puts ACID tables and a fast vectorized SQL engine on top of cheap cloud object storage — excellent for OLAP/ML at scale, the wrong tool for transactional, low-latency point workloads.
 
+## When to use
+
+**Use Databricks if:**
+- ✅ You have large-scale analytics, ETL/ELT, streaming, and ML over a shared open table format and want one governed platform instead of separate lake/warehouse/ML stacks.
+- ✅ You want vectorized SQL (Photon) and ACID Delta tables on cheap cloud object storage with storage/compute separation.
+- ✅ Your sweet spot is large sequential scans/aggregations, not small random reads.
+
+**Avoid Databricks if:**
+- ❌ You need OLTP, low-latency single-row point lookups, or a high-concurrency app backend — it is analytics-first, not transactional.
+- ❌ Your datasets are small enough that [duckdb](duckdb.md) or [postgresql](postgresql.md) are dramatically cheaper and faster.
+- ❌ You can't manage cost/operational hygiene — DBU spend balloons with idle/oversized clusters and small-file neglect, and "ACID" means per-table WriteSerializable.
+
 ## Identity
 - **Taxonomy / data model:** Multi-model "lakehouse" platform, not a single database engine. The data layer is [delta-lake](delta-lake.md) tables (open Parquet files + a JSON/checkpoint transaction log) on S3/ADLS/GCS; queried as relational SQL, DataFrames (Spark/PySpark), and increasingly via [apache-iceberg](apache-iceberg.md) interop. Governance/metadata lives in Unity Catalog.
 - **Storage model:** Columnar (Parquet) data files with a separate append-only transaction log (the DeltaLog) — a metadata-driven table format, distinct from a [B-tree or LSM](../concepts/lsm-vs-btree.md) storage engine. On-disk format is open Parquet; the log gives ACID, time travel, and schema enforcement. Photon is the proprietary vectorized C++ execution engine (replaces the JVM Spark code path for filters/joins/aggregates/scans).

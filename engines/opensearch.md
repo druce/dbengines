@@ -13,6 +13,19 @@ confidence: high
 
 > Community-governed, Apache-2.0 fork of Elasticsearch 7.10 — a distributed Lucene search/analytics engine for logs, observability, full-text and vector search, with the same near-real-time, eventually-consistent, non-transactional behavior as its parent (so do not use it as your primary store).
 
+## When to use
+
+**Use OpenSearch if:**
+- ✅ You need vendor-neutral, Apache-2.0 full-text search, log/observability analytics, or SIEM at scale (the ELK niche, no SSPL)
+- ✅ You want native k-NN/vector + hybrid (keyword+vector) search and RAG retrieval with built-in ML pipelines
+- ✅ You can tier hot/warm/cold via remote-backed storage and searchable snapshots to control cost at log-scale retention
+
+**Avoid OpenSearch if:**
+- ❌ You want a system of record — it is near-real-time and **non-transactional**: reads lag writes, multi-document ops are not atomic, durability depends on translog settings
+- ❌ You need relational joins or strict OLTP (no cross-document joins; denormalize instead)
+- ❌ You need strong consistency / read-your-writes by default (the parent's Jepsen history shows write loss under partition)
+- ❌ You can't manage shard/heap sizing, segment merges, and JVM GC — the usual p99 and operational footguns
+
 ## Identity
 - **Taxonomy / data model:** Search engine; multi-model in practice — JSON document store with [full-text-search](../concepts/full-text-search.md), plus a native k-NN/[vector-search-ann](../concepts/vector-search-ann.md) engine (HNSW/IVF via Lucene, FAISS, nmslib). Forked from Elasticsearch 7.10.2 + Kibana 7.10.2 after Elastic's 2021 relicense ([InfoWorld](https://www.infoworld.com/article/3971473/opensearch-in-2025-much-more-than-an-elasticsearch-fork.html)).
 - **Storage model:** Inverted indexes + columnar doc-values + row-ish `_source` JSON, all in immutable Apache Lucene segments. Segments are write-once and merged; the engine is append-merge, closer to [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM than B-tree. Per-shard write-ahead translog for durability.

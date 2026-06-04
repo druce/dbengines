@@ -13,7 +13,17 @@ confidence: high
 
 > A distributed, near-real-time full-text search and analytics engine built on Lucene — the default for search, observability, and log analytics, but historically weak as a primary store of record (acknowledged writes were lost under partition in Jepsen testing).
 
-## Identity
+## When to use
+
+**Use Elasticsearch if:**
+- ✅ You need fast full-text/site search or log/observability/SIEM analytics at scale with rich aggregations and best-in-class introspection (the ELK/Elastic Stack).
+- ✅ You want semantic/hybrid search combining BM25 with `dense_vector` kNN/ANN in one engine.
+- ✅ You can treat it as a derived index over a real source of truth, keeping durability guarantees elsewhere.
+
+**Avoid Elasticsearch if:**
+- ❌ You need a system of record for transactional/financial data — there are no cross-document transactions and it has a history of losing acknowledged writes under partition (Jepsen).
+- ❌ You need relational joins or serializable transactions — joins are an anti-pattern (denormalize at index time) and there are no isolation levels.
+- ❌ Your design can't commit to fixed primary shard count and field types at index creation — changing them means a full reindex (shard/mapping rigidity is the biggest gotcha).
 - **Taxonomy / data model:** primarily a [full-text-search](../concepts/full-text-search.md) engine; secondarily a schemaless JSON document store, a [vector-search-ann](../concepts/vector-search-ann.md) engine (dense_vector + HNSW kNN), and the storage layer for logs/metrics/traces (the "ELK"/observability stack). Effectively multi-model around an inverted index.
 - **Storage model:** built on Apache Lucene. Each shard is a Lucene index composed of immutable **segments**; each segment is an inverted index (term → posting list). Append-only segment writes plus background merges — closer in spirit to [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM than B-tree. Columnar `doc_values` (on disk) back sorting/aggregations; `dense_vector` fields back ANN.
 - **Workload:** search and OLAP-style analytics over documents/logs, not OLTP. Aggregations are strong; it is not a transactional store. See [oltp-olap-htap](../concepts/oltp-olap-htap.md). Not HTAP — no transactional row engine.

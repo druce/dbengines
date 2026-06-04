@@ -13,6 +13,19 @@ confidence: medium
 
 > The de facto standard for capital-markets tick data: a columnar, in-memory-first time-series store welded to the terse q/APL-family language, optimized for ordered, time-ordered analytics rather than concurrent OLTP.
 
+## When to use
+
+**Use Kdb if:**
+- ✅ You must capture and analyze massive volumes of time-ordered data (especially market tick data) at microsecond query latencies
+- ✅ You need fast `asof`/window joins and aggregations over ordered columnar time-series data
+- ✅ You can afford both the commercial license and specialized q talent
+- ✅ Your domain is HFT/quant/TCA/surveillance, or other high-frequency time-series (telco, IoT, energy, telemetry)
+
+**Avoid Kdb if:**
+- ❌ Its "high availability" and "durability" are things you assemble from tickerplant logs and redundant consumers — there is no built-in replication/consensus
+- ❌ You need general-purpose OLTP, multi-statement ACID/rollback, or MVCC (none exist — single-threaded, single-writer, append-no-undo)
+- ❌ You need JSON/document workloads, standard ANSI SQL, an open-source stack, or commodity hiring (q is steep and scarce)
+
 ## Identity
 - **Taxonomy / data model:** Column-oriented relational [oltp-olap-htap](../concepts/oltp-olap-htap.md) time-series database; multi-model in the sense that it natively carries tables, dictionaries, lists, and nanosecond timestamps as first-class types ([KX kdb+](https://kx.com/products/kdb/), [Wikipedia](https://en.wikipedia.org/wiki/Kdb+)). It is inseparable from **q**, a vector/array language in the APL/K lineage created by Arthur Whitney; the database and the language are the same product.
 - **Storage model:** Columnar throughout. In-memory tables hold ordered columns; on-disk data uses **splayed** tables (one file per column) usually **partitioned by date**, memory-mapped at query time ([Partitioning data in kdb+](https://kx.com/blog/partitioning-data-in-kdb/), [HDB docs](https://code.kx.com/q/learn/startingkdb/hdb/)). Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) — there is no LSM tree and no B-tree; the on-disk format is flat per-column files, and primary "indexing" is the physical sort order plus partition pruning. See [columnar-storage](../concepts/columnar-storage.md), [time-series-storage](../concepts/time-series-storage.md).

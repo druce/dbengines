@@ -13,6 +13,20 @@ confidence: high
 
 > Open-source vector database that bundles embeddings, hybrid search, and RAG plumbing behind one API — availability-favoring leaderless data replication with a strongly-consistent Raft schema, but no ACID transactions.
 
+## When to use
+
+**Use Weaviate if:**
+- ✅ You need a production vector/hybrid-search store for RAG/LLM retrieval, semantic search, recommendations, or multimodal search
+- ✅ You want batteries-included embeddings, hybrid (BM25 + vector) search, and RAG modules behind one API with an open BSD core
+- ✅ You need horizontal HA scaling with per-request tunable consistency (ONE/QUORUM/ALL) over leaderless replication
+- ✅ You want structured filtering alongside ANN, with a strongly-consistent Raft-backed schema
+
+**Avoid Weaviate if:**
+- ❌ You need a system of record — there are no ACID transactions, operations affect a single object, and the data plane is eventually consistent (AP) by default
+- ❌ You haven't validated consistency for your own r+w>n config — distributed-correctness claims have no Jepsen/third-party audit (the biggest gotcha)
+- ❌ You're cost-sensitive at scale — HNSW is RAM-bound and Weaviate Cloud bills per vector dimension stored, so high-dimensional embeddings get expensive fast
+- ❌ Your dataset is tiny (a flat index or pgvector/Postgres suffices) or you need an OLAP warehouse
+
 ## Identity
 - **Taxonomy / data model:** Vector database storing objects + their vectors together in "collections" (formerly "classes"); supports structured filtering alongside [vector-search-ann](../concepts/vector-search-ann.md). Also a [full-text-search](../concepts/full-text-search.md) engine via BM25, making it effectively a multi-model search/vector store.
 - **Storage model:** Object store backed by an LSM-tree key-value store ([lsm-vs-btree](../concepts/lsm-vs-btree.md)); vectors held in a separate vector index. Index choices: HNSW (default, graph-based ANN), flat (brute-force, small datasets), dynamic (flat→HNSW as data grows), plus newer variants ([HFresh in 1.31](https://weaviate.io/blog/weaviate-1-31-release)). Vector compression via product quantization (PQ), binary quantization (BQ), scalar quantization (SQ) to cut RAM ([Weaviate quantization docs](https://docs.weaviate.io/weaviate/concepts/vector-quantization)).

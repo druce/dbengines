@@ -13,6 +13,20 @@ confidence: high
 
 > The boringly-reliable open-source relational default: real serializable isolation, MVCC, and an extension ecosystem (PostGIS, pgvector, Citus) that lets it impersonate half the other engines in this wiki — at the cost of vacuum/bloat management and no built-in sharding.
 
+## When to use
+
+**Use PostgreSQL if:**
+- ✅ You want a general-purpose OLTP system-of-record and value correctness — real SERIALIZABLE via SSI, full multi-statement ACID, transactional DDL
+- ✅ You need a rich type system (JSONB, arrays, ranges, geospatial via PostGIS, vectors via pgvector) and an extension ecosystem that defers the need for a second database
+- ✅ You want the reflexive "just use Postgres" default with abundant engineer availability and excellent docs
+- ✅ You want a permissive license, no lock-in, and the choice of self-hosting or any major managed cloud
+
+**Avoid PostgreSQL if:**
+- ❌ You neglect autovacuum or run long transactions — the biggest gotcha is MVCC bloat, p99 spikes, and at the extreme transaction-ID-wraparound emergencies
+- ❌ You need large-scale analytical scans over wide tables — column stores (DuckDB/ClickHouse) win; the row-store heap isn't competitive
+- ❌ You need built-in horizontal sharding or multi-region active-active without taking on Citus/Cockroach-class operational complexity
+- ❌ You have very high connection counts without a pooler (process-per-connection model exhausts connections)
+
 ## Identity
 - **Taxonomy / data model:** Relational (SQL) core, but effectively multi-model via extensions and built-in types: document (JSONB), key-value (hstore), geospatial ([postgis](postgis.md)), vector (pgvector), full-text search, time-series ([timescaledb](timescaledb.md)), and graph (Apache AGE). See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Row-store, heap tables + B-tree (default) and GiST/GIN/BRIN/SP-GiST/Hash indexes. Not [LSM](../concepts/lsm-vs-btree.md). On-disk: 8 KB pages, fixed-size heap with a visibility map and free space map. Column-store only via extensions/foreign data wrappers (e.g. Citus columnar, Hydra).

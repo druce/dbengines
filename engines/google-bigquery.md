@@ -13,7 +13,17 @@ confidence: high
 
 > Fully managed, serverless OLAP data warehouse that scans columnar data on Colossus with on-demand Dremel compute — no clusters to size, but cost is driven by bytes scanned, and it is the wrong tool for OLTP or low-latency point lookups.
 
-## Identity
+## When to use
+
+**Use Google BigQuery if:**
+- ✅ You want a zero-ops, serverless analytics warehouse on GCP that scales to petabytes with plain ANSI SQL and no clusters to size.
+- ✅ Your access pattern is large scans, BI/dashboarding, ELT, and log/event analytics — plus in-warehouse ML, geospatial, and vector search.
+- ✅ You want pay-per-scan economics (on-demand) or predictable slot reservations for steady large workloads.
+
+**Avoid Google BigQuery if:**
+- ❌ You need an application backing store or OLTP — per-query latency is on the order of a second, point lookups are slow/expensive, and there are no general-purpose secondary indexes.
+- ❌ Your workload is high-frequency single-row reads/writes or sub-100ms latency needs (a single Postgres node is cheaper and faster).
+- ❌ You can't control bytes-scanned cost — `SELECT *` and unpartitioned tables produce surprise bills (partition/cluster design is the real engineering work).
 - **Taxonomy / data model:** Relational data warehouse with ANSI SQL ("GoogleSQL"); supports nested/repeated fields (STRUCT/ARRAY) for semi-structured data, native JSON, and geospatial. Multi-model adjuncts: BigQuery ML (in-database models), vector search ([vector-search-ann](../concepts/vector-search-ann.md)), and BigLake/external tables over object storage.
 - **Storage model:** Column-store. Proprietary [columnar-storage](../concepts/columnar-storage.md) format **Capacitor** (replaced ColumnIO in 2016), stored on Google's **Colossus** distributed filesystem; not [lsm-vs-btree](../concepts/lsm-vs-btree.md) — analytic columnar files, not a mutable index tree. Compute (Dremel) and storage (Colossus) are fully separated. See [storage-compute-separation](../concepts/storage-compute-separation.md).
 - **Workload:** OLAP / analytics. Not HTAP in the transactional sense. The "real-time analytics" story comes from the **Storage Write API / streaming inserts** plus BigQuery's ability to query recently-streamed rows; it is *not* a transactional system and should not back an application's writes. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).

@@ -13,6 +13,20 @@ confidence: high
 
 > A column-store SQL analytics engine that is one of the fastest things in the world for large aggregate scans — provided you accept eventual consistency, asynchronous updates, and snapshot (not serializable) isolation.
 
+## When to use
+
+**Use ClickHouse if:**
+- ✅ You need extremely fast SQL analytics over huge append-mostly datasets (logs, events, metrics, clickstream, BI)
+- ✅ You can batch your inserts (many tiny inserts cause part explosion)
+- ✅ You want world-class aggregations / `GROUP BY` and wide scans over billions of rows in sub-second time
+- ✅ You want permissive Apache-2.0 licensing with a self-host or managed-cloud path
+
+**Avoid ClickHouse if:**
+- ❌ You'd use it as a transactional system of record, for frequent row-level updates/deletes, or point-lookup key-value access
+- ❌ You need serializable isolation or strong cross-row consistency (it gives snapshot isolation, eventual consistency, and durability isn't on by default — the biggest gotcha)
+- ❌ You'd issue many concurrent tiny inserts
+- ❌ You need automatic resharding (open source requires manual data redistribution)
+
 ## Identity
 - **Taxonomy / data model:** relational, SQL-based, but columnar and OLAP-first — not a transactional system. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** column-store. The flagship `MergeTree` engine family writes immutable, sorted, compressed **data parts** that background processes merge over time — an LSM-like write/merge pattern (see [lsm-vs-btree](../concepts/lsm-vs-btree.md), [columnar-storage](../concepts/columnar-storage.md)). Sparse primary-key index (one mark per granule, default 8192 rows) rather than a per-row B-tree.

@@ -13,6 +13,19 @@ confidence: high
 
 > A fast, lean C++ full-text indexer/search daemon from 2001 that pioneered SQL-over-MySQL-protocol search, now bifurcated into a closed-source v3 line and the actively-maintained open-source [Manticore Search](sphinx.md) fork — pick the fork.
 
+## When to use
+
+**Use Sphinx if:**
+- ✅ You are maintaining an existing Sphinx deployment and need its fast, lean full-text retrieval
+- ✅ You want SQL-like search (SphinxQL over the MySQL wire protocol) bolted onto a relational app as a search sidecar
+- ✅ You need fast autocomplete/faceted/geo+text search where speed and a MySQL-compatible interface matter and you don't need a document store
+
+**Avoid Sphinx if:**
+- ❌ You are starting a new project — the open-source line (≤2.3.x, GPLv2) is effectively frozen and v3+ is closed-source; pick the [Manticore Search](sphinx.md) fork instead
+- ❌ You need it as a durable system of record (it's re-indexable from source, not primary storage)
+- ❌ You need cross-document joins, rich distributed consistency/replication, JSON CRUD, or native vector/semantic search
+- ❌ You want active upstream development on an open-source license — use Manticore, [elasticsearch](elasticsearch.md), or [opensearch](opensearch.md)
+
 ## Identity
 - **Taxonomy / data model:** Dedicated full-text [full-text-search](../concepts/full-text-search.md) search engine, not a primary datastore. Documents = sets of full-text fields + typed attributes (int, bigint, float, bool, string, MVA, JSON). Often run alongside an OLTP source DB rather than as the system of record.
 - **Storage model:** Inverted index ([lsm-vs-btree](../concepts/lsm-vs-btree.md) is the wrong axis here; this is an inverted-index engine). Two backends: **disk indexes** (immutable, built in batch by the `indexer` process; only attributes can be updated in place, full-text content cannot) and **RT (real-time) indexes** (a RAM chunk + immutable disk chunks merged on the fly — an LSM-like layout where commits land in RAM and periodically flush to disk). The name reportedly derives from "SQL Phrase Index." On-disk format is Sphinx-proprietary index files.

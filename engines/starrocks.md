@@ -13,6 +13,20 @@ confidence: high
 
 > A fully-vectorized, MPP columnar analytics database for sub-second real-time and customer-facing OLAP — fast on its own storage and as a query engine over open-table lakehouses, but with a deliberately thin transaction model (READ COMMITTED, no write-conflict checks).
 
+## When to use
+
+**Use StarRocks if:**
+- ✅ You need sub-second, high-concurrency analytics — real-time dashboards or customer-facing/embedded analytics
+- ✅ You want fast SQL directly over Iceberg/Hudi/Hive/Delta lakehouses via one vectorized MPP engine instead of stitching several together
+- ✅ You want MySQL-protocol compatibility (BI tools, MySQL drivers) and a cost-based optimizer that runs full TPC-DS
+- ✅ Storage/compute separation (shared-data mode over S3/GCS/Azure Blob) fits your cloud cost model
+
+**Avoid StarRocks if:**
+- ❌ You need a transactional system of record or high-rate single-row OLTP writes
+- ❌ You require serializable isolation or write-conflict detection — it is READ COMMITTED with NO write-conflict checks, so concurrent writers to the same table can both commit
+- ❌ You want a tiny single-node deployment (FE+BE/CN cluster overhead; multi-node for HA)
+- ❌ You can't invest in tuning (bucket/partition counts, primary-key index memory, compaction under heavy upserts) — get these wrong and p99 suffers
+
 ## Identity
 - **Taxonomy / data model:** relational, SQL, analytical (OLAP). Originated in 2020 as a commercialized fork of [apache-doris](apache-doris.md) and since heavily rewritten ([CelerData / Linux Foundation announcement](https://celerdata.com/blog/celerdata-contributes-starrocks-project-to-the-linux-foundation)). Also serves as a lakehouse query engine over external tables.
 - **Storage model:** column-store. On-disk data is organized into segments with per-column encoding/compression, sorted by key, plus prefix indexes, zone maps, bitmap and bloom-filter indexes. Not [lsm-vs-btree](../concepts/lsm-vs-btree.md)-style in the classic sense; the **primary-key table** uses a delete-and-insert (DelVector + primary-key index) upsert pattern ([primary-key table docs](https://docs.starrocks.io/docs/table_design/table_types/primary_key_table/)) rather than the merge-on-read of aggregate/unique tables.

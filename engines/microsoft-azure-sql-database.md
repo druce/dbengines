@@ -13,6 +13,20 @@ confidence: high
 
 > Microsoft's fully-managed cloud relational PaaS built on the SQL Server engine — RCSI on by default, Accelerated Database Recovery always on, and a Hyperscale tier that decouples compute from storage up to 128 TB — at the cost of no OS/instance access and Azure lock-in.
 
+## When to use
+
+**Use Microsoft Azure SQL Database if:**
+- ✅ You want a fully-managed SQL Server-grade relational engine on Azure with HA, PITR, and zero patching effort
+- ✅ Your workload is OLTP / line-of-business, especially .NET/Microsoft-stack apps and multi-tenant SaaS (elastic pools)
+- ✅ You need very large databases with fast scale and near-instant restores (Hyperscale decouples compute/storage up to 128 TB)
+- ✅ You value RCSI-by-default (READ COMMITTED snapshot) and Accelerated Database Recovery always on
+
+**Avoid Microsoft Azure SQL Database if:**
+- ❌ You need OS/instance access, SQLCLR, cross-database/linked-server features, or SQL Agent (use Managed Instance or SQL Server on a VM)
+- ❌ You need transparent horizontal sharding or active-active multi-region writes
+- ❌ You run large-scale MPP analytics/data-warehouse scans (use Fabric / Synapse / a columnar warehouse)
+- ❌ You want to avoid the biggest gotcha: it is **managed-only and Azure-locked**, with per-replica/per-vCore billing that quietly inverts from cheap to expensive at scale
+
 ## Identity
 - **Taxonomy / data model:** Relational (T-SQL / SQL Server engine), increasingly multi-model — native JSON, XML, spatial (geometry/geography), graph (node/edge tables), key-value, and a native `vector` type ([GA June 19, 2025](https://learn.microsoft.com/en-us/azure/azure-sql/database/ai-artificial-intelligence-intelligent-applications)). See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** Row-store B-tree by default; columnstore indexes (clustered/nonclustered) for analytics; In-Memory OLTP (Hekaton) memory-optimized tables on a subset of tiers. On-disk format is SQL Server page/extent (8 KB pages) plus the SQL Server transaction log. See [lsm-vs-btree](../concepts/lsm-vs-btree.md).

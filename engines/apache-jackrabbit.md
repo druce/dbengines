@@ -13,6 +13,20 @@ confidence: high
 
 > The reference implementation of the Java Content Repository (JCR 2.0) standard — a hierarchical, schema-flexible content store with built-in versioning, full-text search, and change observation; in practice almost always encountered as its rewritten successor **Jackrabbit Oak**, the repository underneath Adobe Experience Manager.
 
+## When to use
+
+**Use Apache Jackrabbit if:**
+- ✅ You need a hierarchical content repository — versioned, ACL-rich, full-text-searchable, observable content in a Java stack
+- ✅ You are building on or alongside Adobe Experience Manager / CRX (the dominant consumer of Oak)
+- ✅ Your workload is read-skewed CMS/DAM/document management with flexible per-node schema (node types + mixins)
+- ✅ You maintain index discipline and run revision/blob GC and segment compaction as day-2 chores
+
+**Avoid Apache Jackrabbit if:**
+- ❌ You run queries without an explicitly created index — they silently fall back to full-repository traversal and destroy performance (biggest gotcha)
+- ❌ You need serializable transactions — it gives snapshot isolation only, and write skew is documented
+- ❌ You need relational/transactional OLTP, analytics/aggregation, joins across heterogeneous datasets, or very high write throughput
+- ❌ You don't want a JVM/embedded-library deployment, or you want app-level sharding of the content tree (it leans on MongoDB/RDB instead)
+
 Note: "Apache Jackrabbit" covers two related codebases. *Jackrabbit 2* ("classic") is the original JCR 2.0 reference implementation. *Jackrabbit Oak* is a ground-up rewrite (started ~2012) with a different concurrency and storage model, and is the version in production use today (e.g. Adobe AEM 6+ / CRX). This page covers both, defaulting to Oak's behavior where they diverge because Oak is what you will actually run. ([Oak docs](https://jackrabbit.apache.org/oak/docs/), [JCR home](https://jackrabbit.apache.org/jcr/index.html))
 
 ## Identity

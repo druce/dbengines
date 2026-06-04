@@ -13,7 +13,17 @@ confidence: high
 
 > The default in-process cache for Java/Hibernate/Spring apps: a tiered (heap → off-heap → disk/clustered) key-value store that is a transient performance layer, not a system of record — it explicitly drops disk-tier data on an unclean JVM crash.
 
-## Identity
+## When to use
+
+**Use Ehcache if:**
+- ✅ You have a JVM app (especially Hibernate second-level cache or Spring `@Cacheable`) needing a standard JSR-107/JCache in-process cache in front of a real DB.
+- ✅ You want to scale a single process's cache vertically into large off-heap working sets (tested to ~6 TB off-heap) outside GC reach.
+- ✅ You need cross-JVM shared caching via the Terracotta clustered tier, with a choice of eventual or strong consistency per cache.
+
+**Avoid Ehcache if:**
+- ❌ You need a system of record: the OSS disk tier wipes itself on an unclean crash ("persistent" means survives a clean shutdown only) — crash-consistent restart needs the commercial Terracotta Fast-Restart store.
+- ❌ You expect cross-node consistency without the Terracotta tier — each JVM caches independently and stale reads across instances are the norm.
+- ❌ You need queries, secondary indexes, joins, or analytics — it is API-only get/put (Ehcache 3 dropped the 2.x Search API).
 - **Taxonomy / data model:** Embedded key-value cache for the JVM, exposing a `Map`-like get/put interface and implementing the [JSR-107 JCache](../concepts/license-taxonomy.md) standard API. It is a caching *library* that lives in your application's heap, not a standalone database server. See [oltp-olap-htap](../concepts/oltp-olap-htap.md) — it sits in front of an OLTP system of record, not as one.
 - **Storage model:** Tiered. Heap tier (on-heap Java objects, no serialization, fastest); off-heap tier (direct memory outside GC, requires serialization); disk tier (persistent file store); clustered tier (data held in a [Terracotta Server Array](../concepts/storage-compute-separation.md) shared across JVMs). Multi-tier setups must be "pyramidal" (heap < off-heap < disk/clustered), a heap tier is always required, and disk + clustered tiers cannot be combined ([tiering docs](https://www.ehcache.org/documentation/3.3/tiering.html)). On-disk format is a Terracotta proprietary serialized store, not a queryable file format. Not [LSM or B-tree](../concepts/lsm-vs-btree.md) — it is a hash-based cache keyed by object identity.
 - **Workload:** Caching layer for OLTP read paths (Hibernate second-level cache, Spring `@Cacheable`, session storage). Not analytical, not HTAP — no scans, no aggregation, no query engine.

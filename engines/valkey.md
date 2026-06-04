@@ -13,6 +13,20 @@ confidence: high
 
 > A community-governed, BSD-licensed continuation of Redis 7.2.4 with added multithreaded I/O and faster sync — but it inherits Redis's async-replication, best-effort-cache consistency model, so don't treat it as a system of record.
 
+## When to use
+
+**Use Valkey if:**
+- ✅ You want Redis's speed and rich data structures with a permissive BSD license and an actively-developed, vendor-neutral codebase
+- ✅ Your workload is caching (cache-aside/read-through), session/token store, rate limiters, leaderboards (sorted sets), pub/sub fan-out, or lightweight queues/streams
+- ✅ You need a near drop-in replacement for Redis 7.2.x post-relicensing (RESP-compatible, existing Redis clients work)
+- ✅ Your working set fits in RAM and sub-millisecond p50 latency matters
+
+**Avoid Valkey if:**
+- ❌ You need a durable system of record — async replication plus last-failover-wins means acknowledged writes can vanish during partitions/failover, exactly as Jepsen documented for Redis (the biggest gotcha)
+- ❌ Your dataset is larger than RAM — everything lives in memory
+- ❌ You need serializable cross-key transactions or guaranteed durability of every ack (MULTI/EXEC does not roll back; AOF everysec leaves a ~1s loss window)
+- ❌ You need relational/analytical queries, joins, or secondary indexes in core
+
 ## Identity
 - **Taxonomy / data model:** in-memory key-value store with rich value types (strings, hashes, lists, sets, sorted sets, streams, bitmaps, HyperLogLog, geospatial). Forked from Redis 7.2.4 in March 2024 after Redis relicensed away from BSD; governed under the Linux Foundation with AWS, Google, Oracle, and Ericsson backing ([valkey.io](https://valkey.io/), [redis.io comparison](https://redis.io/blog/what-is-valkey/)).
 - **Storage model:** RAM-resident dataset; not [lsm-vs-btree](../concepts/lsm-vs-btree.md) (no on-disk index structure). On-disk persistence is only for restart/durability via point-in-time RDB snapshots and/or an append-only command log (AOF) ([persistence docs](https://valkey.io/topics/persistence/)). Working set must fit in memory.

@@ -13,6 +13,20 @@ confidence: medium
 
 > A shared-nothing distributed relational database from Ant Group, using Multi-Paxos for strongly-consistent replication and MySQL/Oracle wire-compatibility, built for high-volume financial OLTP (with HTAP ambitions) on commodity hardware.
 
+## When to use
+
+**Use OceanBase if:**
+- ✅ You need MySQL/Oracle-compatible SQL with strong Paxos consistency and true horizontal scale-out for heavy financial-grade OLTP
+- ✅ You are migrating MySQL/Oracle and want scale-out without an app rewrite (wire + PL/SQL compatibility)
+- ✅ You have the operational muscle to run a multi-zone (3-zone, 3-replica) distributed database
+- ✅ High compression on commodity hardware and distributed transactions (2PC over Paxos) justify the complexity at scale
+
+**Avoid OceanBase if:**
+- ❌ Your workload is single-node or small — operational overhead dwarfs a plain MySQL/Postgres
+- ❌ You need pure ad-hoc analytics/data-warehouse ([clickhouse](clickhouse.md) or [snowflake](snowflake.md) fit better)
+- ❌ You rely on "financial-grade" claims without your own testing — there is **no public Jepsen/independent verification**
+- ❌ Your team lacks distributed-DB depth, or you can't tune LSM major compaction to protect p99
+
 ## Identity
 - **Taxonomy / data model:** Distributed relational (SQL). Multi-tenant: each tenant runs in MySQL-compatible **or** Oracle-compatible mode (PL/SQL, Oracle types). ([architecture](https://oceanbase.github.io/oceanbase/architecture/), [dbdb.io](https://dbdb.io/db/oceanbase))
 - **Storage model:** Row-store on an **[LSM-tree](../concepts/lsm-vs-btree.md)** engine — in-memory MemTable flushed to on-disk SSTables; baseline (static) + incremental (dynamic) data merged at compaction. Macro blocks (2MB write unit) / micro blocks (16KB read unit), block + row caches. Columnar storage was added (v4.3) for analytics. High compression is a headline claim (vendor cites 70–90% storage reduction vs MySQL — ⚠️ unverified — vendor figure, workload-dependent). ([dbdb.io](https://dbdb.io/db/oceanbase))

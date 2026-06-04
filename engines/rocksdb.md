@@ -13,6 +13,18 @@ confidence: high
 
 > An embedded, single-node, ordered key-value storage engine optimized for fast SSD/NVMe — it is the storage layer inside many distributed databases (tikv, [cockroachdb](cockroachdb.md) historically, MyRocks, Kafka Streams), not an end-user database.
 
+## When to use
+
+**Use RocksDB if:**
+- ✅ You are *building* a database, queue, or stateful service and need a fast, proven, embeddable LSM key-value engine on SSD/NVMe.
+- ✅ You need ordered byte-key point lookups and range scans, with optional snapshot-isolation transactions, embedded in-process.
+- ✅ You want a permissively-licensed (Apache 2.0 option) storage substrate and will layer schemas, indexes, replication, and HA yourself.
+
+**Avoid RocksDB if:**
+- ❌ You want an application database — it has no SQL, no schema, no server, no replication, and no HA; reach for [postgresql](postgresql.md) or [redis](redis.md) instead.
+- ❌ You can't invest in LSM tuning — get compaction wrong and you get write stalls, p99 spikes, and space amplification.
+- ❌ You need durable-by-default writes — durability defaults to non-fsync'd (`sync=false`), so a power loss can lose recent commits unless you set `WriteOptions` deliberately.
+
 ## Identity
 - **Taxonomy / data model:** embedded key-value store. Keys and values are arbitrary byte streams; keys are kept sorted, so it supports point lookups and ordered range scans ([RocksDB Overview](https://github.com/facebook/rocksdb/wiki/RocksDB-Overview)). Forked from LevelDB. No relational, document, or graph model — those are built *on top of* RocksDB by other systems. See [embedded-databases](../concepts/embedded-databases.md).
 - **Storage model:** [LSM-tree](../concepts/lsm-vs-btree.md). Write path = MemTable (in-memory skiplist) → Write-Ahead Log → flush to immutable Level-0 SST (Sorted String Table) files → background compaction merges SSTs across levels ([RocksDB Overview](https://github.com/facebook/rocksdb/wiki/RocksDB-Overview)). Block-based on-disk SST format with configurable compression (Snappy/LZ4/Zstd) and Bloom filters. Optimized for write-heavy workloads and SSDs. See [lsm-vs-btree](../concepts/lsm-vs-btree.md).

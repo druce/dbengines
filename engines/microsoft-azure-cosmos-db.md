@@ -13,6 +13,20 @@ confidence: high
 
 > A fully managed, globally distributed Azure database whose defining feature is five well-defined consistency levels (not just strong/eventual) with single-digit-millisecond SLAs — at the cost of an opaque Request-Unit billing model and deep Azure lock-in.
 
+## When to use
+
+**Use Microsoft Azure Cosmos DB if:**
+- ✅ You are committed to Azure and need a turnkey, globally distributed, low-latency document/KV store with SLA-backed single-digit-ms reads/writes
+- ✅ You want genuinely fine-grained consistency control — five well-defined levels (Strong → Eventual), tunable per account/request
+- ✅ Your access patterns are point reads/writes for web/mobile/IoT, session/profile/catalog stores, or multi-tenant SaaS
+- ✅ You want integrated vector search (DiskANN) for RAG/agent memory alongside your operational data
+
+**Avoid Microsoft Azure Cosmos DB if:**
+- ❌ You need cross-partition or serializable transactions, or cross-entity relational joins (ACID is snapshot isolation scoped to a single logical partition)
+- ❌ You have spiky/unpredictable traffic that blows past provisioned RU — exceeding RU/s returns HTTP 429 throttling
+- ❌ You need heavy ad-hoc analytics or multi-cloud portability (it is managed-only, Azure-exclusive)
+- ❌ You might pick a low-cardinality/hot partition key — the **immutable partition key** is the biggest gotcha, fixable only by full data migration
+
 ## Identity
 - **Taxonomy / data model:** [multi-model](https://learn.microsoft.com/en-us/azure/cosmos-db/introduction). One engine exposed through several wire-compatible APIs: NoSQL (native document/JSON), MongoDB (RU and vCore), Cassandra (CQL), Gremlin ([graph](../concepts/graph-data-model.md)), and Table (KV). Native [vector search](../concepts/vector-search-ann.md) (DiskANN) in the NoSQL API stores embeddings alongside documents ([docs](https://learn.microsoft.com/en-us/azure/cosmos-db/vector-search)). Cosmos DB for PostgreSQL is a separate Citus-based product, not this engine.
 - **Storage model:** schema-agnostic JSON document store with an automatic, write-optimized indexing engine that indexes every property by default; ⚠️ unverified — Microsoft does not publicly commit to a [B-tree vs LSM](../concepts/lsm-vs-btree.md) on-disk layout, treating the storage format as an internal implementation detail.

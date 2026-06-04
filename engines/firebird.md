@@ -13,6 +13,18 @@ confidence: high
 
 > A small, mature, low-admin relational engine descended from InterBase, built around multi-generational MVCC; great as an embedded or single-server SQL store, but not a distributed system.
 
+## When to use
+
+**Use Firebird if:**
+- ✅ You need a real multi-user SQL engine with transactions, stored procedures (PSQL), and near-zero administration that you can embed and ship inside an application
+- ✅ You want a frugal single-server OLTP store that runs well on small hardware without the working set fitting in RAM
+- ✅ You want full multi-user SQL with an embedded mode that overlaps [sqlite](sqlite.md)'s niche but adds concurrency and snapshot-isolation MVCC
+
+**Avoid Firebird if:**
+- ❌ You need horizontal scale, OLAP/columnar analytics, or multi-region HA with automatic consistent failover — core replication is uni-directional master→replica only
+- ❌ You want a deep cloud/managed ecosystem and a large hiring pool — there is no first-party managed Firebird and the talent pool is small ([postgresql](postgresql.md) dominates there)
+- ❌ You can't enforce transaction hygiene — long-running or abandoned transactions widen the OIT/OAT gap, bloat MGA version chains, and degrade performance; never disable forced writes on Windows
+
 ## Identity
 - **Taxonomy / data model:** Relational (SQL). Single-model. ([db-engines](https://db-engines.com/en/system/Firebird), [Wikipedia](https://en.wikipedia.org/wiki/Firebird_(database_server)))
 - **Storage model:** Row-store, B-tree indexes, page-based on-disk format (not [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM). Uses **Multi-Generational Architecture (MGA)** — older row versions are kept inline in the data pages rather than in a separate undo/rollback segment, which is its distinguishing design. See [mvcc](../concepts/mvcc.md).

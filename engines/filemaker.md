@@ -13,7 +13,17 @@ confidence: medium
 
 > A proprietary low-code application platform (UI + scripting + bundled relational engine) for small workgroup apps — not a standalone database you'd put behind a high-throughput service.
 
-## Identity
+## When to use
+
+**Use FileMaker if:**
+- ✅ A small team — especially an Apple/iOS shop (FileMaker Go on iPad/iPhone) — needs a custom business app (CRM, inventory, scheduling) built fast by non-specialist "citizen developers."
+- ✅ You want a bundled UI + scripting + relational engine as one low-code platform, not a standalone SQL server.
+- ✅ You need to front existing MySQL/SQL Server/Oracle/Postgres tables via the ESS relationship graph rather than be the system of record.
+
+**Avoid FileMaker if:**
+- ❌ You need durability guarantees — "ACID" is conditional: writes cache in server RAM and an abrupt crash can lose recent data; multi-record atomicity only exists if you script the commit/revert pattern.
+- ❌ You're building public-facing high-traffic web apps, analytics/warehouse workloads, or anything needing horizontal scale, geo-replication, or thousands of concurrent writers.
+- ❌ You want an open or portable backend — apps are deeply tied to the proprietary `.fmp12` format and scripting; migrating off is a rewrite (use [postgresql](postgresql.md) or [mysql](mysql.md)).
 - **Taxonomy / data model:** Relational. The product is really a RAD/low-code platform (forms-and-scripts "layouts") with an integrated database engine, GUI, and security model — not a SQL server you connect to with arbitrary clients ([Wikipedia](https://en.wikipedia.org/wiki/FileMaker)). Now branded "Claris FileMaker" / "FileMaker 2025"; developed by Claris International, an Apple subsidiary ([Wikipedia](https://en.wikipedia.org/wiki/FileMaker)).
 - **Storage model:** Single-file proprietary format `.fmp12` (current since FileMaker Pro 12, 2012); each file holds multiple tables, layouts, scripts, and value lists ([Wikipedia](https://en.wikipedia.org/wiki/FileMaker)). On-disk format is closed and undocumented; ⚠️ unverified — internal page structure (B-tree vs other) is not publicly documented. Containers can hold up to 4 GB binary / 2 GB text per field ([Wikipedia](https://en.wikipedia.org/wiki/FileMaker)).
 - **Workload:** OLTP-style interactive business apps (CRM, inventory, project tracking) for small workgroups. Not OLAP, not HTAP. See [oltp-olap-htap](../concepts/oltp-olap-htap.md). A defining quirk: much transaction/query processing happens **on the client**, not the server — records are fetched to the client, edited, then committed back ([ScaleFM](https://scalefm.com/2016/07/acid-summary-and-best-practices-part6/)).

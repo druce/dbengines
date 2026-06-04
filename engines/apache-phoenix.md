@@ -13,6 +13,18 @@ confidence: medium
 
 > A thin SQL/JDBC relational facade over [apache-hbase](apache-hbase.md) that gives low-latency point lookups and range scans on wide-column data — but it is HBase underneath, so it carries HBase's CP semantics, HDFS/ZooKeeper dependencies, and operational burden, and its "ACID transactions" remain effectively beta.
 
+## When to use
+
+**Use Apache Phoenix if:**
+- ✅ You already run HBase and want relational SQL, JDBC, and secondary indexes instead of hand-coding HBase scans.
+- ✅ You have high-write operational stores with point/prefix-range query patterns (salted time-series, entitlement/lookup tables).
+- ✅ You need strongly-consistent secondary indexes over existing HBase data on an established Hadoop/HBase footprint.
+
+**Avoid Apache Phoenix if:**
+- ❌ It's a greenfield project — you're really adopting HBase + HDFS + ZooKeeper, an enormous tax versus PostgreSQL or managed distributed SQL.
+- ❌ You need rock-solid multi-row ACID — transactions are beta with a churned manager history (Tephra retired, Omid now default).
+- ❌ You run ad-hoc analytical/join-heavy BI workloads, or queries not aligned to the row-key prefix.
+
 ## Identity
 - **Taxonomy / data model:** relational SQL skin (tables, columns, types, secondary indexes, views, JDBC) projected onto [apache-hbase](apache-hbase.md)'s wide-column [LSM](../concepts/lsm-vs-btree.md) store. A Phoenix table maps to an HBase table; rows are keyed by a composite primary key encoded into the HBase row key. Not a standalone engine — it is a client library + HBase coprocessors.
 - **Storage model:** HBase-backed, so [LSM-tree](../concepts/lsm-vs-btree.md) (memstore + HFiles on HDFS), log-structured with background compaction. Primary key column order *is* the physical sort order of the row key; column families map to HBase column families. No independent on-disk format of its own.

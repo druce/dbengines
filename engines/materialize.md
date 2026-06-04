@@ -15,6 +15,19 @@ confidence: high
 
 > A streaming SQL database that turns standard SQL `MATERIALIZED VIEW`s into always-fresh, incrementally maintained results over changing data — speaking the Postgres wire protocol and defaulting to strict serializability.
 
+## When to use
+
+**Use Materialize if:**
+- ✅ You need always-fresh SQL results over fast-changing data with real database correctness — real-time dashboards, alerting, segmentation, feature serving
+- ✅ Stale or torn intermediate results are unacceptable (default strict serializable, vs eventually-consistent streaming stacks)
+- ✅ You want plain Postgres-flavored SQL and pgwire compatibility instead of a stream-processing API
+- ✅ You ingest CDC from Postgres/MySQL or Kafka/Redpanda and want incrementally-maintained joins/aggregations/recursion
+
+**Avoid Materialize if:**
+- ❌ Every materialized view is a standing, RAM-resident, always-running dataflow — broad or unbounded-state views get expensive and can OOM
+- ❌ You need a primary OLTP system of record (it ingests change streams, it is not your source of truth)
+- ❌ You want a batch warehouse for ad-hoc scans over huge cold data ([snowflake](snowflake.md)/[trino](trino.md)/[duckdb](duckdb.md) fit better), or the always-on continuous-compute cost outweighs the freshness benefit
+
 ## Identity / role
 - **What it is:** an operational [streaming database](../concepts/streaming-databases.md) for **incremental view maintenance (IVM)**. You write SQL views; Materialize recomputes only the deltas as inputs change, keeping results fresh at sub-second latency rather than re-scanning on each query.
 - **What it is NOT:** not a general-purpose OLTP database (it ingests change streams, it is not your system of record), not a batch warehouse like [snowflake](snowflake.md) (no large ad-hoc scan workloads), and not merely a stream processor like [apache-flink](apache-flink.md) — it exposes durable, queryable SQL state with database semantics, not just a dataflow job. It sits on the [oltp-olap-htap](../concepts/oltp-olap-htap.md) spectrum as a serving layer for derived/real-time data.

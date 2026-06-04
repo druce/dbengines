@@ -15,6 +15,18 @@ confidence: high
 
 > A transaction-log layer over Parquet on object storage that gives a Parquet directory ACID writes, snapshot-isolation reads, and time travel — a table *format*, not an engine, and historically Databricks/[apache-spark-sql](apache-spark-sql.md)-centric.
 
+## When to use
+
+**Use Delta Lake if:**
+- ✅ Your lakehouse is centered on [apache-spark-sql](apache-spark-sql.md)/[databricks](databricks.md) and you want battle-tested ACID, `MERGE`, time travel, and CDC over Parquet with minimal fuss.
+- ✅ You need atomic multi-file writes and snapshot-isolation reads during concurrent writes that raw Parquet directories can't give.
+- ✅ You're fine pairing it with object storage and a compute engine (it has no compute of its own).
+
+**Avoid Delta Lake if:**
+- ❌ You need a truly engine-neutral, multi-writer-across-many-engines format — Iceberg's catalog/engine neutrality is the cleaner fit.
+- ❌ You're running naïve multi-writer Delta on plain S3 without the DynamoDB LogStore — correctness depends on atomic put-if-absent and you can silently lose commits.
+- ❌ You want an OLTP store or high-frequency tiny writes — you'll drown in small files and constant OCC retries.
+
 ## Identity / role
 - **What it IS:** an open [table format](../concepts/open-table-formats.md) — a metadata/protocol layer that makes a collection of Parquet data files behave as a single transactional table. The unit of truth is the `_delta_log/` transaction log (ordered JSON commits, periodically compacted into Parquet checkpoints) sitting alongside the data files.
 - **What it is NOT:** not a query engine, not a database server, not storage. It has no compute of its own and no running process; an engine ([apache-spark-sql](apache-spark-sql.md), [trino](trino.md), [duckdb](duckdb.md), [clickhouse](clickhouse.md), [apache-flink](apache-flink.md)) reads the log and the Parquet files. It is the metadata + protocol, paired with object storage (S3/ADLS/GCS) and a compute engine. See [lakehouse](../concepts/lakehouse.md).

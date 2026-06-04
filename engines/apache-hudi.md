@@ -15,6 +15,20 @@ confidence: high
 
 > An open lakehouse table format whose differentiator is first-class record-level **upserts/deletes and incremental "change stream" reads** — built for high-frequency CDC ingestion, not just appending columnar files.
 
+## When to use
+
+**Use Apache Hudi if:**
+- ✅ Your central problem is mutable, high-frequency ingestion — CDC replication, streaming upserts, dedup on a primary key
+- ✅ Consumers need the change stream (updates and deletes since an instant), not just appends
+- ✅ You want near-real-time ingest via Merge-on-Read plus its record-level index for cheap keyed upserts
+- ✅ You can run and tune the table services (compaction, cleaning, clustering) the upsert power requires
+
+**Avoid Apache Hudi if:**
+- ❌ You neglect or under-tune table services — misconfigured compaction/cleaning makes MoR reads stale/slow or bloats storage and metadata (biggest gotcha)
+- ❌ You mainly have append-only analytics tables, a multi-engine read estate, or want minimal tuning — Iceberg or Delta are simpler defaults
+- ❌ You need low-latency point lookups / OLTP — it's a lake table format, not a serving store like Druid/ClickHouse
+- ❌ You're banking on advanced 1.0 features (NBCC, secondary index) on a non-Spark engine — support trails Spark per release
+
 ## Identity / role
 - **What it is:** an open [table format](../concepts/open-table-formats.md) plus an ingestion/table-management layer that sits on top of columnar files (Parquet base files, Avro log files) in object storage (S3/GCS/ADLS/HDFS). It adds a transaction **timeline**, indexing, and table services (compaction, cleaning, clustering) so a folder of files behaves like a mutable, versioned table. Pairs with the [lakehouse](../concepts/lakehouse.md) pattern and [storage-compute-separation](../concepts/storage-compute-separation.md).
 - **What it is NOT:** not a query engine — it has no compute of its own; engines like [apache-spark-sql](apache-spark-sql.md), [apache-flink](apache-flink.md), [trino](trino.md), Presto, and [starrocks](starrocks.md) do the reading/writing. Not a database server (no always-on process owning the data; correctness comes from the on-storage timeline + writers). Workload is [OLAP/streaming-ingest](../concepts/oltp-olap-htap.md), not OLTP.

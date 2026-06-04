@@ -13,6 +13,20 @@ confidence: medium
 
 > A native massively-parallel property-graph database whose accumulator-based GSQL language and C++ engine target deep (5+ hop) traversals and graph analytics at scale, where Neo4j-style pointer-chasing engines bog down.
 
+## When to use
+
+**Use TigerGraph if:**
+- ✅ You need deep multi-hop traversals (3+ hops) or graph algorithms over large, distributed graphs in real time
+- ✅ Your use case is fraud/AML, entity resolution, 360-degree customer views, recommendation, or GraphRAG/knowledge-graph + vector retrieval
+- ✅ You want a native parallel (MPP) property-graph engine that outpaces pointer-chasing engines on deep queries, and will invest in the GSQL accumulator model
+- ✅ You need hybrid graph + ANN vector search (TigerVector, v4.2+) in one engine
+
+**Avoid TigerGraph if:**
+- ❌ You only need simple 1-hop lookups, general OLTP, or document/blob storage (a relational or KV store is cheaper)
+- ❌ Your graph fits one node — Neo4j or relational recursive CTEs may be simpler and cheaper
+- ❌ You need it open source — it is proprietary/closed-source; free tiers are size-capped (Community Edition up to 300 GB single-server, older Enterprise free tier 50 GB)
+- ❌ You require true serializable isolation or zero-downtime resharding — isolation is read-committed (no Jepsen report), and cluster repartitioning needs downtime
+
 ## Identity
 - **Taxonomy / data model:** native property graph (labeled vertices/edges with typed attributes); not a triple store. See [graph-data-model](../concepts/graph-data-model.md). As of v4.2 (Dec 2024) it also stores vectors as a vertex attribute type (TigerVector) for hybrid graph + ANN search ([TigerVector paper](https://arxiv.org/html/2501.11216v1)), making it loosely [multi-model](../concepts/multi-model.md).
 - **Storage model:** custom C++ engine. The **Graph Storage Engine (GSE)** stores topology in a compressed, encoded format across cache/memory/disk tiers; the **Graph Processing Engine (GPE)** executes traversals in parallel ([MPP paper](https://arxiv.org/pdf/1901.08248)). It is *not* an [lsm-vs-btree](../concepts/lsm-vs-btree.md) design — vertices/edges are stored as compressed adjacency structures keyed by internal integer IDs, originally layered over a KV store abstraction ([building on a KV store](https://medium.com/tigergraph/building-a-graph-database-on-a-key-value-store-97c22b2b33d8)). Working set is effectively memory-resident for performance.

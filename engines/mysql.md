@@ -13,6 +13,20 @@ confidence: high
 
 > The world's most-deployed open-source relational database — easy to run, enormous ecosystem, owned by Oracle under a dual GPL/commercial license — whose biggest gotcha is that its default isolation level fails to deliver true repeatable-read semantics.
 
+## When to use
+
+**Use MySQL if:**
+- ✅ You want a proven, low-friction OLTP database with the deepest talent pool and ecosystem on earth (web/SaaS backends, the LAMP stack)
+- ✅ Your scaling story is "big primary + read replicas" or transparent sharding via Vitess
+- ✅ You want universal driver/ORM coverage, first-class binlog CDC (Debezium/Maxwell), and abundant managed options
+- ✅ You can use explicit `SELECT ... FOR UPDATE`/locking on correctness-critical paths rather than trusting isolation-level names
+
+**Avoid MySQL if:**
+- ❌ You need analytics/OLAP or large ad-hoc aggregations (use [clickhouse](clickhouse.md)/[duckdb](duckdb.md)/a warehouse)
+- ❌ You need write-heavy transparent horizontal sharding out of the box (use Vitess/[cockroachdb](cockroachdb.md)/[tidb](tidb.md))
+- ❌ You need genuine serializability you can trust — the biggest gotcha is that **default REPEATABLE READ is demonstrably weaker than its name** (Jepsen 8.0.34 found read skew, lost updates, G2-item); prefer [postgresql](postgresql.md) if labels must match guarantees
+- ❌ You'd run an old/permissive `sql_mode` or non-InnoDB (MyISAM) tables expecting transactional safety
+
 ## Identity
 - **Taxonomy / data model:** relational (SQL). Multi-model in a limited sense: native `JSON` type and a document-store API (X Protocol / MySQL Shell) layered on InnoDB, plus spatial/GIS types. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** pluggable storage engines. Default is **InnoDB** — a clustered-index row-store on a [B+tree](../concepts/lsm-vs-btree.md) with [mvcc](../concepts/mvcc.md) (undo logs). Legacy **MyISAM** (non-transactional, table-level locking) is deprecated for data and survives mainly in old schemas and the `mysql` system tables (now also InnoDB in 8.0+). MEMORY, ARCHIVE, CSV, NDB exist for niche uses.

@@ -13,6 +13,19 @@ confidence: medium
 
 > A horizontally-sharded, single-master key-value/document store built on Berkeley DB Java Edition, whose headline feature is per-request tunable consistency + durability — and whose biggest limitation is that "transactions" are confined to rows sharing a shard key.
 
+## When to use
+
+**Use Oracle NoSQL if:**
+- ✅ You are already an Oracle shop and want a horizontally-scalable KV/JSON store that integrates with the broader Oracle stack
+- ✅ You need fine-grained, per-request control over the consistency/durability/latency tradeoff (absolute/version/time/eventual reads; SYNC/NO_SYNC durability)
+- ✅ Your access is shard-key-centric — low-latency point reads/writes and short range scans on the shard key (profile/session/sensor/lookup data)
+
+**Avoid Oracle NoSQL if:**
+- ❌ You need general multi-key/cross-shard transactions — "transactions" only span rows sharing a shard key, with no begin/end and no cross-shard atomicity
+- ❌ You need ad-hoc multi-table joins or heavy analytics (not an analytics engine; joins absent in the Cloud Service)
+- ❌ You want a large open community and portability — [apache-cassandra](apache-cassandra.md), [scylladb](scylladb.md), [mongodb](mongodb.md), or [amazon-dynamodb](amazon-dynamodb.md) are stronger
+- ❌ You want independently-verified distributed correctness — no Jepsen report exists despite the tunable-consistency surface
+
 ## Identity
 - **Taxonomy / data model:** Multi-model on a key-value core. Supports opaque key-value, a tabular model (since v3.0), and schemaless JSON (JSON collection tables). Multi-model in the [oltp-olap-htap](../concepts/oltp-olap-htap.md) sense but fundamentally a KV/document engine. ([Oracle docs — introduction](https://docs.oracle.com/en/database/other-databases/nosql-database/25.3/concepts/introduction.html))
 - **Storage model:** Row/record-oriented. Underlying storage engine is **Oracle Berkeley DB Java Edition (JE)**, whose on-disk format is a **log-structured (append-only) B-tree** with cleaner/compaction — relevant for write amplification and p99. See [lsm-vs-btree](../concepts/lsm-vs-btree.md). ([Oracle docs](https://docs.oracle.com/en/database/other-databases/nosql-database/25.3/concepts/introduction.html))

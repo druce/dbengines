@@ -13,6 +13,20 @@ confidence: high
 
 > A fast, resource-cheap time-series database aimed at being a long-term, horizontally scalable backend for Prometheus-style metrics — it trades transactions and strong consistency for ingest throughput, cheap storage, and a ~1-second crash data-loss window.
 
+## When to use
+
+**Use VictoriaMetrics if:**
+- ✅ You need a cheap, operationally simple, horizontally scalable long-term store for Prometheus/Grafana-style metrics
+- ✅ You want a single-binary replacement for Thanos/Cortex/Mimir, or to consolidate Graphite/InfluxDB/OpenTSDB backends
+- ✅ You ingest very high sample rates and high active-series counts and value low RAM/disk/CPU per series
+- ✅ You can tolerate an AP model with a ~1-second crash data-loss window (no WAL by design)
+
+**Avoid VictoriaMetrics if:**
+- ❌ You leave defaults unaware — a degraded cluster silently returns *partial* query results unless you set `-search.denyPartialResponse`, and `-replicationFactor` is best-effort, not a strict durability guarantee (the biggest gotcha)
+- ❌ You need transactions, exact per-record durability, or strong read-after-write consistency across a partitioned cluster
+- ❌ You need relational/document data or a general-purpose database — it is deliberately narrow (float samples + labels only)
+- ❌ You want a single store for metrics plus events plus traces
+
 ## Identity
 - **Taxonomy / data model:** Time-series. Numeric float samples keyed by a metric name + arbitrary label set (the Prometheus/OpenMetrics data model). Append-mostly; not a general-purpose store. There is a sibling product, VictoriaLogs, for logs — out of scope here.
 - **Storage model:** Custom [LSM](../concepts/lsm-vs-btree.md)-style engine inspired by ClickHouse's MergeTree, with columnar, per-column compression (Gorilla-style delta encoding for timestamps, ZSTD-like for values) ([docs FAQ](https://docs.victoriametrics.com/victoriametrics/faq/)). Data is buffered in RAM, periodically flushed into immutable "parts," then background-merged — low write amplification, no per-sample update-in-place. See [columnar-storage](../concepts/columnar-storage.md), [time-series-storage](../concepts/time-series-storage.md).

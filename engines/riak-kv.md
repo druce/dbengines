@@ -13,6 +13,18 @@ confidence: high
 
 > A high-availability, eventually-consistent key-value store that is a near-literal implementation of Amazon's Dynamo paper — operationally simple to scale, but its convenient last-write-wins default loses acknowledged writes by design.
 
+## When to use
+
+**Use Riak KV if:**
+- ✅ You need a leaderless, always-writable, horizontally-scalable KV store across datacenters where availability beats consistency.
+- ✅ Your team will genuinely model conflicts with CRDTs or client-side sibling merges (`allow_mult=true`).
+- ✅ You want predictable, low-variance latency at scale and no-drama rolling upgrades / node add-remove.
+
+**Avoid Riak KV if:**
+- ❌ Anyone might enable last-write-wins (`allow_mult=false`) — Jepsen measured 71% of acknowledged writes lost with no partition and up to 91% across one.
+- ❌ You need transactions, joins, ad-hoc queries, or strong consistency.
+- ❌ It is a greenfield choice — commercial backer Basho went bankrupt in 2017 and maintenance velocity is low; prefer DynamoDB or Cassandra.
+
 ## Identity
 - **Taxonomy / data model:** Distributed key-value store organized as buckets → keys → opaque values; supports [crdts](../concepts/crdts.md)-based data types (counters, sets, maps, registers, flags) on top of the KV core. One of the original Dynamo clones, alongside [apache-cassandra](apache-cassandra.md) and [amazon-dynamodb](amazon-dynamodb.md).
 - **Storage model:** Pluggable per-bucket backends. Default **Bitcask** is a log-structured hash index ([lsm-vs-btree](../concepts/lsm-vs-btree.md)-adjacent; append-only log + in-RAM keydir, so **all keys must fit in memory**). **LevelDB / leveled** are LSM-tree backends supporting secondary indexes and unbounded keyspaces. Memory backend for caches.

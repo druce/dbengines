@@ -13,6 +13,18 @@ confidence: high
 
 > AWS's fully managed, single-writer graph database that speaks both property-graph (Gremlin, openCypher) and RDF (SPARQL) over the same Aurora-style distributed storage — convenient, locked-in, and not horizontally scalable for writes.
 
+## When to use
+
+**Use Amazon Neptune if:**
+- ✅ You're on AWS and want a zero-ops graph database for read-heavy OLTP traversal — fraud detection, identity/entity resolution, recommendation and knowledge graphs, network topology
+- ✅ Your write workload fits within a single writer instance and you want Aurora-style durability (6-way / 3-AZ storage, snapshot-isolation reads)
+- ✅ You want optionality between property-graph (Gremlin/openCypher) and RDF (SPARQL) without standing up your own engine
+
+**Avoid Amazon Neptune if:**
+- ❌ You need horizontal write scaling or multi-region active-active writes — all writes go through one instance with no write sharding (the single biggest gotcha)
+- ❌ You need read-your-writes off replicas (replica reads are eventually consistent; you must hit the writer endpoint) or one engine spanning both PG and RDF in a single query
+- ❌ You want portability off AWS or an open, self-hostable graph DB (prefer [neo4j](neo4j.md)/[arangodb](arangodb.md), or [graphdb](graphdb.md)/[virtuoso](virtuoso.md) for RDF)
+
 ## Identity
 - **Taxonomy / data model:** [graph-data-model](../concepts/graph-data-model.md) — multi-model. Two distinct models that do *not* interoperate within one cluster: **property graph** (queryable with Apache TinkerPop **Gremlin** and **openCypher**) and **RDF** (queryable with **SPARQL**). You pick the model per dataset; you cannot query RDF triples with Gremlin or vice-versa.
 - **Storage model:** purpose-built graph storage on a shared, log-structured cluster volume modeled on the Aurora architecture (separate storage tier replicated 6 ways across 3 AZs) ([What Is Amazon Neptune?](https://docs.aws.amazon.com/neptune/latest/userguide/intro.html)). Not a row/column SQL engine; quad/triple-oriented internally. Uses a [storage-compute-separation](../concepts/storage-compute-separation.md) design.

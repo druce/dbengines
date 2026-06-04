@@ -13,6 +13,18 @@ confidence: high
 
 > A 50-year-old proprietary mainframe DBMS built on inverted lists and multivalued records, tightly paired with the Natural language — extremely fast and durable for the workloads it was designed for, but a closed, legacy ecosystem most teams are trying to migrate off, not onto.
 
+## When to use
+
+**Use Adabas if:**
+- ✅ You already run it for high-volume mainframe OLTP (core banking, insurance, government records) and ripping it out is riskier than keeping it
+- ✅ You need very high, predictable transaction throughput on z/OS with mature backup/PITR (ADASAV, protection logs)
+- ✅ Your data fits its multivalue/periodic-group model and your team has Adabas/Natural mainframe DBA skills
+
+**Avoid Adabas if:**
+- ❌ It's a greenfield system — choose [postgresql](postgresql.md), [oracle](oracle.md), or a purpose-fit modern engine instead
+- ❌ You need native SQL, joins, ad-hoc analytics, or cloud-native/microservice architecture (SQL is bolted on via a separate Gateway)
+- ❌ You can't absorb the lock-in plus skills risk — the real migration cost is rewriting the intertwined Natural application layer, and ownership/roadmap is uncertain (Software AG broke up, Silver Lake-owned, A&N carved out standalone)
+
 ## Identity
 - **Taxonomy / data model:** Non-relational. Best classified as a **multivalue / inverted-list** DBMS ("Adaptable DAta BASe"). Records live in files; fields can be elementary, **multiple-value (MU)** fields, or **periodic groups (PE)** that repeat — i.e. arrays and nested repeating structures inside a single record, which collapses many-to-one relationships that an RDBMS would normalize into separate tables. ([Wikipedia: ADABAS](https://en.wikipedia.org/wiki/ADABAS), [Software AG: field types / format buffers](https://documentation.softwareag.com/adabas/ada854mfr/comref/fmtbuf.htm))
 - **Storage model:** Row/record store with a separate **inverted-list index** (the "Associator"): descriptors (indexed fields) are organized by value, comprising a normal index (NI) plus upper indexes (UI). Each record has an internal sequence number (**ISN**). Physical layout = Associator (indexes/metadata) + Data Storage. Not [lsm-vs-btree](../concepts/lsm-vs-btree.md)-style; it is a bespoke inverted-list + ISN-address scheme predating both. ([Software AG: Adabas Design](https://documentation.softwareag.com/adabas/ada744mfr/adamf/concepts/cfdesign.htm))

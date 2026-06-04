@@ -15,6 +15,20 @@ confidence: high
 
 > A distributed, columnar real-time OLAP datastore engineered for sub-second analytical queries at very high concurrency on data that is seconds-fresh from a Kafka-style stream — the engine behind "user-facing analytics" dashboards (LinkedIn, Uber).
 
+## When to use
+
+**Use Apache Pinot if:**
+- ✅ You need sub-second analytics (p99 < 1s) at very high concurrency (thousands of QPS) for user- or agent-facing dashboards
+- ✅ Your data must be seconds-fresh from a Kafka/Kinesis/Pulsar stream
+- ✅ You can invest in operating a multi-component cluster (ZooKeeper, controllers, brokers, servers, deep store)
+- ✅ Star-tree pre-aggregation indexes fit your known dashboard query set
+
+**Avoid Apache Pinot if:**
+- ❌ You want a general data warehouse or ad-hoc heavy multi-table joins over cold data (use [trino](trino.md)/[snowflake](snowflake.md)/[databricks](databricks.md))
+- ❌ You have low-concurrency batch analytics ([clickhouse](clickhouse.md)/[duckdb](duckdb.md) are simpler)
+- ❌ You need a transactional system of record (the upstream log is the source of truth, not Pinot)
+- ❌ You rely on upserts but can't partition the input stream by primary key and co-locate a partition's segments on one server (the biggest gotcha)
+
 ## Identity / role
 - **What it is:** a purpose-built [real-time-olap](../concepts/real-time-olap.md) datastore (originally LinkedIn, now ASF). It owns its own [columnar](../concepts/columnar-storage.md) storage format ("segments") *and* a distributed query engine. Unlike a [table format](../concepts/open-table-formats.md), it is not a metadata layer over someone else's files — it ingests, stores, indexes, and serves.
 - **Its niche vs. peers:** optimized for **high-QPS (thousands of concurrent queries), low-latency (p99 < 1s), point-lookup-style analytical** queries on a known set of dashboards — the "user-facing analytics" workload. Contrast with [clickhouse](clickhouse.md) (great single-query throughput, fewer concurrent users) and [apache-druid](apache-druid.md) (closest architectural sibling). See [oltp-olap-htap](../concepts/oltp-olap-htap.md).

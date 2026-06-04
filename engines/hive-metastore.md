@@ -15,6 +15,18 @@ confidence: high
 
 > The de-facto legacy catalog of the Hadoop/lake world: a Thrift service backed by a relational DB that stores *where the data is and what its schema is* — not the data, not a query engine — and that two decades of engines still speak by default.
 
+## When to use
+
+**Use Apache Hive Metastore if:**
+- ✅ You need the maximally compatible lake catalog — almost every engine ([trino](trino.md), [apache-spark-sql](apache-spark-sql.md), Presto, [apache-flink](apache-flink.md)) speaks its Thrift API by default.
+- ✅ You are on existing Hadoop/Hive infrastructure and want a free, battle-tested, community-governed (Apache 2.0) catalog.
+- ✅ You need a registry that maps table/partition names to schemas and file locations, optionally fronting Iceberg/Delta tables via HiveCatalog.
+
+**Avoid Apache Hive Metastore if:**
+- ❌ You are standing up a new greenfield catalog — it has no REST/JSON API and weak governance; prefer an Iceberg REST catalog (Polaris, Lakekeeper, Nessie) or Unity Catalog.
+- ❌ You have tables with millions of partitions — partition explosion turns metadata ops into heavy multi-row RDBMS queries that saturate the backing DB (the biggest gotcha).
+- ❌ You expect it to be a scalable, self-managing service — it is a thin Thrift shell over a single RDBMS you must tune, scale, and back up.
+
 ## Identity / role
 - **What it is:** a metadata service (HMS) plus a backing relational database. It stores definitions of databases, tables, partitions, columns, types, storage formats, SerDe info, and the physical **location** (HDFS/S3/GCS path) of the underlying files. It is the canonical [data-catalog](../concepts/data-catalog.md) of the Hadoop ecosystem.
 - **What it is NOT:** it is **not a query engine** (engines like [trino](trino.md), [apache-spark-sql](apache-spark-sql.md), Presto, [apache-flink](apache-flink.md) call it but execute themselves), **not a storage layer** (it points at files, it doesn't hold them), and **not a table format** — it predates and is distinct from [open-table-formats](../concepts/open-table-formats.md) like Iceberg/Delta/Hudi, though those formats often *use* HMS as their catalog.

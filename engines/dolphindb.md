@@ -13,6 +13,18 @@ confidence: medium
 
 > A C++ columnar time-series engine fused with its own array/vectorized programming language and streaming runtime — extremely fast for financial tick data and factor research, but a single-vendor, closed-source (binary-only core) ecosystem you script in DolphinDB's dialect, not standard SQL.
 
+## When to use
+
+**Use DolphinDB if:**
+- ✅ You're a quant/finance or IoT team ingesting, storing, and computing over huge volumes of time-series/tick data in one fast platform.
+- ✅ You need high-performance columnar scans, factor research/backtesting, and real-time stream computing with native asof/window joins.
+- ✅ You're willing to invest in learning its array/vectorized programming language to run analytics server-side.
+
+**Avoid DolphinDB if:**
+- ❌ You need a general-purpose OLTP / web-app backend, portable ANSI SQL, or a broad ORM/BI ecosystem.
+- ❌ You require strong correctness guarantees — headline "ACID + snapshot isolation" holds only in `TRANS` mode (`CHUNK` trades away atomicity), and there is no independent Jepsen verification.
+- ❌ You want a permissive, open-source license with no lock-in — the core is closed-source binary-only with heavy proprietary-language lock-in.
+
 ## Identity
 - **Taxonomy / data model:** Primarily a distributed **time-series** database, but effectively multi-model: it ships several pluggable storage engines — TSDB (LSM-based, row-column hybrid PAX layout), OLAP (pure columnar), PKEY (primary-key dedup/upsert), IMOLTP (in-memory row store with B+tree), and VECTORDB (ANN vector search) ([about](https://docs.dolphindb.com/en/about_dolphindb.html)). See [time-series-storage](../concepts/time-series-storage.md), [columnar-storage](../concepts/columnar-storage.md), [vector-search-ann](../concepts/vector-search-ann.md).
 - **Storage model:** Columnar on disk with lossless compression (LZ4, Zstandard, delta-of-delta, Chimp, dictionary) ([about](https://docs.dolphindb.com/en/about_dolphindb.html)). The TSDB and PKEY engines are built on a proprietary **LSM-tree** ([TSDB engine](https://docs.dolphindb.com/en/Tutorials/tsdb_engine.html)); the OLAP engine is plain columnar append-style. See [lsm-vs-btree](../concepts/lsm-vs-btree.md).

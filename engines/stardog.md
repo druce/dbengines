@@ -13,6 +13,20 @@ confidence: medium
 
 > A proprietary RDF triple/quad store with W3C-standard SPARQL + OWL reasoning, virtual graphs over external sources, and a built-in vector store for LLM-grounded querying — strongly consistent but replicated full-copy, so it scales reads, not data volume.
 
+## When to use
+
+**Use Stardog if:**
+- ✅ Your problem is enterprise data integration and reasoning — heterogeneous silos unified as a standards-based RDF knowledge graph with OWL/rules inference
+- ✅ You want virtual graphs that query external relational/NoSQL/CSV sources in place rather than copying them
+- ✅ You need LLM grounding / GraphRAG via the embedded vector store and Voicebox natural-language layer
+- ✅ You require strong consistency (CP) with HA and read scaling, and standards-based SPARQL portability
+
+**Avoid Stardog if:**
+- ❌ You need to shard a massive graph horizontally — the cluster is full-replication, not sharded, so dataset size is capped to one node and writes get *slower* as you add nodes
+- ❌ You want a labeled-property-graph / Cypher model ([neo4j](neo4j.md)-style) rather than RDF/SPARQL
+- ❌ You run write-heavy multi-node workloads (every write goes to every node)
+- ❌ You rely on the default isolation being serializable — it is SNAPSHOT by default, so write-skew is possible unless you opt into SERIALIZABLE
+
 ## Identity
 - **Taxonomy / data model:** RDF graph database (triples/quads), addressed via the W3C semantic-web stack. Multi-model in the sense that it can federate relational, document, and other sources as virtual-graphs and includes an embedded vector store, but the core model is RDF, not labeled-property-graph (LPG) like [neo4j](neo4j.md). See [graph-data-model](../concepts/graph-data-model.md) and [graph-data-model](../concepts/graph-data-model.md).
 - **Storage model:** "Mastiff" storage engine built on [rocksdb](rocksdb.md), i.e. an LSM-tree, replacing the older B-tree engine; the move to LSM (since Stardog 7.0) improved small-write/batch performance, and Stardog adopted MVCC for snapshot isolation in the same rework ([Mastiff Beta announcement](https://community.stardog.com/t/stardog-7-0-0-mastiff-beta-1/1425)). See [lsm-vs-btree](../concepts/lsm-vs-btree.md).

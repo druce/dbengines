@@ -13,6 +13,18 @@ confidence: medium
 
 > The former Sybase SQL Server / ASE: a battle-tested, T-SQL-compatible, single-node OLTP relational engine that pioneered client-server RDBMS architecture, now in steady maintenance under SAP rather than active feature growth.
 
+## When to use
+
+**Use SAP Adaptive Server Enterprise if:**
+- ✅ You already run a Sybase/ASE estate or an SAP Business Suite back end and need a rock-solid, T-SQL-compatible single-node OLTP engine.
+- ✅ You want full multi-statement ACID with a mature backup/HADR (Always-On) story and predictable row-level-locking OLTP throughput.
+- ✅ You have experienced ASE/T-SQL DBAs for device/segment management and lock-scheme tuning.
+
+**Avoid SAP Adaptive Server Enterprise if:**
+- ❌ It is greenfield work — most teams pick [postgresql](postgresql.md) or a cloud-native engine; the product is in SAP maintenance mode (16.1, EoMM 2030), not active growth.
+- ❌ You need analytics/columnar (use [sap-hana](sap-hana.md)), horizontal scale-out, or web-scale workloads.
+- ❌ You can't tune the lock scheme — default concurrency is lock-based 2PL (MVCC/snapshot isolation exists but must be explicitly enabled and pays a version-store cost), so allpages-vs-datapages-vs-datarows choice makes or breaks throughput.
+
 ## Identity
 - **Taxonomy / data model:** Relational ([oltp-olap-htap](../concepts/oltp-olap-htap.md)). SQL with stored procedures; Transact-SQL dialect shared with [microsoft-sql-server](microsoft-sql-server.md) (Microsoft SQL Server forked from the same Sybase codebase circa 1993).
 - **Storage model:** Disk-oriented **row-store** ([lsm-vs-btree](../concepts/lsm-vs-btree.md) — uses B+-tree indexes with clustered/non-clustered options, not LSM). Page-based on-disk format (typically 2K–16K pages). Optional **in-memory database (IMDB)** since 15.5/15.7 where a database runs entirely in cache, trading durability for speed ([dbdb.io](https://dbdb.io/db/adaptive-server-enterprise)). Row- and page-level compression available.

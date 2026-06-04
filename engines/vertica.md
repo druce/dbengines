@@ -13,6 +13,20 @@ confidence: high
 
 > A mature columnar MPP analytics database (the commercialized C-Store) whose performance comes from physically pre-sorted, pre-segmented, compressed "projections" rather than indexes — now offered in an Eon mode that decouples compute from object storage.
 
+## When to use
+
+**Use Vertica if:**
+- ✅ You need a battle-tested, high-performance columnar MPP warehouse for large SQL analytics, BI, clickstream/ad-tech, or telco CDR workloads
+- ✅ You want to run it yourself (on-prem or your own cloud), especially Eon mode for elastic compute over S3-style communal storage
+- ✅ You bulk-load via COPY and run large scans, joins, and aggregations — plus in-database ML over big columnar datasets
+- ✅ You can invest in projection/segmentation design to get columnar I/O performance
+
+**Avoid Vertica if:**
+- ❌ You get projection design or Tuple Mover health wrong — bad sort order/segmentation, too many small ROS containers, or unpurged deletes slow it dramatically, and there are no indexes to bail you out (the biggest gotcha)
+- ❌ Your workload is OLTP, single-row lookups/updates, or high-concurrency small transactions
+- ❌ You have heavy trickle/row-at-a-time inserts that fight the Tuple Mover, or tiny datasets where DuckDB/Postgres is simpler
+- ❌ You want a zero-ops serverless warehouse — Snowflake or BigQuery fit better
+
 ## Identity
 - **Taxonomy / data model:** relational SQL data warehouse; commercial descendant of the academic [C-Store](https://dbdb.io/db/vertica) column-store prototype. Sold today as "OpenText Analytics Database (Vertica)."
 - **Storage model:** true column-store. Data lives in **projections** — materialized, sorted, segmented, aggressively compressed/encoded copies of (subsets of) table columns; there are no traditional secondary indexes ([columnar-storage](../concepts/columnar-storage.md), [lsm-vs-btree](../concepts/lsm-vs-btree.md) — Vertica is neither LSM nor B-tree; it is sorted/encoded column files). On-disk format is the **ROS (Read Optimized Store)**: sorted, compressed column files on disk. Historically a small in-memory **WOS (Write Optimized Store)** absorbed trickle inserts before the Tuple Mover flushed them to ROS; WOS was deprecated and removed in recent versions, so loads now go directly to ROS containers.

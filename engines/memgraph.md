@@ -13,6 +13,20 @@ confidence: high
 
 > An in-memory, C++ property-graph database speaking Neo4j-compatible Cypher, positioned for real-time graph analytics, streaming, and GraphRAG — fast because it holds the graph in RAM, with durability and high availability that need careful configuration.
 
+## When to use
+
+**Use Memgraph if:**
+- ✅ You need low-latency, real-time graph queries or analytics in Cypher on a dataset that fits in RAM
+- ✅ You want a faster, lighter Neo4j alternative for streaming graphs (Kafka/Pulsar) and GraphRAG / AI memory
+- ✅ You can use existing Cypher/Bolt clients and want in-engine graph algorithms via MAGE (Python/C++/Rust)
+- ✅ Native vector search alongside the graph (for GraphRAG) is useful to you
+
+**Avoid Memgraph if:**
+- ❌ Your graph vastly exceeds available RAM — unless you accept the much slower on-disk RocksDB mode
+- ❌ You need horizontal write sharding or serializable isolation — it is single-writer with no serializable level
+- ❌ You require an independently audited HA/no-data-loss story — failover is Enterprise-only and no Jepsen report exists
+- ❌ You assume "ACID" and "open-source" at face value — ACID applies only to `IN_MEMORY_TRANSACTIONAL` (analytical mode has none) and the license is BSL, not OSI-open
+
 ## Identity
 - **Taxonomy / data model:** Labeled property graph (nodes, relationships, key-value properties on both), querying via openCypher. See [graph-data-model](../concepts/graph-data-model.md). Multi-model only in the loose sense — it is graph-first, not multi-model.
 - **Storage model:** Primarily **in-memory** — the working graph lives in RAM; on-disk artifacts are snapshots + WAL for recovery. Index core is a highly-concurrent **skip list**, not a [B-tree/LSM](../concepts/lsm-vs-btree.md) ([dbdb.io](https://dbdb.io/db/memgraph)). An optional `ON_DISK_TRANSACTIONAL` mode backs storage with **RocksDB** (LSM), trading speed for capacity beyond RAM ([storage modes](https://memgraph.com/blog/memgraph-storage-modes-explained)).

@@ -13,6 +13,19 @@ confidence: high
 
 > Shared-nothing, MySQL-compatible distributed SQL engine (formerly MemSQL) that fuses an in-memory rowstore and a compressed columnstore into a single table type to serve transactional and analytical workloads at once — at the price of capping isolation at READ COMMITTED.
 
+## When to use
+
+**Use SingleStore if:**
+- ✅ You want one MySQL-compatible system that ingests fast and answers analytical queries on fresh data — operational analytics, real-time dashboards, ingest-and-query pipelines.
+- ✅ You're escaping the pain of running separate OLTP and OLAP systems — Universal Storage serves both from one copy of the data.
+- ✅ You need SQL + native vector/full-text hybrid search at scale, with built-in Pipelines ingest from Kafka/S3/GCS.
+
+**Avoid SingleStore if:**
+- ❌ You need serializable or even repeatable-read isolation — isolation tops out at **READ COMMITTED** (the ceiling, not just the default), so non-repeatable reads and write skew are by design.
+- ❌ Your workload fits on a single Postgres/MySQL node, or is very high-contention single-row OLTP — operational overhead and cost are aimed at scale.
+- ❌ You want true OSS licensing — the core engine is closed-source proprietary (free only up to 8 vCPU / 32 GB RAM self-managed).
+- ❌ You have deep cross-shard transactional graphs that force network reshuffles.
+
 ## Identity
 - **Taxonomy / data model:** Relational, distributed. SQL with MySQL dialect compatibility; also stores JSON, geospatial, full-text, and vector ([vector-search-ann](../concepts/vector-search-ann.md)) types in the same tables.
 - **Storage model:** Hybrid. "Universal Storage" is a disk-backed columnstore organized as an [lsm-vs-btree](../concepts/lsm-vs-btree.md) LSM tree with row-segments (~million-row chunks called *segments*), plus secondary **hash indexes** and seekable/sparse compression to make point reads and updates cheap on columnar data ([SingleStore: Pushing HTAP Forward](https://www.singlestore.com/blog/pushing-htap-databases-forward-with-singlestoredb/), [Universal Storage docs](https://docs.singlestore.com/cloud/create-a-database/columnstore/universal-storage/)). A pure in-memory rowstore table type also still exists.

@@ -15,6 +15,19 @@ confidence: high
 
 > A standalone, open-source implementation of the Iceberg REST Catalog API that tracks table metadata pointers and centralizes access control (RBAC + short-lived credential vending) so many engines can share one copy of [Iceberg](../concepts/open-table-formats.md) data.
 
+## When to use
+
+**Use Apache Polaris if:**
+- ✅ You want a vendor-neutral, open (Apache-2.0) catalog so many engines read/write one set of Iceberg tables
+- ✅ You need centralized RBAC plus short-lived credential vending instead of long-lived cloud keys
+- ✅ You run a multi-engine Iceberg lakehouse ([Spark](apache-spark-sql.md), [trino](trino.md), Flink, StarRocks, [snowflake](snowflake.md)) and want to avoid one engine's catalog lock-in
+
+**Avoid Apache Polaris if:**
+- ❌ You're single-engine and happy in that engine's native catalog (it adds an operational tier for little gain)
+- ❌ You're not on Iceberg — it is Iceberg-only, not Delta/Hudi
+- ❌ You expect a discovery/lineage/business-glossary catalog (wrong category) or multi-table transactions (only Iceberg per-table atomicity exists)
+- ❌ You can't run and harden a PostgreSQL-backed service on the critical commit path (the biggest gotcha)
+
 ## Identity / role
 - **What it IS:** a *catalog service* for the [lakehouse](../concepts/lakehouse.md). It implements the Apache Iceberg REST Catalog API, maps table/namespace names to the current Iceberg metadata-file pointer, performs the atomic pointer swap on commit, and enforces who may read/write what. It also vends short-lived cloud-storage credentials to engines.
 - **What it is NOT:** it is **not a query engine** (it plans nothing, scans no data, runs no SQL), **not a storage layer** (data + Parquet/metadata live in your S3/ADLS/GCS object store), and **not the table format itself** (Iceberg is the format; Polaris is a catalog *for* it). It is also not a general-purpose data catalog / discovery + lineage product in the [data-catalog](../concepts/data-catalog.md) sense — it is a technical metastore + authorization gateway, not a business glossary.

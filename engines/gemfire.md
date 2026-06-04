@@ -13,7 +13,17 @@ confidence: high
 
 > A Java distributed in-memory data grid — regions of key-value objects spread across a shared-nothing cluster for sub-millisecond reads/writes, with disk persistence and WAN replication; choose it as a scale-out cache/operational store, not as a SQL database.
 
-## Identity
+## When to use
+
+**Use GemFire if:**
+- ✅ You need a battle-tested, low-latency (sub-millisecond) Java in-memory data grid for caching or operational hot data, especially in a Spring/JVM shop.
+- ✅ You want HA via configurable in-memory redundant copies plus optional oplog disk persistence and asynchronous WAN (geo) replication.
+- ✅ You run real-time event processing with continuous queries (CQ) and data-aware server-side function execution.
+
+**Avoid GemFire if:**
+- ❌ You need distributed cross-shard ACID transactions — multi-key ACID effectively requires data colocated on a single member, and isolation is repeatable-read (not serializable), with no Jepsen validation.
+- ❌ You need SQL/analytics/ad-hoc aggregation — OQL lacks aggregation functions and joins are limited to colocated/replicated data.
+- ❌ Your dataset won't economically fit in RAM, or your team lacks JVM-tuning expertise — it is memory-first and GC pauses dominate tail latency.
 - **Taxonomy / data model:** Key-value [oltp-olap-htap](../concepts/oltp-olap-htap.md) in-memory data grid (IMDG). Data lives in named **regions** (analogous to tables/maps) inside a distributed **cache**; values are arbitrary Java objects, queried via OQL on object graphs. GemFire is the commercial product (originally GemStone Systems → Pivotal/VMware → Broadcom); its open-source core was donated to the Apache Software Foundation in 2015 as **Apache Geode** ([VMware Open Source Blog](https://blogs.vmware.com/opensource/2020/04/14/apache-geode-a-quick-history/)). They originated from a shared codebase, but **VMware GemFire has since forked and diverged** — it is not open source, selectively pulls in (and adds proprietary features beyond) Geode improvements, and newer GemFire/Geode clients are not cross-compatible with older servers. Apache Geode itself was voted into the **Apache Attic in November 2022** (no active PMC), the PMC moved to terminate it in 2024, and it was then **revived** — Geode 1.15.2 (Sep 2025) and **Geode 2.0 (Dec 2025)** ([ASF blog: Geode 2.0 revival](https://news.apache.org/foundation/entry/apache-geode-2-0-revival-reinvention-and-the-road-ahead)).
 - **Storage model:** Primary store is JVM heap (and off-heap) memory across cluster members; no [lsm-vs-btree](../concepts/lsm-vs-btree.md) page store. Optional disk persistence uses append-only **operation logs (oplogs)** — a write-ahead-log design with parallel recovery ([Geode](https://geode.apache.org/)). Indexes are hash-based (entry keys hash to buckets); range/OQL indexes are also supported.
 - **Workload:** OLTP-style low-latency reads/writes and caching. Not an OLAP/analytics engine — OQL lacks aggregation functions ([dbdb.io](https://dbdb.io/db/geode)). No HTAP claim.

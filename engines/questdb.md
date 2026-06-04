@@ -13,6 +13,20 @@ confidence: high
 
 > A high-throughput, single-node columnar time-series engine that pairs InfluxDB-line-protocol ingest with PostgreSQL-flavored SQL; horizontal scale and replication live behind the Enterprise license.
 
+## When to use
+
+**Use QuestDB if:**
+- ✅ You need to firehose time-ordered data (market ticks, metrics, IoT/sensor telemetry) into one fast box with multi-million-rows/sec ingest
+- ✅ You want PostgreSQL-dialect SQL with time-series extensions (`SAMPLE BY`, `LATEST ON`, `ASOF JOIN`) and the Postgres wire protocol
+- ✅ You want HTAP-on-one-engine for time-series — fast ILP ingest plus sub-second analytical scans over time ranges
+- ✅ You want Apache-2.0 OSS for a single big NVMe node with minimal operational ceremony
+
+**Avoid QuestDB if:**
+- ❌ You expect general OLTP/CRUD — the biggest functional gotcha is no single-row deletes (drop whole partitions), no multi-table transactions, and no foreign keys
+- ❌ You need native multi-node sharding on the open-source tier — replication, failover, and security are Enterprise-gated; OSS is genuinely single-node
+- ❌ You have high-cardinality `SYMBOL` columns or frequent random updates (copy-on-write write amplification)
+- ❌ You need independently-verified distributed consistency — no public Jepsen report, and default commit mode doesn't fsync per commit (power-loss window)
+
 ## Identity
 - **Taxonomy / data model:** Time-series database with a relational SQL surface. Tables are time-partitioned; a designated timestamp column drives storage order. See [time-series-storage](../concepts/time-series-storage.md).
 - **Storage model:** Column-store. Each column is its own memory-mapped file in QuestDB's native binary format, time-partitioned (by hour/day/month/year), with older partitions tierable to Apache Parquet on object storage ([storage engine docs](https://questdb.com/docs/architecture/storage-engine/)). Write path is row-oriented (append-fast WAL); read path is columnar — not an [lsm-vs-btree](../concepts/lsm-vs-btree.md) design but an append-mostly columnar log with copy-on-write updates.

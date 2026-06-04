@@ -13,6 +13,18 @@ confidence: high
 
 > A managed relational engine that keeps MySQL/PostgreSQL semantics on the front end but replaces the storage layer with a multi-AZ, 6-way quorum-replicated distributed log — buying durability and fast failover at the cost of being locked to AWS.
 
+## When to use
+
+**Use Amazon Aurora if:**
+- ✅ You're committed to AWS and want managed MySQL/PostgreSQL with better durability (6-way, 3-AZ quorum), sub-minute failover, and near-real-time read replicas
+- ✅ You want cheap copy-on-write clones, continuous PITR, and storage that auto-grows to 256 TiB without provisioning
+- ✅ It's a cloud-native OLTP / web / SaaS backend, or a lift-and-shift target for an existing MySQL/PostgreSQL app
+
+**Avoid Amazon Aurora if:**
+- ❌ You need write throughput beyond one node — the base engine is single-writer; use Aurora Limitless or [Aurora DSQL](amazon-aurora.md)
+- ❌ Your workload is heavy analytics/OLAP (offload to [amazon-redshift](amazon-redshift.md)), or you need multi-cloud / on-prem portability (Aurora is AWS-only)
+- ❌ You can't model your I/O — on the Standard tier per-I/O billing can dwarf compute and surprise you at scale (the single biggest gotcha); reads off replicas are also bounded-stale, not strongly consistent
+
 ## Identity
 - **Taxonomy / data model:** Relational. Two editions: **Aurora MySQL-Compatible** and **Aurora PostgreSQL-Compatible**. The query/transaction engine is the upstream MySQL/PostgreSQL code; only the storage subsystem is replaced. (Distinct from the newer, separate products [Aurora DSQL](amazon-aurora.md) and Aurora PostgreSQL Limitless — see below.)
 - **Storage model:** Row-store (InnoDB-derived for MySQL; heap for PostgreSQL) on top of a **log-structured, distributed storage fleet**. The compute node ships only redo-log records to storage; storage nodes materialize pages from the log. Volume is sliced into 10 GB "protection groups," each replicated **6 ways (2 copies × 3 AZs)** ([Aurora SIGMOD 2017 / design overview](https://www.allthingsdistributed.com/2019/03/amazon-aurora-design-cloud-native-relational-database.html)). See [lsm-vs-btree](../concepts/lsm-vs-btree.md) for the log-vs-page contrast; Aurora is closer to "the log is the database."

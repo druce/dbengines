@@ -13,6 +13,18 @@ confidence: high
 
 > Managed petabyte-scale wide-column key-value store with single-digit-millisecond latency and linear node scaling — but only single-row atomicity, no SQL transactions, and eventual consistency once you replicate across clusters.
 
+## When to use
+
+**Use Google Cloud Bigtable if:**
+- ✅ You have a massive, high-throughput key-value or time-series workload with a clean key-based access pattern.
+- ✅ You want Google to handle sharding, rebalancing, and durability (auto-splitting tablets, no manual resharding).
+- ✅ You're on GCP and need single-digit-millisecond reads/writes at high QPS, or are migrating off self-managed HBase.
+
+**Avoid Google Cloud Bigtable if:**
+- ❌ Your row keys are monotonic/poorly distributed — hotspots no number of nodes will fix is the biggest gotcha.
+- ❌ You need multi-row transactions, joins, secondary indexes, or ad-hoc SQL analytics.
+- ❌ Your dataset is under ~1 TB — you pay for idle nodes, so it's overkill and overpriced at small scale.
+
 ## Identity
 - **Taxonomy / data model:** Wide-column / sparse multidimensional sorted map. The cell key is the four-tuple (row key, column family, column qualifier, timestamp); cells hold versioned values. This is the same model as the [Bigtable 2006 paper](https://research.google.com/archive/bigtable-osdi06.pdf) and the conceptual ancestor of [apache-hbase](apache-hbase.md), [apache-cassandra](apache-cassandra.md), and [apache-accumulo](apache-accumulo.md). See [wide-column](../concepts/wide-column.md).
 - **Storage model:** [LSM-tree](../concepts/lsm-vs-btree.md). Data is written to SSTables (persistent, ordered, immutable maps) on [Colossus](https://docs.cloud.google.com/bigtable/docs/overview), Google's distributed filesystem. Compute (nodes) is separated from storage (Colossus) — see [storage-compute-separation](../concepts/storage-compute-separation.md). Rows are range-partitioned into *tablets*; nodes hold pointers to tablets, not the data itself, so rebalancing and failure recovery move pointers rather than bytes.

@@ -13,6 +13,19 @@ confidence: high
 
 > The de facto in-memory key-value/data-structure server — blisteringly fast for caching, queues, and ephemeral state, but its async replication and best-effort durability mean you should not treat it as a system of record.
 
+## When to use
+
+**Use Redis if:**
+- ✅ You need sub-millisecond point access to ephemeral or cacheable state — caching, sessions, rate limiting, leaderboards (sorted sets), pub/sub, job queues.
+- ✅ Your data structures map to its native types (hashes, lists, sets, sorted sets, streams) and access is by key, not ad-hoc query.
+- ✅ The working set fits in RAM and losing recent writes on failover is acceptable.
+- ✅ You want vector/semantic caching or full-text search via the Redis Query Engine alongside KV.
+
+**Avoid Redis if:**
+- ❌ You need it as a system of record for data you cannot lose — async replication means acknowledged writes can vanish on failover, and `WAIT` only reduces, not eliminates, this.
+- ❌ Your dataset exceeds RAM economically — cost scales with the RAM-bound dataset.
+- ❌ You need strong consistency, real ACID multi-statement transactions, joins, or analytical queries.
+
 ## Identity
 - **Taxonomy / data model:** Primarily key-value, but really a *data-structure server* — values are typed (strings, hashes, lists, sets, sorted sets, streams, bitmaps, HyperLogLog, geospatial, and vector sets). With modules now folded into core Redis 8 (JSON, Time Series, probabilistic types, and the Redis Query Engine for full-text + vector search), it is genuinely [multi-model](../concepts/multi-model.md). See also [vector-search-ann](../concepts/vector-search-ann.md), [full-text-search](../concepts/full-text-search.md), [time-series-storage](../concepts/time-series-storage.md).
 - **Storage model:** In-memory primary store (the entire dataset must fit in RAM), with optional on-disk persistence via RDB point-in-time snapshots and/or AOF (append-only file) command logging. Not [lsm-vs-btree](../concepts/lsm-vs-btree.md) — it is a hash-table/skiplist memory engine, with disk used only for durability/restart.

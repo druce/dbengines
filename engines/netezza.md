@@ -13,6 +13,20 @@ confidence: high
 
 > A proprietary shared-nothing MPP data-warehouse appliance that pushes filtering/decompression into FPGAs to scan huge tables fast; great for set-based analytic SQL, wrong for OLTP, point lookups, or trickle updates.
 
+## When to use
+
+**Use Netezza if:**
+- ✅ You already run it or want a no-knobs appliance that scans and aggregates very large relational tables fast
+- ✅ Your workload is set-based analytic SQL — bulk loads, large scans, star/snowflake joins, regulatory/financial reporting
+- ✅ You want serializable SQL with minimal indexing effort (zone maps + parallel scan replace secondary indexes)
+- ✅ FPGA-offloaded decompression/filtering and even data distribution matter more than RAM-resident working sets
+
+**Avoid Netezza if:**
+- ❌ You run OLTP, high-concurrency single-row reads/writes, trickle/streaming updates, or low-latency point lookups
+- ❌ You misjudge the **distribution key** — skew silently destroys the parallelism the whole architecture depends on
+- ❌ You want elastic pay-per-query economics ([snowflake](snowflake.md), [google-bigquery](google-bigquery.md), [amazon-redshift](amazon-redshift.md) fit better)
+- ❌ You want to avoid vendor lock-in — proprietary appliance/FPGA stack, NZPLSQL, and IBM tooling make migration a multi-quarter project
+
 ## Identity
 - **Taxonomy / data model:** relational, analytic data warehouse. Sold as a purpose-built **appliance** (now also a cloud service, Netezza Performance Server / NPS). Single-purpose OLAP, not multi-model.
 - **Storage model:** row-oriented on-disk pages with heavy compression, distributed across many disks/processing units. Not columnar; performance comes from massive parallel sequential scan plus **zone maps** (auto-maintained min/max per data block that let the scan skip blocks outside a `WHERE` range) ([IBM docs — zone maps](https://www.ibm.com/docs/en/netezza?topic=ds-zone-maps)). Contrast with [lsm-vs-btree](../concepts/lsm-vs-btree.md) — Netezza is neither; it is scan-optimized heap storage.

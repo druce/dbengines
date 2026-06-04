@@ -13,6 +13,18 @@ confidence: high
 
 > A clustered, JVM-native in-memory key/value data grid (the engine behind Red Hat Data Grid) built primarily as a distributed cache — it can do transactions, query, and disk persistence, but its consistency model is weaker than a real database and that is the load-bearing caveat.
 
+## When to use
+
+**Use Infinispan if:**
+- ✅ You need a clustered, JVM-friendly in-memory data grid for distributed caching, HTTP session/state clustering, or a JCache/Hibernate L2 cache.
+- ✅ You are in a Red Hat / Quarkus / Keycloak ecosystem and want commercial hardening via Red Hat Data Grid, with cross-site DR.
+- ✅ You want elastic scale-out with multi-protocol access (Hot Rod, REST, Memcached, RESP/Redis) and optional Ickle/Lucene query.
+
+**Avoid Infinispan if:**
+- ❌ You treat it as a system of record — its own design docs state it provides neither linearizability nor session consistency, only READ_COMMITTED/REPEATABLE_READ (the biggest gotcha).
+- ❌ You need serializable transactions, guaranteed durability, or atomic multi-key ops — `putAll`/`clear` are not truly atomic across nodes, and values can "go backwards" during topology changes.
+- ❌ You cannot keep the working set in cluster RAM, or you take its "ACID transactions" claim at face value under partitions, async replication, or rebalancing.
+
 ## Identity
 - **Taxonomy / data model:** Distributed key/value store / in-memory data grid (IMDG). Values can be opaque blobs or Protobuf-encoded objects; secondary capabilities include full-text/relational query via the Ickle language (Lucene-backed) and continuous queries. Not a relational engine. See [oltp-olap-htap](../concepts/oltp-olap-htap.md).
 - **Storage model:** In-memory first (JVM heap or off-heap native memory), with optional persistent cache stores (RocksDB ([lsm-vs-btree](../concepts/lsm-vs-btree.md)), single-file, JDBC, etc.) used as write-through/write-behind backing or overflow, not as a primary B-tree/LSM datastore. Entries are partitioned across nodes by consistent hashing with a configurable number of owners.

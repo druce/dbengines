@@ -15,6 +15,19 @@ confidence: medium
 
 > A governance/metadata catalog for the lakehouse — it stores *what tables exist and who can touch them*, not data and not query results — split into a thin Apache-2.0 OSS server and a much richer proprietary Databricks-managed product.
 
+## When to use
+
+**Use Unity Catalog if:**
+- ✅ You live on Databricks and want one governance plane (lineage, discovery, row/column security, audit) over your lakehouse — managed UC is the strongest integrated lakehouse catalog
+- ✅ You want a single governance/credential-vending plane across many engines and table formats instead of per-engine ACLs and sprawling Hive metastores
+- ✅ You need to give external Iceberg/Hive engines (Trino, Spark, Dremio, StarRocks, DuckDB) a catalog via the Iceberg REST Catalog API (use UC OSS for this without buying Databricks)
+
+**Avoid Unity Catalog if:**
+- ❌ You assume OSS == managed — the OSS server is a thin interop layer; fine-grained enforcement, automatic lineage, and the discovery UI only fully materialize in the proprietary Databricks service (the biggest gotcha)
+- ❌ You expect fine-grained governance everywhere — external engines holding raw vended credentials may bypass row/column masking unless the integration enforces UC policy
+- ❌ You want a query engine or a storage/table format — UC executes no SQL and stores no data; ACID comes from Delta/Iceberg, not the catalog
+- ❌ You need portable governance depth — the richest features remain locked inside Databricks
+
 ## Identity / role
 - **What it is:** a centralized catalog and governance layer for [lakehouse](../concepts/lakehouse.md) assets — tables, files ("volumes"), functions, ML models, and AI tools — over a three-level namespace (`catalog.schema.object`). It holds metadata, access policies, lineage, and audit, and vends short-lived storage credentials to engines.
 - **What it is NOT:** not a query engine (it does not execute SQL — [databricks](databricks.md)/[apache-spark-sql](apache-spark-sql.md)/[trino](trino.md) do), not a storage/[table format](../concepts/open-table-formats.md) (that's [apache-iceberg](apache-iceberg.md)/[delta-lake](delta-lake.md)/Hudi), and not a database. It is the control plane that sits *beside* compute and object storage. See [oltp-olap-htap](../concepts/oltp-olap-htap.md) for the workload axis it governs (mostly OLAP/lakehouse).

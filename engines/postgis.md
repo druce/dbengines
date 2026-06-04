@@ -13,6 +13,20 @@ confidence: high
 
 > PostGIS is not a standalone database — it is a [postgresql](postgresql.md) extension that adds OGC-standard geometry/geography/raster types and spatial indexing, making Postgres the strongest open-source GIS engine; everything about its consistency, transactions, and operations is inherited from [postgresql](postgresql.md).
 
+## When to use
+
+**Use PostGIS if:**
+- ✅ You have spatial data and want genuine ACID, real SQL spatial joins (`ST_Intersects`, nearest-neighbor, geofencing), and the richest open-source GIS function library — for free
+- ✅ You already run, or can live within, a single-node-to-replicated PostgreSQL
+- ✅ You need OGC/ISO-standard geometry/geography/raster types and integration with QGIS, GeoServer, GDAL, pgRouting
+- ✅ You want vector-tile serving (`ST_AsMVT`) or spatial analysis directly in SQL
+
+**Avoid PostGIS if:**
+- ❌ You need automatic horizontal sharding of spatial workloads — PostGIS doesn't auto-shard spatially (you'll hand-roll Citus or manual partitioning)
+- ❌ You ignore GiST indexing and the bbox-then-refine query pattern — spatial performance lives or dies on the index; a missing one turns a join into a full-scan cross-product
+- ❌ You run pure high-QPS lat/long radius lookups where a simpler geo KV/index (Redis GEO, Elasticsearch geo) suffices, or massive raster archives better served by object storage + tiling
+- ❌ You can't keep PostGIS/GEOS/PROJ versions aligned across nodes and at restore time — mismatches silently change results or break dump loads
+
 ## Identity
 - **Taxonomy / data model:** Spatial extender for [postgresql](postgresql.md). Adds `geometry`, `geography`, `raster`, and topology types plus ~500 spatial functions on top of the relational model. Implements the OGC Simple Features for SQL spec and ISO SQL/MM. It is *not* a separate engine — it ships as a Postgres extension (`CREATE EXTENSION postgis`).
 - **Storage model:** Row-store (Postgres heap), inherited from [postgresql](postgresql.md) ([lsm-vs-btree](../concepts/lsm-vs-btree.md): Postgres is B-tree/heap, not LSM). Geometries store as a compact serialized binary (EWKB-derived) in the row; large geometries TOAST out-of-line and compress. Spatial indexes are R-Tree-over-GiST, with SP-GiST and BRIN also available.

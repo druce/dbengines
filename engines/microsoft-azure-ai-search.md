@@ -13,6 +13,20 @@ confidence: high
 
 > Azure's managed full-text + vector + hybrid search service (formerly Azure Cognitive Search / Azure Search) — a secondary retrieval index for search UX and RAG grounding, explicitly not designed as a primary data store.
 
+## When to use
+
+**Use Microsoft Azure AI Search if:**
+- ✅ You are on Azure and want a managed full-text + vector + hybrid retrieval layer without operating Elasticsearch/OpenSearch yourself
+- ✅ You need RAG grounding for LLMs/agents — integrated vectorization, semantic ranker, and agentic retrieval are built in
+- ✅ You want site/app or enterprise document search fed from Azure sources via pull indexers and skillset enrichment
+- ✅ You can treat it as a derived/secondary index rebuilt from an external source of truth
+
+**Avoid Microsoft Azure AI Search if:**
+- ❌ You need a system of record — there is **no self-service backup/restore/PITR**, so deleting an index with no external backup means rebuilding from the original source
+- ❌ You need multi-document transactions, relational joins, or read-your-writes (it is eventually consistent with no monotonic-read guarantee)
+- ❌ You need multi-cloud or on-prem — it is Azure-only, managed-only SaaS
+- ❌ You are cost-sensitive and a self-hosted [opensearch](opensearch.md)/[elasticsearch](elasticsearch.md) or pgvector ([postgresql](postgresql.md)) would do
+
 ## Identity
 - **Taxonomy / data model:** [full-text-search](../concepts/full-text-search.md) engine over JSON documents, with first-class [vector-search-ann](../concepts/vector-search-ann.md) (HNSW) and hybrid (BM25 + vector via RRF). Search-engine category (also vector). Documents are schema-bound fields; the corpus unit is an *index* inside a *search service*.
 - **Storage model:** inverted indexes for tokenized text; separate vector indexes for embeddings. Built on Apache Lucene for the text engine, with BM25 scoring ([Full-text search / Lucene query architecture](https://learn.microsoft.com/en-us/azure/search/search-lucene-query-architecture)). On-disk inverted index + HNSW graph for vectors. ⚠️ unverified — Microsoft's vector-index doc does not explicitly state HNSW fields must be fully RAM-resident at query time; it documents per-tier vector-storage limits ([vector index overview](https://learn.microsoft.com/en-us/azure/search/vector-store)) and the practical RAM-bound behavior of HNSW ANN is an inference from how HNSW works generally, not an explicit Microsoft guarantee.
