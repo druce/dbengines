@@ -111,6 +111,18 @@ confidence: high                 # high | medium | low — overall page confiden
 > One-sentence summary. **This line is the most important on the page** — it is what gets read
 > first to decide whether the rest is relevant. Make it earn its place.
 
+## When to use
+
+**Use PostgreSQL if:**
+- ✅ <specific, falsifiable reason this is the right tool>
+- ✅ <another>
+- ✅ <another>
+
+**Avoid PostgreSQL if:**
+- ❌ <specific reason it's the wrong tool — the last bullet should be the single biggest gotcha>
+- ❌ <another>
+- ❌ <another>
+
 ## Identity
 - **Taxonomy / data model:** relational, document, KV, wide-column, graph, time-series, vector,
   search, multi-model, object, ... See [oltp-olap-htap](../concepts/oltp-olap-htap.md) for the workload axis.
@@ -191,15 +203,30 @@ confidence: high                 # high | medium | low — overall page confiden
 - ...
 ````
 
+**`## When to use` (required, immediately under the one-liner).** Every page carries a `## When to
+use` block placed **right after the one-liner blockquote and before `## Identity`** — it is the
+second thing a reader sees. Two bullet lists:
+- **`**Use <Name> if:**`** — 3–4 bullets, each prefixed with the green check emoji `✅` (U+2705).
+- **`**Avoid <Name> if:**`** — 3–4 bullets, each prefixed with the red-X emoji `❌` (U+274C); the
+  last Avoid bullet should state the engine's single biggest gotcha / anti-pattern.
+
+Use the engine's exact frontmatter `name:` in the two bold headers. Derive the bullets from the
+page's own content (the one-liner, Ecosystem use-cases/anti-patterns, Distribution & consistency,
+and Bottom line) — specific and falsifiable, no marketing voice. This block is the bullet-form
+distillation; the prose **Bottom line** at the end of the page still stays. These same bullets feed
+the decision guide (§8).
+
 **Confidence markers.** Use overall `confidence:` in frontmatter, and inline `⚠️ unverified —`
 prefix on any specific claim you could not confirm from a credible source. Better an honest flag
 than a confident error.
 
 **Adjacent (non-ranked) pages.** Use the same template, lighter. Frontmatter replaces `rank: N` with
 `adjacent: true`, `rank: n/a`, and adds `category:` ∈ `table-format` · `streaming-platform` ·
-`streaming-database` · `real-time-olap` · `query-engine` · `catalog` · `cdc`. Keep all sections but
+`streaming-database` · `real-time-olap` · `query-engine` · `catalog` · `cdc` · `vector` (the last for
+embedded/library vector stores that aren't db-engines-ranked, e.g. LanceDB). Keep all sections but
 mark genuinely-inapplicable ones `N/A — <reason>` (e.g. isolation levels on a table format). The
-load-bearing one-liner and the **Bottom line** (with its anti-pattern) are still required.
+load-bearing one-liner, the **`## When to use`** block, and the **Bottom line** (with its
+anti-pattern) are still required.
 
 ---
 
