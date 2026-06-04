@@ -243,7 +243,7 @@ Each line: `- **[slug](engines/slug.md)** (rank N) — one-liner.`
 
 **Adjacent technologies** go in a separate trailing section `## Adjacent / data platform (not
 ranked)`, sub-grouped by `category` (table formats, streaming platforms, streaming/real-time
-databases, real-time OLAP, query engines, catalogs, CDC). Their lines read
+databases, real-time OLAP, query engines, catalogs, CDC, embedded/vector). Their lines read
 `- **[slug](engines/slug.md)** (adjacent) — one-liner.` (no rank).
 
 ---
@@ -297,7 +297,10 @@ Periodically, or on request:
 - **Contradictions:** claims that conflict across pages.
 - **Stale:** `last_researched` older than ~6 months, or a known major release since.
 - **Orphans:** pages no page links to; **missing backlinks:** A links B but B should link A.
-- **Coverage:** `todo` engines remaining; sections left empty or thin.
+- **Coverage:** `todo` engines remaining; sections left empty or thin; any page missing its
+  `## When to use` block; any engine page not reachable from a `decision-guide.md` leaf.
+- **Formatting:** every `## When to use` Use bullet uses `✅` and every Avoid bullet uses `❌`; the
+  decision guide uses `❌` (never `✗`) for anti-patterns.
 - **Unsourced contentious claims** lacking a citation or `⚠️` flag.
 Report findings and fix the cheap ones; append a `lint` line to `log.md`.
 
@@ -317,8 +320,14 @@ Process:
 2. Identify the 2–4 questions that, asked first, eliminate the most candidates. State them as the
    fixed "always ask these first" questions.
 3. Then a branching tree drilling to leaves. Each leaf names `engine` candidates with the
-   key trade-off **and** the anti-pattern (when *not* to pick it).
-4. Re-derive the question order whenever coverage materially grows; record changes in `log.md`
+   key trade-off **and** the anti-pattern (when *not* to pick it). Mark every anti-pattern / "don't
+   pick it" clause with the red-X emoji **`❌`** (U+274C) — never the plain `✗` glyph. Draw the
+   leaf's trade-off and anti-pattern from that engine's `## When to use` bullets so the guide and the
+   pages stay consistent.
+4. **Coverage:** every engine that has a page should be reachable from at least one leaf. When you
+   add or research engines, slot them into the guide (re-home a section heading rather than
+   renumbering the whole tree if a new group is needed).
+5. Re-derive the question order whenever coverage materially grows; record changes in `log.md`
    under `decision-guide`.
 
 Keep it usable as a checklist a human can walk top-to-bottom in a couple minutes.
@@ -334,3 +343,6 @@ Keep it usable as a checklist a human can walk top-to-bottom in a couple minutes
   most valuable thing on the page.
 - The one-line summary at the top of each page is load-bearing. Write it last, after you
   understand the engine.
+- Emoji are load-bearing markers, used **only** in the two designated places: `✅`/`❌` in the
+  `## When to use` block, and `❌` for anti-patterns in `decision-guide.md`. Don't sprinkle emoji
+  elsewhere; the `⚠️` confidence flag is the one other exception.
