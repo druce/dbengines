@@ -13,7 +13,7 @@ confidence: medium
 
 # LanceDB
 
-> An Apache-2.0 embedded vector/multimodal database built on the columnar **Lance** file format — it runs in-process (Python/Rust/JS, no server daemon in OSS) over local disk or S3/GCS/Azure object storage with built-in versioning, trading the cold-object-store latency of the OSS path for the NVMe-cached distributed serving of a managed Enterprise tier.
+> An Apache-2.0 embedded vector/multimodal database — the "**SQLite for vector + AI data**" — that runs in-process (Python/Rust/JS, no server daemon in OSS) and keeps **vectors, metadata, and raw multimodal blobs together** in one versioned columnar **Lance** table. It is **local-disk-first and fast there** (sub-10ms p95 on NVMe); it can *also* point the same table at S3/GCS/Azure object storage, where cold reads are the latency caveat — and a managed Enterprise tier adds NVMe-cached distributed serving for high-QPS.
 
 ## When to use
 
@@ -23,7 +23,7 @@ confidence: medium
 - ✅ You want a **single object-storage-native artifact** (a Lance table on S3/GCS/Azure) queryable by many readers, with no separate index service, and interop with Arrow/DuckDB/Polars/pandas/PyTorch.
 
 **Avoid LanceDB if:**
-- ❌ You need **low single-digit-ms latency at high QPS from object storage**: OSS reads from cold S3/GCS/Azure pay hundreds of ms per query and a single process tops out around 10–50 QPS — that profile requires the **paid Enterprise** NVMe-cached distributed tier ([Enterprise vs OSS](https://docs.lancedb.com/enterprise)). This is the biggest gotcha.
+- ❌ You're serving **high QPS at low single-digit-ms latency, especially from cold object storage**: a single OSS process tops out around 10–50 QPS, and cold S3/GCS/Azure reads pay hundreds of ms per query (local NVMe is sub-10ms, but one process still won't do high concurrency). That *serving* profile requires the **paid Enterprise** NVMe-cached distributed tier ([Enterprise vs OSS](https://docs.lancedb.com/enterprise)). This is the biggest gotcha — and it's a cloud-serving / concurrency limit, not a knock on the local embedded path.
 - ❌ You need a **system of record with multi-statement ACID transactions, joins, or SQL OLTP** — LanceDB is a retrieval/search store, not a transactional or relational database.
 - ❌ You need a **always-on multi-writer server** with managed failover out of the box in OSS — OSS is a library with no daemon; concurrency rests on object-store atomic commits, and high-concurrency write/delete on S3 has known sharp edges ([issue #3086](https://github.com/lancedb/lancedb/issues/3086)).
 
@@ -86,7 +86,7 @@ confidence: medium
 - **Deployment:** Self-hosted embedded anywhere; serverless-friendly (e.g. Lambda querying Lance tables on S3); managed SaaS or BYOC-in-VPC via Cloud/Enterprise. Container/k8s-friendly but does not need a StatefulSet in OSS since state lives in shared storage.
 
 ## Bottom line
-Reach for LanceDB when you want an **embedded, Apache-2.0 vector + multimodal store** that needs no server, keeps embeddings and raw media together in one **versioned columnar (Lance) table** on local disk or S3, and slots into the Arrow/DuckDB/PyTorch ecosystem — it is the "SQLite/DuckDB for AI data," the local/object-storage-native counterpoint to server engines ([milvus](milvus.md)/[qdrant](qdrant.md)/[weaviate](weaviate.md)) and to managed-only [pinecone](pinecone.md), and it leans harder than [chroma](chroma.md) on its open columnar format and disk-first design. Don't use it as a system of record, for SQL/relational analytics, or where you need multi-statement ACID transactions. The single biggest gotcha: **OSS reads from cold object storage are slow (hundreds of ms) and a single process serves only tens of QPS** — low-latency high-throughput serving requires the **paid Enterprise** NVMe-cached distributed tier, and there is **no Jepsen report**, so the consistency story is "trust the object store plus a documented optimistic-concurrency commit protocol," not independently verified.
+Reach for LanceDB when you want an **embedded, Apache-2.0 vector + multimodal store** that needs no server, keeps embeddings and raw media together in one **versioned columnar (Lance) table** on local disk or S3, and slots into the Arrow/DuckDB/PyTorch ecosystem — it is the "SQLite/DuckDB for AI data," the local/object-storage-native counterpoint to server engines ([milvus](milvus.md)/[qdrant](qdrant.md)/[weaviate](weaviate.md)) and to managed-only [pinecone](pinecone.md), and it leans harder than [chroma](chroma.md) on its open columnar format and disk-first design. Don't use it as a system of record, for SQL/relational analytics, or where you need multi-statement ACID transactions. The single biggest gotcha applies only to the **object-storage / high-QPS serving** path: a single OSS process serves only tens of QPS and cold S3/GCS/Azure reads cost hundreds of ms (**local NVMe is sub-10ms** — the embedded local path is fast), so low-latency high-throughput *serving* requires the **paid Enterprise** NVMe-cached distributed tier. There is also **no Jepsen report**, so the consistency story is "trust the object store plus a documented optimistic-concurrency commit protocol," not independently verified.
 
 ## Sources
 - [LanceDB GitHub (OSS, Apache 2.0, SDKs)](https://github.com/lancedb/lancedb)

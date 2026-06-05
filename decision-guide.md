@@ -58,8 +58,8 @@ are premature.
   columnar HTAP), [sap-adaptive-server](engines/sap-adaptive-server.md) (Sybase ASE), [informix](engines/informix.md),
   [ingres](engines/ingres.md)/[openedge](engines/openedge.md) (choose only if the app already mandates it). ❌ cost and shrinking
   talent pools.
-- **Embedded / single-file / edge:** [sqlite](engines/sqlite.md) (the default; single-writer), [duckdb](engines/duckdb.md) (if the
-  embedded workload is *analytical*), [h2](engines/h2.md)/[hypersql](engines/hypersql.md)/[apache-derby](engines/apache-derby.md) (JVM/test),
+- **Embedded / single-file / edge:** [sqlite](engines/sqlite.md) (the default; single-writer — for an *analytical*
+  embedded workload reach for [duckdb](engines/duckdb.md) instead, see OLAP §2), [h2](engines/h2.md)/[hypersql](engines/hypersql.md)/[apache-derby](engines/apache-derby.md) (JVM/test),
   [firebird](engines/firebird.md) (server *or* embedded), [sap-sql-anywhere](engines/sap-sql-anywhere.md) (edge/sync), [realm](engines/realm.md)/[pouchdb](engines/pouchdb.md)
   (mobile/offline), [microsoft-access](engines/microsoft-access.md) (desktop/file, single-user). See [embedded-databases](concepts/embedded-databases.md). ❌ not multi-writer servers.
 - **Managed, minimal ops (cloud OK):** [amazon-aurora](engines/amazon-aurora.md) (MySQL/Postgres-compatible, disaggregated
@@ -85,6 +85,14 @@ are premature.
 Column-stores and MPP — see [columnar-storage](concepts/columnar-storage.md). **Anti-pattern for all of these: OLTP / many small
 writes / point lookups.**
 
+- **Start here — the simplest thing that might possibly work:** [duckdb](engines/duckdb.md) — "SQLite for analytics":
+  embedded, in-process, vectorized column-store with **zero ops**, querying Parquet/CSV/Arrow/Iceberg in place. Scales
+  **vertically** — larger-than-memory queries spill to local disk (best on NVMe/SSD), comfortably crunching
+  tens-to-hundreds of GB on one box. **Scaling path when you outgrow a single node:** *MotherDuck* extends the *same*
+  DuckDB to the cloud via **dual execution** — the planner routes each query stage to wherever the data lives (local or
+  cloud) to minimize transfer — with per-user serverless "Ducklings" that scale up and out to TB scale, no rewrite. Try
+  it before buying a warehouse below. ❌ not multi-user OLTP / many small writes; single-writer file; not a
+  shared-nothing MPP warehouse for petabyte-scale or high-concurrency BI.
 - **Managed cloud warehouse, near-zero tuning:** [snowflake](engines/snowflake.md) (storage/compute separation, easy to
   overspend), [google-bigquery](engines/google-bigquery.md) (serverless, billed by bytes scanned), [amazon-redshift](engines/amazon-redshift.md),
   [microsoft-fabric](engines/microsoft-fabric.md) / [microsoft-azure-synapse-analytics](engines/microsoft-azure-synapse-analytics.md) (Synapse now legacy → Fabric). ❌
@@ -111,7 +119,6 @@ a [catalog](concepts/data-catalog.md), queried by many decoupled engines. See [l
 - **Self-hosted / real-time OLAP:** [clickhouse](engines/clickhouse.md) (blazing scans, eventually consistent),
   [starrocks](engines/starrocks.md) / [apache-druid](engines/apache-druid.md) (sub-second slice-and-dice), [exasol](engines/exasol.md) / [vertica](engines/vertica.md) /
   [greenplum](engines/greenplum.md) / [sap-iq](engines/sap-iq.md) / [teradata](engines/teradata.md) / [netezza](engines/netezza.md) / [gbase](engines/gbase.md) (MPP, legacy→modern spectrum).
-- **Embedded analytics:** [duckdb](engines/duckdb.md) — "SQLite for analytics", single-node, vectorized. ❌ not multi-user.
 - **HTAP (one system for both):** [singlestore](engines/singlestore.md) (RC only), [sap-hana](engines/sap-hana.md) (RAM-priced), [tidb](engines/tidb.md)
   (row+columnar replica), [oracle](engines/oracle.md)/[microsoft-sql-server](engines/microsoft-sql-server.md) columnstore. Always verify the
   **physical separation** mechanism — see [oltp-olap-htap](concepts/oltp-olap-htap.md).
@@ -213,11 +220,11 @@ See [vector-search-ann](concepts/vector-search-ann.md). Decide: **dedicated vect
 (pgvector in [postgresql](engines/postgresql.md), [redis](engines/redis.md), [mongodb](engines/mongodb.md), [elasticsearch](engines/elasticsearch.md) — usually enough until high
 scale/QPS).
 
-- **Embedded / in-process (no server):** [lancedb](engines/lancedb.md) — "SQLite/DuckDB for AI data": Apache-2.0,
-  ships inside your app/Lambda/notebook over local disk or S3, columnar Lance format with built-in
-  versioning, ideal for multimodal data. ❌ cold-object-store reads are hundreds of ms and a single
-  process tops out ~10–50 QPS — low-latency high-QPS serving needs the paid Enterprise tier; not a
-  transactional system of record.
+- **Embedded / in-process (no server):** [lancedb](engines/lancedb.md) — the "SQLite for vector + AI data": Apache-2.0,
+  ships inside your app/Lambda/notebook and keeps **vectors + metadata + multimodal blobs** in one versioned columnar
+  Lance table, **local-disk-first** (sub-10ms p95 on NVMe) or over the same table on S3/GCS/Azure. ❌ a single OSS
+  process tops out ~10–50 QPS and *cold object-store* reads cost hundreds of ms — high-QPS low-latency serving needs the
+  paid Enterprise tier; not a transactional system of record.
 - **Managed/serverless:** [pinecone](engines/pinecone.md) (API-only, no self-host). ❌ eventually consistent, lock-in.
 - **Open-source, scale:** [milvus](engines/milvus.md) (billion-scale, disaggregated), [qdrant](engines/qdrant.md) (rich payload
   filtering, Rust), [weaviate](engines/weaviate.md) (hybrid BM25+vector, RAG modules), [chroma](engines/chroma.md) (dev-first, embeddable
