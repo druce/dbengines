@@ -1,0 +1,64 @@
+what are key points to ask about a database engine ... how it is typically categorized in data taxonomy, typical users, license , where it falls in the cap theorem spectrum, schema/schemaless, query language, hardware requirements etc.
+
+---
+
+Here's a fairly complete rubric for sizing up a database engine. I've grouped it so you can move from "what is it" down to "how do I run it."
+
+**Taxonomy / data model**
+- What family does it fall in: relational, key-value, document, wide-column, graph, time-series, vector, search, object, or some multi-model hybrid? The category often misleads — "multi-model" engines usually have one model they're actually good at and bolt the rest on.
+- Underlying storage model: row store, column store, LSM-tree vs B-tree, log-structured, in-memory with persistence? This predicts read/write asymmetry and compaction behavior more than the marketing category does.
+- OLTP vs OLAP vs HTAP — and if it claims HTAP, how it physically separates the two workloads (separate replicas, columnar secondary index, etc.).
+
+**CAP / consistency spectrum**
+- Where it sits on CAP under partition: CP (refuses writes to stay consistent) or AP (stays up, reconciles later)? CAP is a coarse lens, though — PACELC is more useful because it also tells you the latency-vs-consistency tradeoff when there's *no* partition.
+- Default isolation level and what's actually achievable (read committed, snapshot, serializable). Many "ACID" claims mean snapshot isolation, not serializable.
+- Replication model: single-leader, multi-leader, leaderless quorum (R+W>N)? Synchronous vs async, and what the failover/split-brain story is.
+- Tunable consistency? (Cassandra/Dynamo-style per-query consistency levels.)
+- Clock dependency — does correctness rest on synchronized clocks (Spanner/TrueTime, hybrid logical clocks)?
+
+**Schema**
+- Schema-on-write vs schema-on-read; rigid, flexible, or schemaless. "Schemaless" usually just means the schema lives in your application code instead of the DB.
+- Migration/evolution story — online DDL, or does an `ALTER` lock the table?
+- Type system richness (native JSON, arrays, geospatial, vectors, intervals).
+
+**Query interface**
+- Query language: SQL (which dialect / standard compliance), a custom DSL (CQL, AQL, Cypher/GQL, PromQL), or API-only (get/put)?
+- Transaction support: full multi-statement ACID, single-row atomicity only, or none?
+- Secondary indexes, joins, aggregations, window functions — what's native vs what you reimplement in the app.
+- Stored procedures / UDFs, and in what language.
+
+**Scaling & topology**
+- Vertical vs horizontal scaling; sharding (auto vs manual, resharding pain), partitioning scheme.
+- Read replicas, and whether reads from them are consistent.
+- Separation of storage and compute (the Snowflake/Aurora/Neon pattern) — matters a lot for elasticity and cost.
+
+**Performance & durability**
+- Write path durability: WAL, fsync policy, group commit. What's the data-loss window on crash?
+- Read/write throughput and latency profile under your access pattern; tail latencies, not just averages.
+- Compaction / vacuum / GC behavior and its impact on p99.
+
+**Operations**
+- Backup/restore, point-in-time recovery, snapshotting.
+- Observability: metrics, query plans/EXPLAIN, slow-query logs.
+- Upgrade story (rolling, downtime), and the day-2 operational burden generally — this is where most engines hide their real cost.
+- Maturity: production track record, known failure modes, the Aphyr/Jepsen result if one exists.
+
+**Ecosystem & people**
+- Typical users / canonical use cases — and just as informative, the anti-patterns where it's the wrong tool.
+- Client drivers, ORM support, connectors (CDC, Kafka, dbt, BI tools).
+- Community size, commercial support, documentation quality.
+
+**Licensing & cost**
+- OSS license and which flavor — permissive (Apache/MIT/BSD) vs copyleft vs a source-available "open-ish" license (SSPL, BSL/Elastic, Confluent Community). The post-2018 relicensing wave (Mongo, Elastic, Redis, Cockroach, HashiCorp) matters if you're embedding or reselling.
+- Self-managed vs managed-only; vendor lock-in via proprietary extensions.
+- Cost model: per-node, per-core, per-GB stored, per-query/serverless — and how it behaves at your scale, since the cheap-at-small ones often invert at scale.
+
+**Hardware / deployment**
+- Memory-bound vs disk-bound vs CPU-bound; does it want to fit the working set (or all) of data in RAM?
+- Storage assumptions — NVMe vs spinning disk, local vs network-attached (some engines tolerate EBS-style latency, some really don't).
+- Single-node, clustered, embedded (SQLite/DuckDB/RocksDB style), or serverless.
+- Cloud-native vs on-prem; container/k8s friendliness, stateful-set realities.
+
+A couple of cross-cutting questions worth asking last, because they reframe everything above: *what does this give up to get its headline feature?* (every engine trades something away — find it), and *what does the failure mode look like at 3am?* The second one separates the engines that demo well from the ones you can actually run.
+
+Want me to turn this into a scoring template (spreadsheet with weights) you could use to compare a few engines head-to-head?

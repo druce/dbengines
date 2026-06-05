@@ -1,0 +1,3250 @@
+ ▐▛███▜▌   Claude Code v2.1.165
+▝▜█████▛▘  Opus 4.8 · Claude Max
+  ▘▘ ▝▝    ~/projects/MTA/dbengine
+
+
+❯ /clear                                                                        
+
+❯ run the bootstrap workflow                                                    
+
+⏺ I'll run the bootstrap workflow as defined in CLAUDE.md §7.0. Let me start by
+  checking the current directory state and loading the tools I need.
+
+  Listed 1 directory (ctrl+o to expand)
+
+⏺ The scaffolding files already exist. Let me read them to see their current
+  state before bootstrapping.
+
+  Read 3 files, listed 1 directory (ctrl+o to expand)
+
+⏺ Scaffold exists but ranking.md is unpopulated. Now I'll fetch the live
+  db-engines.com ranking. Let me grab the top 150.
+
+⏺ Fetch(https://db-engines.com/en/ranking)
+  ⎿  Received 247KB (200 OK)
+
+⏺ I have the full top 150. Now I'll populate ranking.md, then append a bootstrap
+  line to log.md. The index.md groups are already initialized empty per the
+  schema.
+
+⏺ Write(ranking.md)
+  ⎿  Added 154 lines, removed 10 lines
+        6  
+        7  Status: `todo` · `in-progress` · `done (YYYY-MM-DD)`.
+        8  
+        9 -Format:                                                       
+        9 +Source: [db-engines.com/en/ranking](https://db-engines.com/en/
+          +ranking), fetched 2026-06-04. The                             
+       10 +`Data model` below is the **primary** model (multi-model engin
+          +es note "+ multi-model"); confirm                             
+       11 +and refine per engine during research. Rank/membership shift o
+          +ver time — re-fetch before treating                           
+       12 +this as current.                                              
+       13  
+       11 -```                                                           
+       14  | Rank | Engine | Data model | Status |
+       15  |------|--------|-----------|--------|
+       14 -| 1    | Oracle | Relational | todo  |                        
+       15 -```                                                           
+       16 -                                                              
+       17 -> Not yet populated. Run the bootstrap workflow to fill this f
+          -rom the live ranking — the order and                          
+       18 -> membership shift over time, so fetch it fresh rather than ha
+          -rd-coding from memory.                                        
+       19 -                                                              
+       20 -| Rank | Engine | Data model | Status |                       
+       21 -|------|--------|-----------|--------|                        
+       16 +| 1 | Oracle | Relational (+ multi-model) | todo |            
+       17 +| 2 | MySQL | Relational (+ multi-model) | todo |             
+       18 +| 3 | Microsoft SQL Server | Relational (+ multi-model) | todo
+          + |                                                            
+       19 +| 4 | PostgreSQL | Relational (+ multi-model) | todo |        
+       20 +| 5 | MongoDB | Document (+ multi-model) | todo |             
+       21 +| 6 | Snowflake | Relational | todo |                         
+       22 +| 7 | Databricks | Multi-model | todo |                       
+       23 +| 8 | Redis | Key-value (+ multi-model) | todo |              
+       24 +| 9 | IBM Db2 | Relational (+ multi-model) | todo |           
+       25 +| 10 | Apache Cassandra | Wide-column (+ multi-model) | todo |
+       26 +| 11 | SQLite | Relational | todo |                           
+       27 +| 12 | Elasticsearch | Search engine (+ multi-model) | todo | 
+       28 +| 13 | MariaDB | Relational (+ multi-model) | todo |          
+       29 +| 14 | Microsoft Azure SQL Database | Relational (+ multi-mode
+          +l) | todo |                                                   
+       30 +| 15 | Apache Hive | Relational | todo |                      
+       31 +| 16 | Splunk | Search engine | todo |                        
+       32 +| 17 | Microsoft Access | Relational | todo |                 
+       33 +| 18 | Amazon DynamoDB | Multi-model (KV/document) | todo |   
+       34 +| 19 | Google BigQuery | Relational | todo |                  
+       35 +| 20 | Neo4j | Graph | todo |                                 
+       36 +| 21 | Apache Solr | Search engine (+ multi-model) | todo |   
+       37 +| 22 | SAP HANA | Relational (+ multi-model) | todo |         
+       38 +| 23 | Teradata | Relational (+ multi-model) | todo |         
+       39 +| 24 | FileMaker | Relational | todo |                        
+       40 +| 25 | SAP Adaptive Server | Relational (+ multi-model) | todo
+          + |                                                            
+       41 +| 26 | ClickHouse | Relational (+ multi-model) | todo |       
+       42 +| 27 | Apache Spark (SQL) | Relational | todo |               
+       43 +| 28 | PostGIS | Spatial (+ multi-model) | todo |             
+       44 +| 29 | Microsoft Azure Cosmos DB | Multi-model | todo |       
+       45 +| 30 | InfluxDB | Time-series (+ multi-model) | todo |        
+       46 +| 31 | Apache HBase | Wide-column | todo |                    
+       47 +| 32 | OpenSearch | Search engine (+ multi-model) | todo |    
+       48 +| 33 | Microsoft Fabric | Relational | todo |                 
+       49 +| 34 | Firebird | Relational | todo |                         
+       50 +| 35 | Microsoft Azure Synapse Analytics | Relational | todo |
+       51 +| 36 | Firebase Realtime Database | Document | todo |         
+       52 +| 37 | Amazon Redshift | Relational | todo |                  
+       53 +| 38 | Informix | Relational (+ multi-model) | todo |         
+       54 +| 39 | Memcached | Key-value | todo |                         
+       55 +| 40 | Apache Impala | Relational (+ multi-model) | todo |    
+       56 +| 41 | Apache Flink | Relational | todo |                     
+       57 +| 42 | DuckDB | Relational | todo |                           
+       58 +| 43 | Couchbase | Multi-model | todo |                       
+       59 +| 44 | Amazon Aurora | Relational (+ multi-model) | todo |    
+       60 +| 45 | Google Cloud Firestore | Document | todo |             
+       61 +| 46 | Prometheus | Time-series | todo |                      
+       62 +| 47 | Vertica | Relational (+ multi-model) | todo |          
+       63 +| 48 | Pinecone | Vector | todo |                             
+       64 +| 49 | dBASE | Relational | todo |                            
+       65 +| 50 | H2 | Relational (+ multi-model) | todo |               
+       66 +| 51 | Kdb | Multi-model (time-series) | todo |               
+       67 +| 52 | etcd | Key-value | todo |                              
+       68 +| 53 | Trino | Relational (+ multi-model) | todo |            
+       69 +| 54 | Algolia | Search engine | todo |                       
+       70 +| 55 | Netezza | Relational | todo |                          
+       71 +| 56 | Milvus | Vector | todo |                               
+       72 +| 57 | Microsoft Azure AI Search | Search engine (+ multi-mode
+          +l) | todo |                                                   
+       73 +| 58 | Realm | Document | todo |                              
+       74 +| 59 | Presto | Relational | todo |                           
+       75 +| 60 | Greenplum | Relational (+ multi-model) | todo |        
+       76 +| 61 | CouchDB | Document (+ multi-model) | todo |            
+       77 +| 62 | TimescaleDB | Time-series (+ multi-model) | todo |     
+       78 +| 63 | Sphinx | Search engine | todo |                        
+       79 +| 64 | Qdrant | Vector | todo |                               
+       80 +| 65 | DolphinDB | Multi-model (time-series) | todo |         
+       81 +| 66 | ScyllaDB | Wide-column (+ multi-model) | todo |        
+       82 +| 67 | Graphite | Time-series | todo |                        
+       83 +| 68 | Hazelcast | Key-value (+ multi-model) | todo |         
+       84 +| 69 | Oracle Essbase | Relational (multidimensional) | todo |
+       85 +| 70 | Weaviate | Vector | todo |                             
+       86 +| 71 | CockroachDB | Relational (+ multi-model) | todo |      
+       87 +| 72 | MarkLogic | Multi-model (document) | todo |            
+       88 +| 73 | TiDB | Relational (+ multi-model) | todo |             
+       89 +| 74 | Interbase | Relational | todo |                        
+       90 +| 75 | Apache Jackrabbit | Content (JCR) | todo |             
+       91 +| 76 | RocksDB | Key-value | todo |                           
+       92 +| 77 | Aerospike | Multi-model (KV) | todo |                  
+       93 +| 78 | QuestDB | Time-series (+ multi-model) | todo |         
+       94 +| 79 | OpenEdge | Relational | todo |                         
+       95 +| 80 | ArangoDB | Multi-model | todo |                        
+       96 +| 81 | Alibaba Cloud PolarDB | Relational | todo |            
+       97 +| 82 | Apache Druid | Multi-model (analytics) | todo |        
+       98 +| 83 | Oracle NoSQL | Multi-model (KV) | todo |               
+       99 +| 84 | Google Cloud Datastore | Document | todo |             
+      100 +| 85 | SAP SQL Anywhere | Relational | todo |                 
+      101 +| 86 | Datastax Enterprise | Wide-column (+ multi-model) | tod
+          +o |                                                           
+      102 +| 87 | Microsoft Azure Data Explorer | Relational (+ multi-mod
+          +el) | todo |                                                  
+      103 +| 88 | Ingres | Relational | todo |                           
+      104 +| 89 | Ehcache | Key-value | todo |                           
+      105 +| 90 | Riak KV | Key-value | todo |                           
+      106 +| 91 | Apache Derby | Relational | todo |                     
+      107 +| 92 | Chroma | Vector | todo |                               
+      108 +| 93 | SingleStore | Relational (+ multi-model) | todo |      
+      109 +| 94 | Google Cloud Spanner | Relational | todo |             
+      110 +| 95 | TDengine | Time-series (+ multi-model) | todo |        
+      111 +| 96 | Microsoft Azure Table Storage | Wide-column | todo |   
+      112 +| 97 | Apache Ignite | Multi-model | todo |                   
+      113 +| 98 | Adabas | Multivalue | todo |                           
+      114 +| 99 | HyperSQL | Relational | todo |                         
+      115 +| 100 | Amazon Neptune | Graph (+ multi-model) | todo |       
+      116 +| 101 | Virtuoso | Multi-model | todo |                       
+      117 +| 102 | GemFire | Key-value (+ multi-model) | todo |          
+      118 +| 103 | OrientDB | Multi-model | todo |                       
+      119 +| 104 | Google Cloud Bigtable | Wide-column (+ multi-model) | 
+          +todo |                                                        
+      120 +| 105 | GraphDB | Multi-model (RDF/graph) | todo |            
+      121 +| 106 | Valkey | Key-value | todo |                           
+      122 +| 107 | Apache Jena - TDB | RDF | todo |                      
+      123 +| 108 | Apache Accumulo | Wide-column | todo |                
+      124 +| 109 | OceanBase | Relational (+ multi-model) | todo |       
+      125 +| 110 | Coveo | Search engine | todo |                        
+      126 +| 111 | IBM Cloudant | Document | todo |                      
+      127 +| 112 | RavenDB | Document (+ multi-model) | todo |           
+      128 +| 113 | SAP IQ | Relational | todo |                          
+      129 +| 114 | RethinkDB | Document (+ multi-model) | todo |         
+      130 +| 115 | CloudKit | Document | todo |                          
+      131 +| 116 | Citus | Relational (+ multi-model) | todo |           
+      132 +| 117 | YugabyteDB | Relational (+ multi-model) | todo |      
+      133 +| 118 | InterSystems IRIS | Multi-model | todo |              
+      134 +| 119 | Apache Phoenix | Relational | todo |                  
+      135 +| 120 | GBase | Relational | todo |                           
+      136 +| 121 | UniData, UniVerse | Multivalue | todo |               
+      137 +| 122 | 4D | Relational | todo |                              
+      138 +| 123 | Stardog | Multi-model (RDF/graph) | todo |            
+      139 +| 124 | Amazon DocumentDB | Document | todo |                 
+      140 +| 125 | LMDB | Key-value | todo |                             
+      141 +| 126 | Amazon CloudSearch | Search engine | todo |           
+      142 +| 127 | JanusGraph | Graph | todo |                           
+      143 +| 128 | TigerGraph | Graph | todo |                           
+      144 +| 129 | Percona Server for MySQL | Relational | todo |        
+      145 +| 130 | Infinispan | Key-value | todo |                       
+      146 +| 131 | NebulaGraph | Graph | todo |                          
+      147 +| 132 | LevelDB | Key-value | todo |                          
+      148 +| 133 | PouchDB | Document | todo |                           
+      149 +| 134 | MaxDB | Relational | todo |                           
+      150 +| 135 | Rockset | Document (+ multi-model) | todo |           
+      151 +| 136 | EXASOL | Relational | todo |                          
+      152 +| 137 | Memgraph | Graph | todo |                             
+      153 +| 138 | Apache IoTDB | Time-series | todo |                   
+      154 +| 139 | StarRocks | Relational | todo |                       
+      155 +| 140 | Apache Drill | Multi-model | todo |                   
+      156 +| 141 | VictoriaMetrics | Time-series | todo |                
+      157 +| 142 | PlanetScale | Relational (+ multi-model) | todo |     
+      158 +| 143 | SpatiaLite | Spatial (+ multi-model) | todo |         
+      159 +| 144 | EDB Postgres | Relational (+ multi-model) | todo |    
+      160 +| 145 | Oracle Coherence | Key-value | todo |                 
+      161 +| 146 | Fauna | Multi-model | todo |                          
+      162 +| 147 | Amazon SimpleDB | Key-value | todo |                  
+      163 +| 148 | Meilisearch | Search engine (+ multi-model) | todo |  
+      164 +| 149 | Oracle Berkeley DB | Key-value (+ multi-model) | todo 
+          +|                                                             
+      165 +| 150 | Datomic | Relational | todo |                         
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ ranking.md is populated. Now I'll append the bootstrap line to log.md.
+
+⏺ Update(log.md)
+  ⎿  Added 1 line
+      11  ---
+      12  
+      13  ## [2026-06-04] bootstrap | wiki scaffold created (CLAUDE.md, i
+          ndex.md, log.md, ranking.md, decision-guide.md, engines/, conce
+          pts/)
+      14 +## [2026-06-04] bootstrap | populated ranking.md with top 150 f
+         +rom db-engines.com (fetched 2026-06-04); all status=todo       
+
+⏺ Bootstrap workflow complete. Here's what I did per [[CLAUDE]] §7.0:
+
+  1. Fetched the live ranking — pulled the top 150 from
+  db-engines.com/en/ranking (June 2026 snapshot, fetched 2026-06-04), capturing
+  rank, exact engine name, and data model.
+
+  2. Populated ranking.md — all 150 engines as a checklist table (Rank | Engine 
+  | Data model | Status), every one set to todo. I recorded the primary model
+  with a (+ multi-model) note where applicable, since the schema groups engines
+  by primary model in index.md. A few worth flagging for refinement during
+  research:
+  - Elasticsearch / OpenSearch — db-engines tags them "multi-model" now; I
+  classified them under Search engine (their primary identity).
+  - Amazon Neptune (Graph), Google Cloud Bigtable (Wide-column), GraphDB/Stardog
+  (RDF/graph) — db-engines lists these as bare "multi-model"; I assigned a
+  concrete primary model. Confirm per page.
+
+  3. State already initialized — index.md already had its empty data-model
+  groups and decision-guide.md its placeholder (both from the scaffold commit),
+  so no change needed there.
+
+  4. Logged it — appended a bootstrap line to log.md noting the ranking
+  population and fetch date.
+
+  The wiki is ready for research. Next step is the ingest workflow (§7.1) to
+  start building engine pages — that's parallelizable across subagents (§7.2),
+  one engine per agent. Want me to start a batch? If so, how many engines, and
+  from the top of the ranking or a specific set?
+
+✻ Worked for 1m 36s
+
+❯ 6 engines.  start from the top and work our way down                          
+
+⏺ Running the batch research workflow (§7.2) for the next 6 todo engines:
+  Oracle, MySQL, Microsoft SQL Server, PostgreSQL, MongoDB, Snowflake. This is
+  parallelizable — one engine per subagent. Agents write only their own
+  engines/<slug>.md; I (orchestrator) handle the shared-file edits (index.md,
+  ranking.md, log.md) and create the shared concept pages afterward to avoid
+  write conflicts.
+
+  First, let me mark these six in-progress in ranking.md.
+
+⏺ Bash(sed -i '' \
+       -e 's/^| 1 | Oracle |\(.*\)| todo |/| 1 | Oracle |\1| in-progress |/' \…)
+  ⎿  | 1 | Oracle | Relational (+ multi-model) | in-progress |
+     | 2 | MySQL | Relational (+ multi-model) | in-progress |
+     | 3 | Microsoft SQL Server | Relational (+ multi-model) | in-progress
+     … +4 lines (ctrl+o to expand)
+
+⏺ Now I'll dispatch 6 research agents in parallel — one per engine. Each will
+  read the template from CLAUDE.md, research via web, and write its own page.
+
+⏺ 6 agents finished (ctrl+o to expand)
+   ├ Research Oracle engine page · 0 tool uses
+   │ ⎿  Done
+   ├ Research MySQL engine page · 0 tool uses
+   │ ⎿  Done
+   ├ Research SQL Server engine page · 0 tool uses
+   │ ⎿  Done
+   ├ Research PostgreSQL engine page · 0 tool uses
+   │ ⎿  Done
+   ├ Research MongoDB engine page · 0 tool uses
+   │ ⎿  Done
+   └ Research Snowflake engine page · 0 tool uses
+     ⎿  Done
+
+⏺ All 6 pages written. Now the orchestrator shared-file work. Let me verify the
+  pages exist, then update index.md, ranking.md, and log.md.
+
+  Searched for 1 pattern (ctrl+o to expand)
+
+⏺ All 6 pages written and consistent. Now updating the shared files. First
+  index.md:
+⏺ Update(index.md)
+  ⎿  Added 8 lines, removed 2 lines
+       5  
+       6  Format: `- **[[slug]]** (rank N) — one-liner.`
+       7  
+       8 -> Empty until the bootstrap + research workflows run. See [[CLA
+         -UDE]] §5 and §7.                                               
+       9 -                                                               
+       8  ## Relational
+       9  
+      10 +- **[[oracle]]** (rank 1) — Heavyweight commercial multi-model 
+         +RDBMS; deep OLTP/HTAP features and MVCC, but snapshot-isolation
+         +-as-"serializable" and per-core options-priced licensing domina
+         +te the decision.                                               
+      11 +- **[[mysql]]** (rank 2) — Ubiquitous open-source OLTP relation
+         +al DB (InnoDB/MVCC); battle-tested, but default "REPEATABLE REA
+         +D" is weaker than its name (Jepsen).                           
+      12 +- **[[microsoft-sql-server]]** (rank 3) — Microsoft's flagship 
+         +commercial RDBMS; mature single-node OLTP/HTAP with T-SQL, lock
+         +ing READ COMMITTED by default, Always On HA, now on Linux.     
+      13 +- **[[postgresql]]** (rank 4) — Battle-tested permissive-licens
+         +ed relational DB; the safe default for OLTP, with a deep extens
+         +ion ecosystem (JSONB, PostGIS, pgvector) and real SERIALIZABLE 
+         +via SSI.                                                       
+      14 +- **[[snowflake]]** (rank 6) — Managed cloud data warehouse tha
+         +t pioneered storage/compute separation; elastic per-second comp
+         +ute over columnar object storage, near-zero tuning, easy to ove
+         +rspend.                                                        
+      15 +                                                               
+      16  ## Document
+      17  
+      18 +- **[[mongodb]]** (rank 5) — Dominant document (BSON) database;
+         + easy scale-out and flexible schema, but safe consistency/durab
+         +ility needs non-default majority concerns (Jepsen found data lo
+         +ss at defaults).                                               
+      19 +                                                               
+      20  ## Key-value
+      21  
+      22  ## Wide-column
+
+⏺ Now mark the 6 engines done in ranking.md and append log.md lines:
+
+⏺ Update(ranking.md)
+  ⎿  | 1 | Oracle | Relational (+ multi-model) | done (2026-06-04) |
+     | 2 | MySQL | Relational (+ multi-model) | done (2026-06-04) |
+     | 3 | Microsoft SQL Server | Relational (+ multi-model) | done (2026-0
+     … +5 lines (ctrl+o to expand)
+
+⏺ Update(log.md)
+  ⎿  Added 2 lines
+      12  
+      13  ## [2026-06-04] bootstrap | wiki scaffold created (CLAUDE.md, i
+          ndex.md, log.md, ranking.md, decision-guide.md, engines/, conce
+          pts/)
+      14  ## [2026-06-04] bootstrap | populated ranking.md with top 150 f
+          rom db-engines.com (fetched 2026-06-04); all status=todo
+      15 +## [2026-06-04] ingest | batch 1 (ranks 1-6): oracle, mysql, mi
+         +crosoft-sql-server, postgresql, mongodb, snowflake — parallel a
+         +gents, indexed                                                 
+      16 +## [2026-06-04] ingest | created 11 concept pages backing batch
+         + 1 links: cap-pacelc, pacelc note, isolation-levels, mvcc, repl
+         +ication-models, consensus-raft-paxos, lsm-vs-btree, wal-and-dur
+         +ability, oltp-olap-htap, storage-compute-separation, license-ta
+         +xonomy, clocks-and-time                                        
+
+⏺ Now I'll create the 11 concept pages backing those links. These are
+  foundational theory — well-established knowledge I'll write tight and
+  reference-style, cross-linked. Writing them in parallel:
+
+⏺ Write(concepts/cap-pacelc.md)
+  ⎿  Wrote 48 lines to concepts/cap-pacelc.md
+       2 name: CAP & PACELC
+       3 slug: cap-pacelc
+       4 summary: Why a partitioned distributed DB must trade consistency
+         cy tradeoff that matters even when the network is healthy.sisten
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # CAP & PACELC
+       9 
+      10 > CAP says: under a network **partition**, a distributed store c
+         an keep serving (**A**vailable) or
+     … +63 lines (ctrl+o to expand)
+
+⏺ Write(concepts/isolation-levels.md)
+  ⎿  Wrote 51 lines to concepts/isolation-levels.md
+       2 name: Isolation Levels
+       3 slug: isolation-levels
+       4 summary: The ANSI levels, the anomalies they do and don't preven
+         ation in practice.izable" on the label often means snapshot isol
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Isolation Levels
+       9 
+      10 > Isolation is the **I** in ACID: how much concurrent transactio
+         ns can interfere. The ANSI SQL
+     … +64 lines (ctrl+o to expand)
+
+⏺ Write(concepts/mvcc.md)
+  ⎿  Wrote 39 lines to concepts/mvcc.md
+       2 name: MVCC (Multi-Version Concurrency Control)
+       3 slug: mvcc
+       4 summary: Keep multiple row versions so readers never block write
+         h version cleanup (vacuum/undo/compaction).y model, paid for wit
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # MVCC — Multi-Version Concurrency Control
+       9 
+      10 > Instead of locking rows for reads, keep **multiple versions** 
+         of each row stamped with
+     … +49 lines (ctrl+o to expand)
+
+⏺ Write(concepts/replication-models.md)
+  ⎿  Wrote 45 lines to concepts/replication-models.md
+       2 name: Replication Models
+       3 slug: replication-models
+       4 summary: Single-leader vs multi-leader vs leaderless quorum; syn
+         t determines your data-loss window.ailover/split-brain story tha
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Replication Models
+       9 
+      10 > Replication copies data across nodes for durability, availabil
+         ity, and read scaling. The shape
+     … +58 lines (ctrl+o to expand)
+
+⏺ Write(concepts/consensus-raft-paxos.md)
+  ⎿  Wrote 43 lines to concepts/consensus-raft-paxos.md
+       2 name: Consensus (Raft & Paxos)
+       3 slug: consensus-raft-paxos
+       4 summary: How a cluster agrees on one value (or one log order) de
+         nsistent replication.backbone of leader election and strongly-co
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Consensus — Raft & Paxos
+       9 
+      10 > Consensus protocols let a group of nodes **agree on a single v
+         alue or a single ordering of a log**
+     … +55 lines (ctrl+o to expand)
+
+⏺ Write(concepts/lsm-vs-btree.md)
+  ⎿  Wrote 42 lines to concepts/lsm-vs-btree.md
+       2 name: LSM-Tree vs B-Tree
+       3 slug: lsm-vs-btree
+         update-in-place, read-optimized) vs LSM-trees (append/compact, w
+         rite-optimized) — and the read/write/space amplification each pa
+         ys.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # LSM-Tree vs B-Tree
+      10 > The on-disk index structure decides an engine's write/read/spa
+         ce tradeoff. **B-trees** update in
+     … +56 lines (ctrl+o to expand)
+
+⏺ Write(concepts/wal-and-durability.md)
+  ⎿  Wrote 43 lines to concepts/wal-and-durability.md
+       2 name: WAL & Durability
+       3 slug: wal-and-durability
+       4 summary: Write-ahead logging, fsync policy, and group commit — t
+          crash data-loss window."D" in ACID, and the knobs that set your
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # WAL & Durability
+       9 
+      10 > Durability (the **D** in ACID) means a committed write survive
+         s a crash. The near-universal
+     … +55 lines (ctrl+o to expand)
+
+⏺ Write(concepts/oltp-olap-htap.md)
+  ⎿  Wrote 48 lines to concepts/oltp-olap-htap.md
+       2 name: OLTP / OLAP / HTAP
+       3 slug: oltp-olap-htap
+       4 summary: The workload axis — many small transactional writes (OL
+          of doing both on one system (HTAP).AP) vs the contested promise
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # OLTP / OLAP / HTAP
+       9 
+      10 > The single most useful question to classify a database: **what
+          shape is the workload?** It drives
+     … +63 lines (ctrl+o to expand)
+
+⏺ Write(concepts/storage-compute-separation.md)
+  ⎿  Wrote 44 lines to concepts/storage-compute-separation.md
+       2 name: Storage/Compute Separation
+       3 slug: storage-compute-separation
+       4 summary: Decoupling the durable storage layer from elastic state
+         ture behind Snowflake, BigQuery, Aurora, and Neon.— the architec
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Storage/Compute Separation
+       9 
+      10 > Classic "shared-nothing" databases bind data to the node that 
+         owns it, so you scale storage and
+     … +57 lines (ctrl+o to expand)
+
+⏺ Write(concepts/license-taxonomy.md)
+  ⎿  Wrote 45 lines to concepts/license-taxonomy.md
+       2 name: License Taxonomy
+       3 slug: license-taxonomy
+       4 summary: Permissive vs copyleft vs source-available vs proprieta
+         Confluent) that moved engines out of true open source. Elastic, 
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # License Taxonomy
+       9 
+      10 > "Open source" has become a contested label. What matters opera
+         tionally: **can you run, modify, and
+     … +62 lines (ctrl+o to expand)
+
+⏺ Write(concepts/clocks-and-time.md)
+  ⎿  Wrote 46 lines to concepts/clocks-and-time.md
+       2 name: Clocks & Time
+       3 slug: clocks-and-time
+       4 summary: When distributed correctness depends on synchronized cl
+         ons are violated.HLCs, and the failure modes when clock assumpti
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Clocks & Time
+       9 
+      10 > In a distributed database, **time is how you order events acro
+         ss machines**. Some systems lean on
+     … +61 lines (ctrl+o to expand)
+
+⏺ All files written. Let me do a quick quality check — spot-check the
+  [[relational]] link (likely a mislink, not a concept page) and verify one
+  engine page follows the template.
+
+⏺ Bash(echo "=== [[relational]] context ===" && grep -rn '\[\[relational\]\]'
+      engines/ ; echo "=== frontmatter check (each page must have slug +
+      last_researched) ==="…)
+  ⎿  === [[relational]] context ===
+     engines/microsoft-sql-server.md:17:- **Taxonomy / data model:** primar
+     ily [[relational]] (SQL), multi-model via native JSON (typed `json` da
+     … +36 lines (ctrl+o to expand)
+
+⏺ The [[relational]] is a mislink — "relational" is a data-model category, not a
+  concept page. Fixing it to plain text:
+
+⏺ Update(engines/microsoft-sql-server.md)
+  ⎿  File must be read first
+
+  Read 1 file (ctrl+o to expand)
+⏺ Update(engines/microsoft-sql-server.md)
+  ⎿  Added 1 line, removed 1 line
+      14  > The mature, full-featured commercial relational database for 
+          Windows-and-Linux shops: rock-solid single-node OLTP with optio
+          nal columnstore HTAP, T-SQL everywhere, and per-core licensing 
+          that gets expensive fast at scale.
+      15  
+      16  ## Identity
+      17 -- **Taxonomy / data model:** primarily [[relational]] (SQL), mu
+         -lti-model via native JSON (typed `json` data type added in SQL 
+         -Server 2025), XML, spatial (geometry/geography), graph (`NODE`/
+         -`EDGE` tables), and vector search (native `vector` type / DiskA
+         -NN in SQL Server 2025). See [[oltp-olap-htap]] for the workload
+         - axis.                                                         
+      17 +- **Taxonomy / data model:** primarily relational (SQL), multi-
+         +model via native JSON (typed `json` data type added in SQL Serv
+         +er 2025), XML, spatial (geometry/geography), graph (`NODE`/`EDG
+         +E` tables), and vector search (native `vector` type / DiskANN i
+         +n SQL Server 2025). See [[oltp-olap-htap]] for the workload axi
+         +s.                                                             
+      18  - **Storage model:** default disk-based **row-store** B-tree (c
+          lustered/heap); optional **columnstore** indexes (clustered or 
+          nonclustered) for analytics; [[lsm-vs-btree]] — SQL Server is B
+          -tree-based, not LSM. In-Memory OLTP ("Hekaton") tables use loc
+          k-free hash and Bw-tree indexes ([Hekaton paper, Diaconu et al.
+           2013](https://www.microsoft.com/en-us/research/wp-content/uplo
+          ads/2013/06/Hekaton-Sigmod2013-final.pdf)).
+      19  - **Workload:** OLTP-first; HTAP via **real-time operational an
+          alytics** — a nonclustered columnstore index over a row-store t
+          able, or a clustered columnstore over a memory-optimized table,
+           lets analytic scans run against live OLTP data without a separ
+          ate warehouse ([Microsoft Learn](https://learn.microsoft.com/en
+          -us/sql/relational-databases/indexes/get-started-with-columnsto
+          re-for-real-time-operational-analytics)). This is the concrete 
+          physical separation: OLTP reads/writes hit the row B-tree; anal
+          ytic queries hit the columnstore copy of the same rows.
+      20  
+
+⏺ Batch 1 complete. Here's the summary.
+
+  Done — ranks 1–6 ingested
+
+  Dispatched 6 parallel research agents (one per engine), each researching via
+  web and writing its own page, while I handled the shared-file edits and
+  concept pages to avoid write conflicts (§7.2).
+
+  Engine pages written (engines/), all confidence: high, full template:
+
+  ┌──────┬──────────────────────────┬────────────────────────────────────────┐
+  │ Rank │          Engine          │   The one gotcha each page calls out   │
+  ├──────┼──────────────────────────┼────────────────────────────────────────┤
+  │      │                          │ "SERIALIZABLE" is really snapshot      │
+  │ 1    │ [[oracle]]               │ isolation; per-core options-priced     │
+  │      │                          │ licensing dominates                    │
+  ├──────┼──────────────────────────┼────────────────────────────────────────┤
+  │ 2    │ [[mysql]]                │ Default "REPEATABLE READ" is weaker    │
+  │      │                          │ than its name (Jepsen)                 │
+  ├──────┼──────────────────────────┼────────────────────────────────────────┤
+  │ 3    │ [[microsoft-sql-server]] │ Locking READ COMMITTED by default;     │
+  │      │                          │ per-core cost scales hard              │
+  ├──────┼──────────────────────────┼────────────────────────────────────────┤
+  │ 4    │ [[postgresql]]           │ Real SERIALIZABLE via SSI, but         │
+  │      │                          │ vacuum/bloat + no built-in sharding    │
+  ├──────┼──────────────────────────┼────────────────────────────────────────┤
+  │      │                          │ Safe consistency needs non-default     │
+  │ 5    │ [[mongodb]]              │ w:majority; Jepsen found data loss at  │
+  │      │                          │ defaults                               │
+  ├──────┼──────────────────────────┼────────────────────────────────────────┤
+  │ 6    │ [[snowflake]]            │ Storage/compute separation; near-zero  │
+  │      │                          │ tuning, easy to overspend              │
+  └──────┴──────────────────────────┴────────────────────────────────────────┘
+
+  11 concept pages created (concepts/) to back the theory links the engine pages
+  share — written once, linked everywhere per §3: cap-pacelc, isolation-levels,
+  mvcc, replication-models, consensus-raft-paxos, lsm-vs-btree,
+  wal-and-durability, oltp-olap-htap, storage-compute-separation,
+  license-taxonomy, clocks-and-time.
+
+  Shared bookkeeping:
+  - index.md — 5 engines under Relational, MongoDB under Document, sorted by
+  rank.
+  - ranking.md — ranks 1–6 set to done (2026-06-04).
+  - log.md — appended ingest lines for the batch and the concept pages.
+  - Fixed one mislink ([[relational]] → plain text; it's a category, not a
+  concept page).
+
+  Notes for a future lint pass: the engine pages contain forward-links to
+  not-yet-written engines ([[duckdb]], [[cockroachdb]], [[clickhouse]],
+  [[mariadb]], etc.) — expected dangling links that resolve as we work down the
+  ranking. [[pgvector]] and [[postgis]] are extensions, not ranked engines.
+
+  Want me to continue with the next batch (ranks 7–12: Databricks, Redis, IBM
+  Db2, Apache Cassandra, SQLite, Elasticsearch)?
+
+✻ Cogitated for 8m 7s
+
+※ recap: We're building the database-engines wiki by researching the top 150 from db-engines.com. Bootstrap is done and ranks 1-6 are fully ingested with pages, concept pages, and index updates. Next action is to research the next batch, ranks 7-12. (disable recaps in /config)
+
+❯ continue across all of them and keep updating shared pages                    
+
+⏺ This is a big job — 144 engines remaining (ranks 7–150). At roughly the ~40k
+  tokens per engine I just saw, that's on the order of 5–7M tokens of research.
+  I want to pick the right mechanism before I burn that, since it changes both
+  cost and how you'll experience it.
+
+  There are two good ways to run it, and one of them (a workflow) needs your
+  explicit go-ahead:
+
+⏺ User answered Claude's questions:
+  ⎿  · How should I run the remaining 144 engines (ranks 7–150)? → Run a 
+     workflow (Recommended)
+
+⏺ Workflow it is — that's now your explicit go-ahead for multi-agent
+  orchestration. I'll launch one background workflow that fans out one agent per
+  engine across all 144 (ranks 7–150), each researching and writing only its
+  own engines/<slug>.md and returning structured index data. When it completes
+  I'll do the shared-file edits (index.md, ranking.md, log.md) and create any
+  new concept pages the agents linked — keeping those single-writer to avoid
+  conflicts.
+
+  Let me kick it off.
+
+⏺ Workflow(Research and write wiki pages for db-engines ranks 7-150 (144
+          engines), one agent per engine)
+  ⎿  /workflows to view dynamic workflow runs
+
+⏺ Dynamic workflow "Research and write wiki pages for db-engines ranks 7-150 (144 engines), one agent per engine" failed: TypeError: args.map is not a function. (In 'args.map(e =&gt; () =&gt;
+  agent(buildPrompt(e), { label: 'r' + e.rank + ':' + e.slug, phase: 'Research', schema: RESULT_SCHEMA })
+)', 'args.map' is undefined) · 0s
+
+⏺ The workflow failed instantly — args arrived as a string, not a parsed array,
+  so args.map blew up. Easy fix: coerce args to an array in the script, then
+  resume (completed agents are cached — though none ran, so it's a fresh start).
+  Let me read and patch the script file.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/.claude/projects/-Users-drucev-projects-MTA-dbengine/4983af6f-8240-41
+        b9-b3e7-622259404e91/workflows/scripts/dbengine-batch-ingest-wf_8eb74d91
+        -759.js)
+  ⎿  Added 6 lines, removed 2 lines
+      101    'Research the engine now using WebSearch and WebFetch, then 
+           Write the file, then return the structured result. Set wrote_f
+           ile=true only after the Write succeeds. index_line format: - *
+           *[[' + e.slug + ']]** (rank ' + e.rank + ') — <concise one-lin
+           er>.'
+      102  ].join('\n');
+      103  
+      104 +let engines = args;                                           
+      105 +if (typeof engines === 'string') engines = JSON.parse(engines)
+          +;                                                             
+      106 +if (!Array.isArray(engines) && engines && Array.isArray(engine
+          +s.engines)) engines = engines.engines;                        
+      107 +                                                              
+      108  phase('Research');
+      105 -log('Researching ' + args.length + ' engines (ranks 7-150), on
+          -e agent each.');                                              
+      109 +log('Researching ' + engines.length + ' engines (ranks 7-150),
+          + one agent each.');                                           
+      110  
+      107 -const results = await parallel(args.map(e => () =>            
+      111 +const results = await parallel(engines.map(e => () =>         
+      112    agent(buildPrompt(e), { label: 'r' + e.rank + ':' + e.slug, 
+           phase: 'Research', schema: RESULT_SCHEMA })
+      113  ));
+      114  
+
+⏺ Update(~/.claude/projects/-Users-drucev-projects-MTA-dbengine/4983af6f-8240-41
+        b9-b3e7-622259404e91/workflows/scripts/dbengine-batch-ingest-wf_8eb74d91
+        -759.js)
+  ⎿  Added 1 line, removed 1 line
+      118    .map(c => String(c).replace(/^\[\[|\]\]$/g,'').trim().toLowe
+           rCase())
+      119    .filter(c => c && !EXISTING_CONCEPTS.includes(c)))].sort();
+      120  
+      121 -log('Done: ' + wrote.length + '/' + args.length + ' pages writ
+          -ten; ' + newConcepts.length + ' new concept slugs linked.');  
+      121 +log('Done: ' + wrote.length + '/' + engines.length + ' pages w
+          +ritten; ' + newConcepts.length + ' new concept slugs linked.')
+          +;                                                             
+      122  
+      123  return { count: ok.length, written: wrote.length, results: ok,
+            newConcepts };
+
+⏺ Patched. Now re-launching with the fixed script (passing args again — the
+  script now parses it if it arrives as a string):
+  ⎿  /workflows to view dynamic workflow runs
+
+⏺ The fix took — workflow w422zj0a0 is now running in the background, fanning
+  out 144 agents (~10–16 at a time). The first run died on a args type quirk (it
+  arrived stringified); the script now parses it defensively.
+
+  What happens next:
+  - It'll churn for a while — roughly 20–30 minutes given the concurrency cap
+  and per-engine research. You can watch live progress with /workflows.
+  - Each agent writes only its own engines/<slug>.md and returns structured
+  index data; nothing touches the shared files yet.
+  - When it completes, I'll be notified automatically and will then, in one
+  pass:
+    a. verify all 144 pages got written (re-running any that failed),
+    b. add every engine to index.md under its category, sorted by rank,
+    c. flip ranks 7–150 to done (2026-06-04) in ranking.md,
+    d. create any new concept pages the agents linked (graph, vector/ANN,
+  time-series storage, CRDTs, etc.) — single-writer, like the first batch,
+    e. append the ingest lines to log.md.
+
+  I'll pick it up from there once it finishes — no action needed from you in the
+  meantime.
+
+✻ Churned for 6m 9s
+
+※ recap: Building the DB-engines wiki: ranks 1–6 are done, and a background workflow is now researching and writing pages for the remaining 144 engines (ranks 7–150). When it finishes I'll update the shared index, ranking, log, and concept pages. (disable recaps in /config)
+
+❯ how you doin                                                                  
+
+⏺ Doing well — and more to the point, so is the job. Let me check on the
+  background workflow while we chat.
+
+⏺ Bash(ls engines/*.md 2>/dev/null | grep -v -E
+      '/(oracle|mysql|microsoft-sql-server|postgresql|mongodb|snowflake)\.md' |
+      wc -l | xargs echo "new engine pages written…)
+  ⎿  new engine pages written (of 144): 30
+     total engine pages:
+     36
+
+⏺ I'm good, thanks for asking! 😄 Cruising along while the workers do the heavy
+  lifting.
+
+  Status check: the workflow's been grinding for a few minutes and 30 of 144 new
+  engine pages are already on disk (36 total counting batch 1). That's a
+  healthy pace — the agents are landing pages as they finish researching, ~10–16
+  going at once.
+
+  Nothing for me to do until it wraps — the shared-file edits (index, ranking,
+  concept pages, log) all happen in one pass after the full fan-out completes,
+  so I don't trip over my own writes. I'll get pinged automatically when it's
+  done and pick it up from there.
+
+  Want me to peek at one of the freshly-written pages to spot-check quality
+  while we wait, or just let it ride? You can also run /workflows anytime to
+  watch it live.
+
+✻ Cooked for 13s
+
+❯ nice, let it ride, keep it up and let me know any question or when finished   
+⏺ Will do — letting it ride. I'll ping you only if something needs a decision,
+  otherwise you'll hear from me when the full batch is done and the shared pages
+  are updated. 🚀
+
+✻ Crunched for 2s
+
+※ recap: We're building the 150-engine database wiki; a background workflow is researching ranks 7–150 (144 engine pages). It's running now. Next: when it finishes I'll update index.md, ranking.md, concept pages, and log.md in one pass. (disable recaps in /config)
+
+⏺ Dynamic workflow "Research and write wiki pages for db-engines ranks 7-150
+(144 engines), one agent per engine" completed · 52m 26s
+
+⏺ 144/144 pages written — the full fan-out completed (5.5M tokens, 144 agents,
+  ~52 min). Now the orchestrator pass. The result blob is large, so I'll process
+  it with a script rather than pull it all into context. First, let me inspect
+  the output file and verify the pages on disk.
+
+⏺ Bash(OUT=/private/tmp/claude-501/-Users-drucev-projects-MTA-dbengine/515da36e-
+      85b1-47e2-8159-c6d2caeeba23/tasks/w422zj0a0.output
+      echo "=== file size ==="; wc -c "$OU…)
+  ⎿  === file size ===
+       143435 /private/tmp/claude-501/-Users-drucev-projects-MTA-dbengine/5
+     15da36e-85b1-47e2-8159-c6d2caeeba23/tasks/w422zj0a0.output
+     … +7 lines (ctrl+o to expand)
+
+⏺ All 150 pages on disk. Let me parse the result JSON with Python to build the
+  index groupings, collect new concept slugs, and flag any anomalies.
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 << 'PY'…)
+  ⎿  results found: 144
+     slugs missing on disk: []
+     wrote_file=false: []
+     … +35 lines (ctrl+o to expand)
+
+⏺ Clean run: all 144 written, none missing, none flagged. Category spread looks
+  right (55 Relational, 18 Key-value, 13 Document, 11 Time-series, etc.). Now
+  the shared-file edits.
+
+  First, regenerate index.md from all 150 engines (batch 1 + the 144), grouped
+  by category and sorted by rank, and flip ranking.md statuses:
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 << 'PY'…)
+  ⎿  index.md written, engines listed: 150
+     === flip ranking.md 7-150 to done ===
+     remaining todo lines:
+     … +3 lines (ctrl+o to expand)
+
+⏺ index.md rebuilt with all 150. ranking.md shows 2 remaining todo — that's rank
+  150 (my regex missed 150) plus the example line in the header. Let me fix
+  rank 150:
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      sed -i '' -E 's/^(\| 150 \| .* \| )todo \|/\1done (2026-06-04) |/'
+      ranking.md…)
+  ⎿  === rows still todo (excluding header example) ===
+     === done count ===
+     150
+
+⏺ All 150 marked done. Now creating the high-value concept pages the agents
+  linked (the long tail of one-off variants I'll leave for a lint pass). Writing
+  the 11 most-referenced ones:
+
+⏺ Write(concepts/columnar-storage.md)
+  ⎿  Wrote 41 lines to concepts/columnar-storage.md
+       2 name: Columnar Storage
+       3 slug: columnar-storage
+       4 summary: Store each column contiguously instead of each row — th
+         ble scans and compression for expensive row-level writes.full-ta
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Columnar Storage
+       9 
+      10 > A **column-store** lays out a table column-by-column on disk r
+         ather than row-by-row. Analytical
+     … +54 lines (ctrl+o to expand)
+
+⏺ Write(concepts/sharding-partitioning.md)
+  ⎿  Wrote 44 lines to concepts/sharding-partitioning.md
+       2 name: Sharding & Partitioning
+       3 slug: sharding-partitioning
+       4 summary: Splitting data across nodes (sharding) or within a node
+         , hot-spot, and cross-shard-transaction pain it brings.esharding
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Sharding & Partitioning
+       9 
+      10 > **Partitioning** divides a table into chunks; **sharding** spr
+         eads those chunks across nodes so
+     … +58 lines (ctrl+o to expand)
+
+⏺ Write(concepts/vector-search-ann.md)
+  ⎿  Wrote 45 lines to concepts/vector-search-ann.md
+       2 name: Vector Search & ANN
+       3 slug: vector-search-ann
+       4 summary: Indexing high-dimensional embeddings for approximate-ne
+         mantic search and RAG, trading recall for speed.roblem behind se
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Vector Search & ANN
+       9 
+      10 > A **vector database / index** stores high-dimensional embeddin
+         g vectors and answers "find the K
+     … +56 lines (ctrl+o to expand)
+
+⏺ Write(concepts/full-text-search.md)
+  ⎿  Wrote 46 lines to concepts/full-text-search.md
+       2 name: Full-Text Search
+       3 slug: full-text-search
+       4 summary: The inverted index — map terms to the documents contain
+         e engine behind keyword search, log analytics, and SIEM.M25); th
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Full-Text Search
+       9 
+      10 > Full-text search finds documents by their **content**, ranked 
+         by relevance, not by exact key
+     … +58 lines (ctrl+o to expand)
+
+⏺ Write(concepts/time-series-storage.md)
+  ⎿  Wrote 42 lines to concepts/time-series-storage.md
+       2 name: Time-Series Storage
+       3 slug: time-series-storage
+       4 summary: Append-heavy, timestamp-ordered data with high ingest a
+         me partitioning, downsampling, and retention/TTL.compression, ti
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Time-Series Storage
+       9 
+      10 > Time-series data is a relentless stream of timestamped points 
+         (metrics, sensors, events, trades):
+     … +53 lines (ctrl+o to expand)
+
+⏺ Write(concepts/graph-data-model.md)
+  ⎿  Wrote 40 lines to concepts/graph-data-model.md
+       2 name: Graph Data Model
+       3 slug: graph-data-model
+       4 summary: Model data as nodes and edges so relationships are firs
+         rsive joins in a relational store. Property-graph vs RDF.ve recu
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Graph Data Model
+       9 
+      10 > A graph database stores **nodes** (entities) and **edges** (re
+         lationships), both optionally
+     … +51 lines (ctrl+o to expand)
+
+⏺ Write(concepts/embedded-databases.md)
+  ⎿  Wrote 41 lines to concepts/embedded-databases.md
+       2 name: Embedded Databases
+       3 slug: embedded-databases
+       4 summary: Databases that run in-process as a library, not a separ
+         pplication. SQLite, DuckDB, RocksDB, and friends.s next to the a
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Embedded Databases
+       9 
+      10 > An **embedded** database runs **in-process** as a linked libra
+         ry: no separate server, no network
+     … +51 lines (ctrl+o to expand)
+
+⏺ Write(concepts/crdts.md)
+  ⎿  Wrote 47 lines to concepts/crdts.md
+       2 name: CRDTs (Conflict-free Replicated Data Types)
+       3 slug: crdts
+       4 summary: Data types whose concurrent updates always merge determ
+         AP systems converging without conflicts or a central arbiter.er/
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # CRDTs — Conflict-free Replicated Data Types
+       9 
+      10 > A **CRDT** is a data structure whose replicas can be updated i
+         ndependently and concurrently, and
+     … +58 lines (ctrl+o to expand)
+
+⏺ Write(concepts/jepsen.md)
+  ⎿  Wrote 41 lines to concepts/jepsen.md
+       2 name: Jepsen
+       3 slug: jepsen
+         framework that injects faults (partitions, clock skew, crashes) 
+         and checks whether a database actually delivers its claimed cons
+         istency — it usually doesn't, at least at first.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Jepsen
+      10 > [Jepsen](https://jepsen.io) is a testing framework and a body 
+         of analyses (by Kyle Kingsbury,
+     … +53 lines (ctrl+o to expand)
+⏺ Write(concepts/multi-model.md)
+  ⎿  Wrote 38 lines to concepts/multi-model.md
+       2 name: Multi-Model
+       3 slug: multi-model
+         cument, graph, key-value, etc.) over a shared core — convenience
+          and fewer systems to run, but usually with one model first-clas
+         s and the rest bolted on.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Multi-Model
+      10 > A **multi-model** database supports more than one data model —
+          some combination of relational,
+     … +49 lines (ctrl+o to expand)
+
+⏺ Write(concepts/wide-column.md)
+  ⎿  Wrote 46 lines to concepts/wide-column.md
+       2 name: Wide-Column Stores
+       3 slug: wide-column
+         ted map keyed by (row, column-family, column, timestamp) — built
+          for massive write throughput and linear scale, not joins or ad-
+         hoc queries.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Wide-Column Stores
+      10 > A **wide-column** store (a.k.a. column-family / Bigtable-style
+         ) is, at heart, a **sparse,
+     … +59 lines (ctrl+o to expand)
+
+⏺ 11 concept pages written (22 total now). Finally, append the log.md entries:
+
+⏺ Update(log.md)
+  ⎿  Added 3 lines
+      14  ## [2026-06-04] bootstrap | populated ranking.md with top 150 f
+          rom db-engines.com (fetched 2026-06-04); all status=todo
+      15  ## [2026-06-04] ingest | batch 1 (ranks 1-6): oracle, mysql, mi
+          crosoft-sql-server, postgresql, mongodb, snowflake — parallel a
+          gents, indexed
+      16  ## [2026-06-04] ingest | created 11 concept pages backing batch
+           1 links: cap-pacelc, pacelc note, isolation-levels, mvcc, repl
+          ication-models, consensus-raft-paxos, lsm-vs-btree, wal-and-dur
+          ability, oltp-olap-htap, storage-compute-separation, license-ta
+          xonomy, clocks-and-time
+      17 +## [2026-06-04] ingest | batch 2 (ranks 7-150): 144 engines via
+         + background workflow (one agent each, 144/144 written); index.m
+         +d rebuilt for all 150, ranking.md all done                     
+      18 +## [2026-06-04] ingest | created 11 concept pages for batch 2 l
+         +inks: columnar-storage, sharding-partitioning, vector-search-an
+         +n, full-text-search, time-series-storage, graph-data-model, emb
+         +edded-databases, crdts, jepsen, multi-model, wide-column       
+      19 +## [2026-06-04] note | coverage now 150/150 engines + 22 concep
+         +t pages. Lint TODO: canonicalize long-tail concept-link variant
+         +s (document-data-model, key-value-store, rdf-triplestore, wide-
+         +column-store(s), consistency-levels, etc.) and one-off stubs (m
+         +umps, globals, hyperloglog, apache-tinkerpop, graph-rag, rdf-vs
+         +-property-graph, log-sequence-numbers, multitenancy, versioning
+         +, multivalue-model, hierarchical-data-model); verify backlinks;
+         + build decision-guide.md (§8)                                  
+
+⏺ Let me run a final verification of the whole wiki state:
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      echo "engine pages: $(ls engines/*.md | wc -l | tr -d ' ')"…)
+  ⎿  engine pages: 150
+     concept pages: 22
+     ranking done: 150
+     … +15 lines (ctrl+o to expand)
+
+⏺ ✅ Done — all 150 engines researched and the wiki is fully wired up.
+
+  Final state
+
+  ┌────────────────────────┬───────────┐
+  │         Metric         │   Count   │
+  ├────────────────────────┼───────────┤
+  │ Engine pages           │ 150 / 150 │
+  ├────────────────────────┼───────────┤
+  │ Concept pages          │ 22        │
+  ├────────────────────────┼───────────┤
+  │ ranking.md marked done │ 150       │
+  ├────────────────────────┼───────────┤
+  │ index.md entries       │ 150       │
+  └────────────────────────┴───────────┘
+
+  Index breakdown by data model: Relational 60 · Key-value 18 · Document 14 ·
+  Multi-model 12 · Time-series 11 · Search engine 10 · Graph 9 · Wide-column 7 ·
+  Vector 5 · Other 4 · Object 0.
+
+  How batch 2 ran
+
+  - One background workflow, 144 agents (one per engine), 144/144 pages written,
+  zero missing, zero wrote_file:false. ~5.5M tokens, ~52 min wall-clock.
+  - One early failure (the args payload arrived stringified) — patched the
+  script to parse it, relaunched, clean run.
+
+  Orchestrator pass (single-writer, after fan-out)
+
+  - Rebuilt index.md from all 150 (batch 1 + 2), grouped by category, sorted by
+  rank.
+  - Flipped ranks 7–150 to done (2026-06-04) in ranking.md.
+  - Wrote 11 new concept pages for the most-linked theory the agents referenced:
+  columnar-storage, sharding-partitioning, vector-search-ann, full-text-search,
+  time-series-storage, graph-data-model, embedded-databases, crdts, jepsen,
+  multi-model, wide-column.
+  - Logged everything in log.md.
+
+  A couple of honest notes / questions for you
+
+  1. Confidence: agents self-rated mostly high, a few medium (e.g. ibm-db2). I
+  didn't run an independent verification pass over the 144 — a lint (§7.4) with
+  adversarial fact-checking would catch any overconfident claims. Want me to run
+  one?
+  2. Long-tail dangling links: ~15 one-off concept slugs are still unwritten
+  (e.g. mumps, globals, hyperloglog, apache-tinkerpop, rdf-triplestore,
+  document-data-model, consistency-levels). Per the schema, dangling links are
+  fine and mark pages worth writing — I logged them as a lint TODO rather than
+  spawning stubs. I can canonicalize/redirect these in a lint pass.
+  3. decision-guide.md (§8) is still the placeholder — it's meant to be built
+  after research from the actual data, which we now have. That's the natural
+  next step.
+
+  Want me to (a) run a lint + verification pass, (b) build the decision guide,
+  or (c) both?
+
+✻ Cogitated for 1h 13m 49s
+
+❯ c                                                                             
+
+⏺ On it — running the full lint (§7.4) plus building the decision guide (§8).
+  I'll do the deterministic lint first (cheap, scripted), then launch an
+  adversarial verification workflow in the background, and build the decision
+  guide from the data while it runs.
+
+  Step 1 — deterministic lint: canonicalize the long-tail concept-link variants,
+  inventory what's left dangling, and check orphans.
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 << 'PY'…)
+  ⎿  files updated by remap: 8
+
+     remaining dangling links (count):
+     … +65 lines (ctrl+o to expand)
+
+⏺ Good — the lint surfaced two classes of issues: (1) engine alias slugs (e.g.
+  [[cassandra]] instead of [[apache-cassandra]], [[bigquery]], [[sql-server]],
+  [[hsqldb]]→hypersql) that should resolve to existing pages, and (2)
+  genuinely-external tech (Iceberg, Spark core, Kafka, pgvector, dbt) that's
+  correctly out of scope and fine to leave dangling. No orphan engine pages. Let
+  me fix the aliases and add the two missing data-model concept pages
+  (Document, Key-value):
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 << 'PY'…)
+  ⎿  files updated by alias remap: 23
+     alias remap done
+
+⏺ Write(concepts/document-data-model.md)
+  ⎿  Wrote 49 lines to concepts/document-data-model.md
+       2 name: Document Data Model
+       3 slug: document-data-model
+         ON) keyed by ID — schema-flexible and a natural fit for object-s
+         haped data, at the cost of cross-document joins and global const
+         raints.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Document Data Model
+      10 > A document database stores records as **self-describing, hiera
+         rchical documents** — typically
+     … +63 lines (ctrl+o to expand)
+
+⏺ Write(concepts/key-value-store.md)
+  ⎿  Wrote 42 lines to concepts/key-value-store.md
+       2 name: Key-Value Store
+       3 slug: key-value-store
+       4 summary: The simplest model — a distributed hash map of opaque k
+         t the cost of querying only by key. and easy horizontal scale, a
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Key-Value Store
+       9 
+      10 > A key-value store is a persistent (or in-memory) **map from a 
+         unique key to a value**, where the
+     … +54 lines (ctrl+o to expand)
+
+⏺ Step 2 — adversarial verification workflow. Each agent owns exactly one engine
+  page (no write conflicts), re-checks its must-cite claims (CAP/PACELC,
+  isolation, replication, Jepsen, license, version-specific facts) against the
+  web, fixes its own page in place, and returns structured findings. Let me
+  generate the 150-engine arg list from disk first.
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 << 'PY'…)
+  ⎿  count: 150
+     current confidence dist: {'high': 84, 'medium': 66}
+     first 3: [{'rank': 1, 'name': 'Oracle', 'slug': 'oracle', 'confidence'
+     … +3 lines (ctrl+o to expand)
+
+⏺ 150 engines (84 high / 66 medium confidence). I'll embed the engine list
+  directly in the script (more reliable than the args channel). Let me read the
+  generated list:
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Now launching the verification workflow with the 150-engine list embedded
+  directly in the script (bypassing the args channel entirely):
+
+⏺ Workflow(Adversarially fact-check and fix all 150 engine pages in place; one
+          agent per page)
+  ⎿  /workflows to view dynamic workflow runs
+
+⏺ Step 3 — build the decision guide (§8) while verification runs in the
+  background (it edits engine pages; the guide is a separate file, no conflict).
+  Let me read the full index to ground the guide in our actual coverage.
+  Read 1 file (ctrl+o to expand)
+
+⏺ I have everything I need. Writing the data-derived decision guide (§8) —
+  fewest high-signal questions first, then branches to leaves with candidate +
+  trade-off + anti-pattern:
+
+⏺ Write(decision-guide.md)
+  ⎿  Added 226 lines, removed 11 lines
+        1 -# Which Database Should I Use? — Decision Guide               
+        1 +---                                                           
+        2 +name: Decision Guide                                          
+        3 +slug: decision-guide                                          
+        4 +summary: Which database should I use? A walk-top-to-bottom tre
+          +e derived from the 150 researched engine pages — ask the four 
+          +questions first, then jump to your workload.                  
+        5 +last_researched: 2026-06-04                                   
+        6 +---                                                           
+        7  
+        3 -> **Built after research, from the data — not yet populated.**
+          - See [[CLAUDE]] §8.                                           
+        8 +# Which Database Should I Use?                                
+        9  
+        5 -This guide is intentionally empty until enough engine pages ex
+          -ist to derive it empirically. The                             
+        6 -plan:                                                         
+       10 +> Built **from the data** in this wiki (150 engines), per [[CL
+          +AUDE]] §8. Walk it top to bottom in a                         
+       11 +> couple of minutes. Leaves name `[[engine]]` candidates with 
+          +the **key trade-off** and the                                 
+       12 +> **anti-pattern** (when *not* to pick it). Every claim links 
+          +to a page — follow it before betting on it.                   
+       13  
+        8 -1. Analyze the researched engine pages to find which dimension
+          -s partition the field most cleanly.                           
+        9 -2. Fix the **2–4 highest-signal questions to always ask first*
+          -* (the ones that eliminate the most                           
+       10 -   candidates fastest).                                       
+       11 -3. Build a branching tree from there to leaves. Each leaf name
+          -s `[[engine]]` candidates with the                            
+       12 -   key trade-off **and** the anti-pattern (when not to pick it
+          -).                                                            
+       13 -4. Re-derive the question order as coverage grows; log changes
+          - in [[log]] under `decision-guide`.                           
+       14 +---                                                           
+       15  
+       15 -<!-- The fixed first questions and the tree go here once deriv
+          -ed. -->                                                       
+       16 +## Ask these four first                                       
+       17 +                                                              
+       18 +These four questions eliminate the most candidates fastest. An
+          +swer them, then go to the matching                            
+       19 +section.                                                      
+       20 +                                                              
+       21 +1. **What is the primary job?** (data model + workload) — the 
+          +biggest filter:                                               
+       22 +   transactional app DB (OLTP) · analytics/reporting (OLAP) · 
+          +document · key-value/cache ·                                  
+       23 +   graph · time-series/metrics · full-text search · vector/AI 
+          +retrieval · stream processing ·                               
+       24 +   spatial · *several of these at once* (→ [[multi-model]], bu
+          +t verify each model is first-class).                          
+       25 +   See [[oltp-olap-htap]].                                    
+       26 +2. **Scale & topology?** single-node / embedded · single-prima
+          +ry + read replicas ·                                          
+       27 +   horizontally sharded · globally distributed (multi-region w
+          +rites). Most workloads are smaller                            
+       28 +   than people think — don't buy distribution you won't use. S
+          +ee [[sharding-partitioning]],                                 
+       29 +   [[replication-models]].                                    
+       30 +3. **Operations & licensing?** self-hosted vs managed/serverle
+          +ss; is cloud lock-in acceptable;                              
+       31 +   do you require **permissive** OSS (Apache/MIT/BSD) vs toler
+          +ate **source-available** (SSPL/BSL)                           
+       32 +   or **proprietary**? See [[license-taxonomy]].              
+       33 +4. **Consistency & durability needs?** strict-serializable / s
+          +trong vs tunable / eventual; what is                          
+       34 +   your acceptable **data-loss window** on crash? See [[isolat
+          +ion-levels]], [[cap-pacelc]],                                 
+       35 +   [[wal-and-durability]]. Beware "ACID"/"serializable" that i
+          +s really snapshot isolation, and                              
+       36 +   verify distributed-consistency claims against [[jepsen]].  
+       37 +                                                              
+       38 +**The single most common right answer:** for a general transac
+          +tional application, default to                                
+       39 +**[[postgresql]]** until you have a concrete reason not to. Mo
+          +st "we need NoSQL/distributed" instincts                      
+       40 +are premature.                                                
+       41 +                                                              
+       42 +---                                                           
+       43 +                                                              
+       44 +## 1. Transactional application database (OLTP)               
+       45 +                                                              
+       46 +**Start here unless you have a specific reason to leave.**    
+       47 +                                                              
+       48 +- **Default, self-hosted, permissive:** [[postgresql]] — real 
+          +SERIALIZABLE via SSI, vast extension                          
+       49 +  ecosystem (JSON, [[postgis|spatial]], pgvector). ✗ no built-
+          +in sharding; watch vacuum/bloat at scale.                     
+       50 +- **Ubiquitous, simple, huge hiring pool:** [[mysql]] / [[mari
+          +adb]] — easy, battle-tested. ✗ default                        
+       51 +  "REPEATABLE READ" is weaker than its name ([[jepsen]]); Mari
+          +aDB Galera consistency is overstated.                         
+       52 +  [[percona-server-for-mysql]] for free enterprise-grade extra
+          +s.                                                            
+       53 +- **Microsoft shop:** [[microsoft-sql-server]] — mature, T-SQL
+          +, columnstore HTAP. ✗ per-core cost.                          
+       54 +- **Already on Oracle / extreme OLTP+options:** [[oracle]] — d
+          +eepest feature set. ✗ cost and                                
+       55 +  audit/licensing traps; "SERIALIZABLE" is snapshot isolation.
+       56 +- **Embedded / single-file / edge:** [[sqlite]] (the default; 
+          +single-writer), [[duckdb]] (if the                            
+       57 +  embedded workload is *analytical*), [[h2]]/[[hypersql]]/[[ap
+          +ache-derby]] (JVM/test),                                      
+       58 +  [[realm]]/[[pouchdb]] (mobile/offline). See [[embedded-datab
+          +ases]]. ✗ not multi-writer servers.                           
+       59 +- **Managed, minimal ops (cloud OK):** [[amazon-aurora]] (MySQ
+          +L/Postgres-compatible, disaggregated                          
+       60 +  storage), [[microsoft-azure-sql-database]], [[alibaba-cloud-
+          +polardb]], [[edb-postgres]]. ✗ cloud                          
+       61 +  lock-in; AWS/Azure-only.                                    
+       62 +                                                              
+       63 +### Need to scale OLTP horizontally or across regions?        
+       64 +- **Distributed SQL (NewSQL), strong consistency:** [[cockroac
+          +hdb]] (serializable, Postgres-wire,                           
+       65 +  survives region loss, BSL), [[yugabytedb]] (Postgres-wire, A
+          +pache-2.0, HLC clocks),                                       
+       66 +  [[google-cloud-spanner]] (strict serializability via TrueTim
+          +e, managed-only),                                             
+       67 +  [[tidb]] (MySQL-wire, HTAP), [[oceanbase]] (financial-grade,
+          + MySQL/Oracle-compat). ✗ all pay a                            
+       68 +  consensus-latency tax ([[consensus-raft-paxos]]); overkill b
+          +elow ~single-node-saturation scale.                           
+       69 +- **Shard an existing Postgres/MySQL:** [[citus]] (Postgres ex
+          +tension; cross-shard reads lack a                             
+       70 +  distributed snapshot), [[planetscale]] (managed Vitess MySQL
+          +/Postgres; cross-shard txns                                   
+       71 +  best-effort). ✗ you must pick shard keys well — see [[shardi
+          +ng-partitioning]].                                            
+       72 +- **Strict-serializable + immutability/audit:** [[datomic]] (D
+          +atalog, time-travel, Jepsen-clean).                           
+       73 +  ✗ closed-source, single-writer transactor.                  
+       74 +                                                              
+       75 +---                                                           
+       76 +                                                              
+       77 +## 2. Analytics / reporting / data warehouse (OLAP)           
+       78 +                                                              
+       79 +Column-stores and MPP — see [[columnar-storage]]. **Anti-patte
+          +rn for all of these: OLTP / many small                        
+       80 +writes / point lookups.**                                     
+       81 +                                                              
+       82 +- **Managed cloud warehouse, near-zero tuning:** [[snowflake]]
+          + (storage/compute separation, easy to                         
+       83 +  overspend), [[google-bigquery]] (serverless, billed by bytes
+          + scanned), [[amazon-redshift]],                               
+       84 +  [[microsoft-fabric]] / [[microsoft-azure-synapse-analytics]]
+          + (Synapse now legacy → Fabric). ✗                             
+       85 +  cost surprises; vendor lock-in.                             
+       86 +- **Lakehouse (own your open storage):** [[databricks]] (Delta
+          +), query engines [[trino]] / [[presto]]                       
+       87 +  / [[apache-spark-sql]] / [[apache-impala]] / [[apache-drill]
+          +] over Iceberg/Delta/Parquet. ✗ these                         
+       88 +  are compute layers, not databases — no transactions of their
+          + own; ACID comes from the table format.                       
+       89 +- **Self-hosted / real-time OLAP:** [[clickhouse]] (blazing sc
+          +ans, eventually consistent),                                  
+       90 +  [[starrocks]] / [[apache-druid]] (sub-second slice-and-dice)
+          +, [[exasol]] / [[vertica]] /                                  
+       91 +  [[greenplum]] / [[sap-iq]] / [[teradata]] / [[netezza]] / [[
+          +gbase]] (MPP, legacy→modern spectrum).                        
+       92 +- **Embedded analytics:** [[duckdb]] — "SQLite for analytics",
+          + single-node, vectorized. ✗ not multi-user.                   
+       93 +- **HTAP (one system for both):** [[singlestore]] (RC only), [
+          +[sap-hana]] (RAM-priced), [[tidb]]                            
+       94 +  (row+columnar replica), [[oracle]]/[[microsoft-sql-server]] 
+          +columnstore. Always verify the                                
+       95 +  **physical separation** mechanism — see [[oltp-olap-htap]]. 
+       96 +                                                              
+       97 +---                                                           
+       98 +                                                              
+       99 +## 3. Document store (JSON, flexible schema)                  
+      100 +                                                              
+      101 +See [[document-data-model]].                                  
+      102 +                                                              
+      103 +- **General document DB:** [[mongodb]] — dominant, easy scale-
+          +out. ✗ safe consistency needs                                 
+      104 +  non-default `w:majority` + majority/snapshot reads; weak def
+          +aults lost data in every [[jepsen]] test.                     
+      105 +- **Managed / serverless:** [[google-cloud-firestore]] (serial
+          +izable, mobile sync),                                         
+      106 +  [[amazon-documentdb]] (Mongo-API, real feature gaps), [[micr
+          +osoft-azure-cosmos-db]] (multi-API,                           
+      107 +  five consistency levels), [[ibm-cloudant]], [[cloudkit]] (Ap
+          +ple-only). ✗ lock-in.                                         
+      108 +- **Offline-first / sync:** [[couchdb]] / [[pouchdb]] / [[ibm-
+          +cloudant]] (CouchDB replication protocol),                    
+      109 +  [[couchbase]] (memory-first, SQL++), [[firebase-realtime-dat
+          +abase]] (small realtime apps),                                
+      110 +  [[realm]] (mobile). ✗ AP/eventual; app-resolved conflicts (s
+          +ee [[crdts]]).                                                
+      111 +- **.NET-native:** [[ravendb]]. ✗ Jepsen found isolation claim
+          +s overstated.                                                 
+      112 +                                                              
+      113 +---                                                           
+      114 +                                                              
+      115 +## 4. Key-value / cache / coordination                        
+      116 +                                                              
+      117 +See [[key-value-store]]. **Most of these are caches, not syste
+          +ms of record.**                                               
+      118 +                                                              
+      119 +- **In-memory cache / data structures:** [[redis]] / [[valkey]
+          +] (Valkey = BSD fork after Redis                              
+      120 +  relicensed), [[memcached]] (minimalist, volatile), [[hazelca
+          +st]] / [[apache-ignite]] /                                    
+      121 +  [[gemfire]] / [[oracle-coherence]] / [[ehcache]] / [[infinis
+          +pan]] (JVM data grids). ✗ async                               
+      122 +  replication → poor system of record.                        
+      123 +- **Durable, scale-out KV:** [[amazon-dynamodb]] (serverless, 
+          +single-digit-ms, design for access                            
+      124 +  patterns), [[aerospike]] (flash-optimized sub-ms, multi-reco
+          +rd ACID since 8.0), [[riak-kv]]                               
+      125 +  (Dynamo-style + [[crdts]]; ✗ LWW default silently drops writ
+          +es), [[oracle-nosql]].                                        
+      126 +- **Strongly-consistent config/coordination:** [[etcd]] (stric
+          +t-serializable Raft; the brain of                             
+      127 +  Kubernetes). ✗ small critical data only, not a general DB.  
+      128 +- **Embedded storage engine (inside your app or another DB):**
+          + [[rocksdb]] / [[leveldb]] (LSM),                             
+      129 +  [[lmdb]] / [[oracle-berkeley-db]] (B-tree). See [[lsm-vs-btr
+          +ee]], [[embedded-databases]].                                 
+      130 +                                                              
+      131 +---                                                           
+      132 +                                                              
+      133 +## 5. Graph                                                   
+      134 +                                                              
+      135 +See [[graph-data-model]].                                     
+      136 +                                                              
+      137 +- **Property graph, deep traversals:** [[neo4j]] (market leade
+          +r, Cypher, index-free adjacency). ✗                           
+      138 +  single-leader, read-committed, doesn't shard a connected gra
+          +ph.                                                           
+      139 +- **In-memory / real-time graph:** [[memgraph]] (Neo4j-compati
+          +ble Cypher). ✗ HA is Enterprise-only.                         
+      140 +- **Distributed / huge graphs:** [[janusgraph]] (over Cassandr
+          +a/HBase/Bigtable; ✗ not ACID on common                        
+      141 +  backends), [[nebulagraph]] (trillions of edges; ✗ no general
+          + ACID), [[tigergraph]] (MPP analytics).                       
+      142 +- **Managed:** [[amazon-neptune]] (property graph + RDF). ✗ si
+          +ngle-writer, AWS lock-in.                                     
+      143 +- **RDF / knowledge graph / SPARQL + reasoning:** [[graphdb]],
+          + [[stardog]], [[virtuoso]],                                   
+      144 +  [[apache-jena-tdb]] (embedded, single-node). ✗ triplestores,
+          + not general app DBs.                                         
+      145 +                                                              
+      146 +---                                                           
+      147 +                                                              
+      148 +## 6. Time-series / metrics / IoT                             
+      149 +                                                              
+      150 +See [[time-series-storage]].                                  
+      151 +                                                              
+      152 +- **Metrics & monitoring:** [[prometheus]] (pull-scrape, PromQ
+          +L; ✗ single-node, not durable alone) →                        
+      153 +  scale/long-term with [[victoriametrics]] (high-cardinality, 
+          +~1s data-loss window). [[graphite]]                           
+      154 +  (legacy RRD-style).                                         
+      155 +- **General TSDB with SQL:** [[timescaledb]] (Postgres extensi
+          +on, full ACID; ✗ single-node now),                            
+      156 +  [[influxdb]] (v3 = columnar/Parquet rewrite), [[questdb]] (f
+          +ast ingest; ✗ HA Enterprise-only).                            
+      157 +- **IoT/industrial:** [[tdengine]], [[apache-iotdb]], [[dolphi
+          +ndb]]. **Finance/tick data:** [[kdb]]                         
+      158 +  (the standard; ✗ closed, idiosyncratic q language, non-ACID)
+          +, [[dolphindb]].                                              
+      159 +- **Event analytics over time:** [[apache-druid]], [[microsoft
+          +-azure-data-explorer]] (Kusto/KQL),                           
+      160 +  [[clickhouse]].                                             
+      161 +                                                              
+      162 +---                                                           
+      163 +                                                              
+      164 +## 7. Full-text search                                        
+      165 +                                                              
+      166 +See [[full-text-search]]. **All are secondary indexes fed from
+          + a durable primary — not systems of                           
+      167 +record** (e.g. [[elasticsearch]] lost acknowledged writes unde
+          +r partition, [[jepsen]]).                                     
+      168 +                                                              
+      169 +- **Self-hosted Lucene:** [[elasticsearch]] (now SSPL/AGPL; lo
+          +gs/observability/vectors),                                    
+      170 +  [[opensearch]] (Apache-2.0 fork), [[apache-solr]] (mature, C
+          +P SolrCloud).                                                 
+      171 +- **Managed / hosted:** [[algolia]] (sub-50ms instant search),
+          + [[microsoft-azure-ai-search]]                                
+      172 +  (full-text + vector + RAG), [[coveo]] (enterprise/commerce),
+          + [[amazon-cloudsearch]] (legacy).                             
+      173 +- **Lightweight / single-node:** [[meilisearch]] (typo-toleran
+          +t; ✗ weak HA/scale), [[sphinx]]                               
+      174 +  (frozen → Manticore fork). **Logs/SIEM at scale:** [[splunk]
+          +] (schema-on-read; ✗ expensive).                              
+      175 +                                                              
+      176 +---                                                           
+      177 +                                                              
+      178 +## 8. Vector / AI retrieval (RAG)                             
+      179 +                                                              
+      180 +See [[vector-search-ann]]. Decide: **dedicated vector DB** vs 
+          +**add vectors to a DB you already run**                       
+      181 +(pgvector in [[postgresql]], [[redis]], [[mongodb]], [[elastic
+          +search]] — usually enough until high                          
+      182 +scale/QPS).                                                   
+      183 +                                                              
+      184 +- **Managed/serverless:** [[pinecone]] (API-only, no self-host
+          +). ✗ eventually consistent, lock-in.                          
+      185 +- **Open-source, scale:** [[milvus]] (billion-scale, disaggreg
+          +ated), [[qdrant]] (rich payload                               
+      186 +  filtering, Rust), [[weaviate]] (hybrid BM25+vector, RAG modu
+          +les), [[chroma]] (dev-first, embeddable                       
+      187 +  → serverless cloud). ✗ none are ACID systems of record; pair
+          + with a primary store.                                        
+      188 +                                                              
+      189 +---                                                           
+      190 +                                                              
+      191 +## 9. Specialized & "it's not really a database"              
+      192 +                                                              
+      193 +- **Spatial / GIS:** [[postgis]] (the de facto open-source GIS
+          + engine, on [[postgresql]]),                                  
+      194 +  [[spatialite]] (embedded, on [[sqlite]]). ✗ PostGIS has no n
+          +ative spatial sharding.                                       
+      195 +- **Stream processing (compute, not storage):** [[apache-flink
+          +]] (stateful, exactly-once). ✗ a                              
+      196 +  compute layer — needs a sink/store of record.               
+      197 +- **Multidimensional/MOLAP (financial planning):** [[oracle-es
+          +sbase]]. ✗ single-node, proprietary.                          
+      198 +- **Content repository (CMS/DAM):** [[apache-jackrabbit]] (JCR
+          +; engine under Adobe AEM).                                    
+      199 +- **Multi-model "do several at once":** [[arangodb]] (doc+grap
+          +h+KV, one query language; ✗ cluster                           
+      200 +  ACID only within a shard), [[microsoft-azure-cosmos-db]], [[
+          +marklogic]] (doc+RDF+search, real                             
+      201 +  multi-doc ACID; ✗ costly), [[intersystems-iris]] (healthcare
+          +; ✗ defaults to READ UNCOMMITTED),                            
+      202 +  [[fauna]] (✗ service shut down 2025). Read [[multi-model]] f
+          +irst — one model is usually                                   
+      203 +  first-class and the rest bolted on.                         
+      204 +- **MultiValue / mainframe / legacy** (choose only if the app 
+          +already requires it): [[adabas]],                             
+      205 +  [[unidata-universe]], [[maxdb]], [[dbase]], [[filemaker]], [
+          +[4d]], [[openedge]], [[ingres]],                              
+      206 +  [[informix]], [[interbase]], [[sap-adaptive-server]].       
+      207 +                                                              
+      208 +---                                                           
+      209 +                                                              
+      210 +## Cross-cutting filters (apply to any leaf above)            
+      211 +                                                              
+      212 +- **License red flags:** post-2018 relicensing to source-avail
+          +able (SSPL: [[mongodb]],                                      
+      213 +  [[elasticsearch]]; BSL: [[cockroachdb]], [[scylladb]]) — if 
+          +you need permissive OSS or to offer it                        
+      214 +  as a service, prefer [[postgresql]], [[valkey]], [[opensearc
+          +h]], [[clickhouse]], [[milvus]].                              
+      215 +  See [[license-taxonomy]].                                   
+      216 +- **Managed-only (no self-host):** [[snowflake]], [[google-big
+          +query]], [[google-cloud-spanner]],                            
+      217 +  [[amazon-dynamodb]], [[pinecone]], [[microsoft-azure-cosmos-
+          +db]], [[cloudkit]] — accept lock-in or                        
+      218 +  rule them out.                                              
+      219 +- **Dead / dying / frozen (avoid for new builds):** [[rockset]
+          +] (shut to outsiders 2024),                                   
+      220 +  [[fauna]] (2025), [[rethinkdb]] (commercially dead), [[amazo
+          +n-simpledb]] / [[amazon-cloudsearch]]                         
+      221 +  (closed to new customers), [[orientdb]] (orphaned), [[maxdb]
+          +] (EOL), [[apache-derby]] (read-only).                        
+      222 +- **"Strongly consistent" claims:** verify against [[jepsen]] 
+          +and check whether safe behavior needs                         
+      223 +  non-default settings — it often does ([[mongodb]], [[redis]]
+          +, [[mariadb]] Galera, [[riak-kv]]).                           
+      224 +                                                              
+      225 +---                                                           
+      226 +                                                              
+      227 +## Maintenance                                                
+      228 +                                                              
+      229 +Re-derive the question order and leaves as coverage grows or e
+          +ngines change status; record changes in                       
+      230 +[[log]] under `decision-guide`. This version derived from 150 
+          +engine pages researched 2026-06-04.                           
+
+⏺ The verification workflow is already improving pages as it runs (I can see SQL
+  Server now has tighter citations and ⚠️ unverified flags on the no-Jepsen and
+  Hyperscale claims — exactly the intent). The decision guide is written and
+  the deterministic lint is done. Let me log those, then wait for verification
+  to finish.
+
+⏺ Update(log.md)
+  ⎿  Added 3 lines
+      17  ## [2026-06-04] ingest | batch 2 (ranks 7-150): 144 engines via
+           background workflow (one agent each, 144/144 written); index.m
+          d rebuilt for all 150, ranking.md all done
+      18  ## [2026-06-04] ingest | created 11 concept pages for batch 2 l
+          inks: columnar-storage, sharding-partitioning, vector-search-an
+          n, full-text-search, time-series-storage, graph-data-model, emb
+          edded-databases, crdts, jepsen, multi-model, wide-column
+      19  ## [2026-06-04] note | coverage now 150/150 engines + 22 concep
+          t pages. Lint TODO: canonicalize long-tail concept-link variant
+          s (document-data-model, key-value-store, rdf-triplestore, wide-
+          column-store(s), consistency-levels, etc.) and one-off stubs (m
+          umps, globals, hyperloglog, apache-tinkerpop, graph-rag, rdf-vs
+          -property-graph, log-sequence-numbers, multitenancy, versioning
+          , multivalue-model, hierarchical-data-model); verify backlinks;
+           build decision-guide.md (§8)
+      20 +## [2026-06-04] lint | canonicalized concept-link variants acro
+         +ss all pages (wide-column-store(s)→wide-column, document-databa
+         +se→document-data-model, rdf-triplestore/rdf-vs-property-graph/a
+         +pache-tinkerpop→graph-data-model, log-sequence-numbers→wal-and-
+         +durability, consistency-levels→cap-pacelc, etc.); fixed engine 
+         +alias slugs ([[cassandra]]→apache-cassandra, [[bigquery]]→googl
+         +e-bigquery, [[sql-server]]→microsoft-sql-server, [[hsqldb]]→hyp
+         +ersql, +9 more); created concept pages document-data-model, key
+         +-value-store (24 concept pages total); no orphan engine pages. 
+         +Remaining dangling links are genuinely out-of-scope tech (apach
+         +e-iceberg, apache-spark, delta-lake, apache-kafka, pgvector, db
+         +t, lucene, vitess, foundationdb, etc.) — left as future-page ma
+         +rkers per CLAUDE §3.                                           
+      21 +## [2026-06-04] decision-guide | built decision-guide.md from 1
+         +50 engine pages: 4 always-ask-first questions (job/model · scal
+         +e&topology · ops&licensing · consistency) then a 9-branch tree 
+         +(OLTP, OLAP, document, KV/cache, graph, time-series, search, ve
+         +ctor, specialized) + cross-cutting filters (license red flags, 
+         +managed-only, dead/dying, Jepsen caveats)                      
+      22 +## [2026-06-04] lint | adversarial verification workflow over a
+         +ll 150 engine pages IN PROGRESS (one agent each: re-checks CAP/
+         +PACELC, isolation, replication, Jepsen, license, version-specif
+         +ic claims; fixes page in place); results to be summarized on co
+         +mpletion                                                       
+
+⏺ Here's where things stand:
+
+  ✅ Done now
+
+  Deterministic lint (§7.4, the cheap scriptable parts):
+  - Canonicalized concept-link variants across all pages — e.g.
+  wide-column-store(s)→wide-column, document-database→document-data-model,
+  rdf-triplestore/apache-tinkerpop→graph-data-model,
+  log-sequence-numbers→wal-and-durability, consistency-levels→cap-pacelc.
+  - Fixed 14 engine alias slugs that pointed nowhere —
+  [[cassandra]]→apache-cassandra, [[bigquery]]→google-bigquery,
+  [[sql-server]]→microsoft-sql-server, [[hsqldb]]→hypersql, etc.
+  - Added 2 concept pages (document-data-model, key-value-store) → 24 concept 
+  pages total.
+  - No orphan engine pages. Remaining dangling links are genuinely out-of-scope
+  tech (Iceberg, Spark core, Kafka, pgvector, dbt, Lucene, Vitess, FoundationDB)
+  — correctly left as future-page markers per the schema.
+
+  Decision guide (§8) — decision-guide.md rebuilt from the 150 pages:
+  - 4 always-ask-first questions: primary job/model · scale & topology · ops &
+  licensing · consistency/durability.
+  - 9-branch tree (OLTP → OLAP → document → KV/cache → graph → time-series →
+  search → vector → specialized), each leaf naming candidates with trade-off and
+  anti-pattern.
+  - Cross-cutting filters: license red flags (SSPL/BSL), managed-only lock-in,
+  dead/dying engines to avoid, and "verify against Jepsen" reminders.
+
+  ⏳ Running in the background
+
+  Adversarial verification workflow (wjmrcm8ff) — 150 agents, one per page,
+  re-checking the must-cite claims (CAP/PACELC, isolation, replication, Jepsen,
+  license, version facts) and fixing each page in place. Early evidence looks
+  good (SQL Server already gained tighter citations and honest ⚠️ unverified
+  flags). ~20–40 min expected.
+
+  When it finishes I'll summarize: how many pages got corrections, any critical
+  errors it caught, the updated confidence distribution, and any claims it
+  couldn't verify (flagged for your eyes). Nothing needed from you until then.
+
+✻ Baked for 6m 55s
+
+❯ nice, while waiting for it to finish let's think about a possible update      
+  plan. spark/databricks and iceberg should be part of the decision tree even   
+  though not technically database engines. let's think about 1) how to make     
+  them part of it e.g. have a lakehouse page or a few pages covering the        
+  different parts and 2) any other technologies that should be covered b/c in   
+  similar solution space , maybe streaming databases/kafka                      
+
+⏺ This is a great direction — and conveniently, the lint already gave me a
+  strong signal: the existing 150 pages reference a lot of these adjacent
+  technologies as dangling links (apache-iceberg ×9, apache-kudu ×6, delta-lake
+  ×5, apache-pinot/apache-paimon/apache-doris ×2, plus the Kafka/CDC ecosystem).
+  Adding pages for them would resolve real links, not invent scope.
+
+  Let me ground the plan precisely before designing. I'll launch one Explore
+  agent to get a clean inventory of adjacent-tech references and confirm
+  conventions, then I'll design the structure and check a couple of decisions
+  with you.
+
+⏺ Explore(Inventory adjacent-tech references)
+  ⎿  Done (18 tool uses · 61.4k tokens · 2m 1s)
+  (ctrl+o to expand)
+
+⏺ The inventory confirms it: the wiki is strictly scoped to "top 150 database
+  engines" with no place for adjacent tech, yet the existing pages already lean
+  on it heavily (Iceberg ×9, Delta ×5, Kudu ×6, plus the Kafka/CDC ecosystem) —
+  and the decision guide mentions lakehouse exactly once and streaming once. So
+  there's a real, link-resolving case for an expansion.
+
+  A few decisions are genuinely yours and shape the whole plan. Let me get those
+  before I finalize.
+
+⏺ User answered Claude's questions:
+  ⎿  · How should non-ranked adjacent tech (Iceberg, Kafka, etc.) be filed, 
+     given the wiki is currently scoped to ranked DB engines? → Into engines/ 
+     with a flag
+     · Which adjacent areas should this expansion cover? (pick all that apply) →
+     Lakehouse & table formats, Streaming platforms & CDC, Streaming/real-time 
+     databases, Real-time OLAP / catalogs / query-engine gaps
+     · Update CLAUDE.md (the schema doc) to formally include adjacent-tech scope
+     + the new structure? → Yes, update the schema
+     · Also fold in the related lint cleanup the inventory surfaced? → Yes, 
+     include cleanup
+
+⏺ All four answers are decisive — adjacent tech goes in engines/ with an
+  adjacent: true flag, cover all four clusters, update the schema doc, and fold
+  in the cleanup. Let me write the plan.
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ The plan is written. Let me load and call ExitPlanMode to hand it back for
+  your approval.
+
+⏺ User approved Claude's plan
+  ⎿  Plan saved to: ~/.claude/plans/tingly-singing-avalanche.md · /plan to edit
+     Plan: Adjacent Data-Platform Technologies (Lakehouse + Streaming) Expansion
+
+     Context
+
+     The wiki currently covers the top-150 ranked db-engines plus theory concept
+     pages. But the
+     researched engine pages already lean heavily on adjacent, non-ranked
+     technologies that aren't
+     database engines in the strict sense — the inventory found dangling links
+     like [[apache-iceberg]]
+     (×9), [[apache-kudu]] (×6), [[delta-lake]] (×5), plus the Kafka/CDC
+     ecosystem. The decision
+     guide mentions "lakehouse" exactly once and "streaming" once, so those
+     solution spaces are
+     under-served for a reader deciding what to use.
+
+     Goal: make lakehouse (Spark/Databricks/Iceberg/Delta) and streaming (Kafka,
+     streaming
+     DBs, CDC) first-class in the wiki and its decision tree — even though they
+     aren't ranked engines —
+     and fill nearby gaps (real-time OLAP, catalogs, query engines). Creating
+     these pages also resolves
+     real existing links rather than inventing scope.
+
+     Decisions (from user)
+
+     1. Placement: adjacent tech lives in engines/ marked with frontmatter
+     adjacent: true,
+     rank: n/a (everything stays an [[engine]] link; the "ranked" set is
+     distinguished by frontmatter).
+     2. Breadth: cover all four clusters — lakehouse/table-formats, streaming
+     platforms + CDC,
+     streaming/real-time databases, and real-time-OLAP/catalogs/query-engine
+     gaps.
+     3. Schema doc: update CLAUDE.md (§1, §2, §4, §5) to formalize adjacent-tech
+     scope + conventions.
+     4. Cleanup: fold in the alias remaps + two missing theory concept pages the
+     inventory surfaced.
+
+     Conventions for adjacent pages
+
+     Reuse the existing engine-page template (CLAUDE.md §4) but lighter:
+     frontmatter adds
+     adjacent: true, rank: n/a, and category: ∈ {table-format,
+     streaming-platform,
+     streaming-database, real-time-olap, query-engine, catalog, cdc}. Sections
+     that don't apply
+     to a non-DBMS (e.g. isolation levels for a table format) are kept but
+     marked
+     N/A — <reason>. Same sourcing/⚠️ unverified/wikilink rules. The
+     load-bearing one-liner and
+     Bottom line / anti-pattern are required.
+
+     New pages to create
+
+     Adjacent profile pages (engines/, adjacent: true) — ~19
+
+     - Lakehouse / table formats: apache-iceberg, delta-lake, apache-hudi,
+     apache-paimon
+     - Streaming platforms & CDC: apache-kafka, apache-pulsar, redpanda,
+     debezium
+     (Kinesis, Kafka Connect, Flink CDC covered inside concept pages)
+     - Streaming/real-time databases: materialize, risingwave, ksqldb
+     - Real-time OLAP gaps: apache-pinot, apache-doris, apache-kudu
+     - Query engines: dremio, datafusion (Trino/Presto/Spark/DuckDB already
+     exist)
+     - Catalogs: unity-catalog, hive-metastore, apache-polaris
+     (Nessie/Glue covered inside the data-catalog concept)
+
+     Concept pages (concepts/) — ~9
+
+     - lakehouse — architecture: object storage + open table format + decoupled
+     compute + catalog;
+     ties together [[databricks]], [[apache-spark-sql]], [[trino]],
+     [[snowflake]], [[duckdb]].
+     - open-table-formats — Iceberg vs Delta vs Hudi vs Paimon comparison (ACID,
+     time-travel, catalogs).
+     - streaming-platforms — Kafka/Pulsar/Redpanda/Kinesis: the durable
+     log/broker layer.
+     - streaming-databases — incremental view maintenance / streaming SQL
+     spectrum
+     (stream processor → streaming DB → real-time OLAP sink);
+     Materialize/RisingWave/ksqlDB/[[apache-flink]].
+     - change-data-capture — log-based CDC: Debezium, Kafka Connect, Flink CDC.
+     - data-catalog — Hive Metastore, Unity Catalog, Polaris, Nessie, Glue;
+     metadata/governance layer.
+     - real-time-olap — sub-second analytics on fresh data:
+     Pinot/Druid/ClickHouse/StarRocks/Doris.
+     - hierarchical-data-model, multivalue-data-model — theory concepts
+     (cleanup; back legacy-engine links).
+
+     Schema doc (CLAUDE.md) updates
+
+     - §1 scope: add a paragraph: wiki also covers adjacent data-platform 
+     technologies (table
+     formats, streaming platforms, streaming/real-time DBs, CDC, catalogs, query
+     engines) where they
+     materially affect database choice; flagged adjacent: true, excluded from
+     the 150 ranking/worklist.
+     - §2 directory: note engines/ holds ranked engines and adjacent tech,
+     distinguished by frontmatter.
+     - §4 template: document the lighter adjacent-page frontmatter (adjacent,
+     rank: n/a, category).
+     - §5 index: add an ## Adjacent / data platform (not ranked) section grouped
+     by category.
+
+     Decision guide (decision-guide.md) updates
+
+     - Expand the one-line Lakehouse bullet (§2 OLAP) into a real subsection:
+     pick the table format
+     ([[apache-iceberg]] default / [[delta-lake]] if Databricks /
+     [[apache-hudi]]/[[apache-paimon]] for
+     streaming upserts), engines over it, and the catalog choice
+     ([[unity-catalog]]/[[apache-polaris]]/[[hive-metastore]]).
+     - Add a new top-level branch: "Streaming / real-time / event-driven" with
+     leaves for: event log
+     ([[apache-kafka]]/[[apache-pulsar]]/[[redpanda]]), stream processing
+     ([[apache-flink]]/ksqlDB),
+     streaming databases ([[materialize]]/[[risingwave]]), real-time OLAP sinks
+     ([[apache-pinot]]/[[apache-druid]]/[[clickhouse]]/[[apache-doris]]), and
+     CDC ingestion
+     ([[debezium]]/Kafka Connect). Each with trade-off + anti-pattern.
+     - Add catalog/governance guidance to cross-cutting filters.
+
+     Cleanup (lint, named aliases + theory)
+
+     - Remap variant aliases to base pages and add a one-sentence mention in
+     each base page:
+     [[polardb-x]]→[[alibaba-cloud-polardb]],
+     [[edb-postgres-distributed]]→[[edb-postgres]],
+     [[percona-xtradb-cluster]]→[[percona-server-for-mysql]],
+     [[amazon-aurora-dsql]]→[[amazon-aurora]].
+     - Fix [[azure-cosmos-db]]→[[microsoft-azure-cosmos-db]] (case) and the one
+     broken
+     [[https://…]] wikilink (convert to a proper markdown link).
+     - Remap CDC/tooling stubs to the new pages:
+     [[kafka-streams]]/[[flink-cdc]]/[[kafka-connect]]
+     → [[change-data-capture]] or [[apache-flink]] as appropriate;
+     [[manticore-search]]→ note in [[sphinx]].
+     - New profile pages auto-resolve the big dangling links
+     (iceberg/delta/paimon/hudi/kafka/debezium/
+     pinot/doris/kudu). Remaining genuinely-out-of-scope links (dbt, lucene,
+     foundationdb, s3,
+     apache-zookeeper, vitess, grafana-mimir/cortex/thanos,
+     litestream/litefs/rqlite/dqlite/patroni)
+     stay as future-page markers, logged in log.md.
+
+     Shared-file updates (orchestrator, single-writer)
+
+     - index.md: new ## Adjacent / data platform (not ranked) section,
+     sub-grouped by category.
+     - ranking.md: add a separate "Adjacent technologies (tracked, not ranked)"
+     checklist table so
+     coverage is tracked without polluting the 150 ranking.
+     - log.md: append ingest (adjacent batch + concept pages), decision-guide,
+     and lint lines.
+
+     Execution approach
+
+     1. Wait for the in-flight verification workflow (wjmrcm8ff) to finish first
+     — the cleanup
+     remaps edit existing engine pages and must not race the verifier's in-place
+     edits. (New adjacent
+     pages are new files and don't conflict, but sequencing keeps it clean.)
+     2. Adjacent profile pages = a background Workflow, one agent per page
+     (~19), each writing only
+     its own engines/<slug>.md with adjacent: true and returning the index line
+     + category +
+     concept links — same proven pattern as the rank-7–150 batch (embed the page
+     list in the script;
+     don't rely on the args channel).
+     3. Orchestrator (me) writes the ~9 concept pages, the decision-guide.md
+     expansion, the
+     CLAUDE.md schema edits, the cleanup remaps, and the
+     index.md/ranking.md/log.md updates.
+     4. Optionally run a focused verification pass over just the new adjacent
+     pages afterward.
+
+     Verification
+
+     - ls engines/*.md | xargs grep -l 'adjacent: true' | wc -l ≈ 19; all new
+     concept files present.
+     - Re-run the dangling-link scan (the python inventory from the lint step):
+     the high-frequency
+     lakehouse/streaming/real-time-OLAP targets should no longer be dangling;
+     only intentional
+     out-of-scope markers remain.
+     - index.md has the new Adjacent section; decision-guide.md has the new
+     Streaming branch and
+     expanded Lakehouse subsection; CLAUDE.md scope/§2/§4/§5 reflect the new
+     conventions.
+     - Spot-check 2–3 new pages (e.g. apache-iceberg, apache-kafka, materialize)
+     for template
+     conformance and that anti-patterns/Bottom line are present.
+
+⏺ Plan approved. Per the execution approach, the cleanup remaps must wait for
+  the in-flight verification workflow (it edits existing engine pages). But the
+  adjacent profile pages are brand-new files — safe to generate now in parallel.
+  I'll launch that workflow immediately, then write the concept pages and
+  CLAUDE.md edits (also non-conflicting) while both workflows run.
+
+  Launching the adjacent-pages workflow (19 agents, one per page):
+
+⏺ Workflow(Research & write ~19 adjacent data-platform pages
+          (lakehouse/streaming/CDC/catalogs/query-engines) as adjacent:true
+          engine pages)
+  ⎿  /workflows to view dynamic workflow runs
+
+⏺ Both workflows are now running in the background (verification + adjacent
+  pages). While they churn, I'll write the non-conflicting orchestrator work —
+  the 9 concept pages (new files in concepts/). Writing them now:
+
+⏺ Write(concepts/lakehouse.md)
+  ⎿  Wrote 50 lines to concepts/lakehouse.md
+       2 name: Lakehouse
+       3 slug: lakehouse
+         og) directly on cheap object storage, then point many decoupled 
+         engines at it — warehouse-style SQL on data-lake economics, with
+          no copy into a proprietary store.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Lakehouse
+      10 > A **lakehouse** is an architecture, not a product: keep data a
+         s open columnar files (Parquet/ORC)
+     … +69 lines (ctrl+o to expand)
+
+⏺ Write(concepts/open-table-formats.md)  ⎿  Wrote 49 lines to concepts/open-table-formats.md
+       2 name: Open Table Formats
+       3 slug: open-table-formats
+         n object storage into a transactional table — Iceberg, Delta, Hu
+         di, Paimon. They give the lake ACID, time travel, and schema evo
+         lution; they are not engines.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Open Table Formats
+      10 > An **open table format** is a specification + metadata layer o
+         ver columnar files (usually Parquet)
+     … +69 lines (ctrl+o to expand)
+
+⏺ Write(concepts/streaming-platforms.md)
+  ⎿  Wrote 45 lines to concepts/streaming-platforms.md
+       2 name: Streaming Platforms
+       3 slug: streaming-platforms
+       4 summary: The durable, replayable event log that sits between pro
+         m of record for events, not a queryable database.inesis. A syste
+       5 last_researched: 2026-06-04
+       6 ---
+       8 # Streaming Platforms
+       9 
+      10 > A **streaming platform** is a distributed, append-only, **dura
+         ble and replayable log** of events
+     … +60 lines (ctrl+o to expand)
+
+⏺ Write(concepts/streaming-databases.md)
+  ⎿  Wrote 44 lines to concepts/streaming-databases.md
+       2 name: Streaming Databases
+       3 slug: streaming-databases
+         results continuously fresh via incremental view maintenance — Ma
+         terialize, RisingWave, ksqlDB. The spectrum runs from stream pro
+         cessor to streaming DB to real-time OLAP.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Streaming Databases
+      10 > A **streaming database** runs SQL over never-ending input stre
+         ams and keeps the answer
+     … +59 lines (ctrl+o to expand)
+
+⏺ Write(concepts/change-data-capture.md)
+  ⎿  Wrote 45 lines to concepts/change-data-capture.md
+       2 name: Change Data Capture (CDC)
+       3 slug: change-data-capture
+         lete) out of its transaction log in commit order — the low-overh
+         ead way to replicate OLTP data into lakes, warehouses, search, a
+         nd caches.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Change Data Capture (CDC)
+      10 > **CDC** captures every row-level change in a source database a
+         nd emits it as an ordered stream of
+     … +58 lines (ctrl+o to expand)
+
+⏺ Write(concepts/data-catalog.md)
+  ⎿  Wrote 46 lines to concepts/data-catalog.md
+       2 name: Data Catalog
+       3 slug: data-catalog
+         ir schema and current snapshot, and who may touch them — the lin
+         chpin that makes multi-engine lakehouse ACID and governance poss
+         ible.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Data Catalog
+      10 > In a [[lakehouse]], the **catalog** is the source of truth for
+          **table identity**: it maps a table
+     … +59 lines (ctrl+o to expand)
+
+⏺ Write(concepts/real-time-olap.md)
+  ⎿  Wrote 45 lines to concepts/real-time-olap.md
+       2 name: Real-Time OLAP
+       3 slug: real-time-olap
+         ata and serve sub-second ad-hoc aggregations at high concurrency
+          — Pinot, Druid, ClickHouse, StarRocks, Doris. The query-serving
+          end of the streaming stack.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Real-Time OLAP
+      10 > **Real-time OLAP** stores combine two things classic warehouse
+         s don't do well together: **fresh
+     … +60 lines (ctrl+o to expand)
+
+⏺ Write(concepts/hierarchical-data-model.md)
+  ⎿  Wrote 42 lines to concepts/hierarchical-data-model.md
+       2 name: Hierarchical & Network Data Models
+       3 slug: hierarchical-data-model
+         l, IMS) or a graph of pointers (network, CODASYL). Fast for pre-
+         planned navigation, rigid for ad-hoc queries; mostly of historic
+         al and mainframe interest.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # Hierarchical & Network Data Models
+      10 > Before the relational model, databases organized records by **
+         explicit pointer links** rather than
+     … +54 lines (ctrl+o to expand)
+
+⏺ Write(concepts/multivalue-data-model.md)
+  ⎿  Wrote 38 lines to concepts/multivalue-data-model.md
+       2 name: MultiValue Data Model
+       3 slug: multivalue-data-model
+         ose fields can themselves hold lists (multivalues) and lists-of-
+         lists, queried via an embedded BASIC 4GL. Niche but still runnin
+         g line-of-business apps.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # MultiValue Data Model
+      10 > The **MultiValue** (a.k.a. PICK, post-relational, "nested rela
+         tional") model stores variable-length
+     … +50 lines (ctrl+o to expand)
+
+⏺ 33 concept pages now. Next, the schema doc — CLAUDE.md isn't touched by the
+  workflows, so I can edit it now. Let me read it first (required before
+  editing), then make the §1/§2/§4/§5 updates.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Now the four CLAUDE.md edits:
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 8 lines
+      19  it behaves under stress, and when it is the wrong tool*. The di
+          mensions to cover are fixed — see
+      20  the **engine page template** (§4).
+      21  
+      22 +**Adjacent data-platform technologies.** The wiki also covers t
+         +echnologies that are *not* ranked                              
+      23 +db-engines but materially shape a database decision — lakehouse
+         + **table formats** (Iceberg, Delta),                           
+      24 +**streaming platforms** (Kafka), **streaming/real-time database
+         +s**, **CDC**, **catalogs**, and                                
+      25 +**query engines**. These live in `engines/` alongside ranked en
+         +gines, distinguished by frontmatter                            
+      26 +(`adjacent: true`, `rank: n/a`, plus a `category:`); they are e
+         +xcluded from the top-150 ranking and                           
+      27 +worklist (§7), and tracked in a separate `ranking.md` section. 
+         +Add one when an engine page keeps                              
+      28 +linking it or when the decision guide (§8) needs it.           
+      29 +                                                               
+      30  **Research mode: active.** You research engines yourself via we
+          b search and doc fetches. You do
+      31  not wait for the human to supply sources. If the human *does* d
+          rop an authoritative source
+      32  (official docs, a paper, a Jepsen report), it takes precedence 
+          over secondary sources.
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 5 lines, removed 1 line
+      52  ├── log.md              # append-only operations log
+      53  ├── ranking.md          # the top-150 worklist with per-engine 
+          status
+      54  ├── decision-guide.md   # "which DB should I use?" question tre
+          e (built AFTER research — §8)
+      55 -├── engines/            # one page per engine, e.g. engines/pos
+         -tgresql.md                                                     
+      55 +├── engines/            # one page per engine; also adjacent te
+         +ch (adjacent: true) e.g. apache-iceberg.md                     
+      56  └── concepts/           # shared theory pages linked from engin
+          e pages, e.g. concepts/cap-pacelc.md
+      57  ```
+      58  
+      59 +`engines/` holds both **ranked db-engines** and **adjacent tech
+         +nologies** (§1); they are the same                             
+      60 +file shape and link the same way (`[[slug]]`), distinguished on
+         +ly by frontmatter (`adjacent: true`,                           
+      61 +`rank: n/a`, `category:`). The index (§5) and `ranking.md` keep
+         + them in separate sections.                                    
+      62 +                                                               
+      63  **Naming:** files are lowercase kebab-case of the canonical eng
+          ine name.
+      64  `PostgreSQL` → `engines/postgresql.md`, `Amazon DynamoDB` → `en
+          gines/amazon-dynamodb.md`,
+      65  `Microsoft SQL Server` → `engines/microsoft-sql-server.md`. Rec
+          ord the exact db-engines display
+
+⏺ Now §4 (adjacent-page frontmatter note) and §5 (index Adjacent section). Let
+  me read the end of §4 and §5 to edit precisely.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 6 lines
+      190  prefix on any specific claim you could not confirm from a cred
+           ible source. Better an honest flag
+      191  than a confident error.
+      192  
+      193 +**Adjacent (non-ranked) pages.** Use the same template, lighte
+          +r. Frontmatter replaces `rank: N` with                        
+      194 +`adjacent: true`, `rank: n/a`, and adds `category:` ∈ `table-f
+          +ormat` · `streaming-platform` ·                               
+      195 +`streaming-database` · `real-time-olap` · `query-engine` · `ca
+          +talog` · `cdc`. Keep all sections but                         
+      196 +mark genuinely-inapplicable ones `N/A — <reason>` (e.g. isolat
+          +ion levels on a table format). The                            
+      197 +load-bearing one-liner and the **Bottom line** (with its anti-
+          +pattern) are still required.                                  
+      198 +                                                              
+      199  ---
+      200  
+      201  ## 5. index.md
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 5 lines
+      209  
+      210  Each line: `- **[[slug]]** (rank N) — one-liner.`
+      211  
+      212 +**Adjacent technologies** go in a separate trailing section `#
+          +# Adjacent / data platform (not                               
+      213 +ranked)`, sub-grouped by `category` (table formats, streaming 
+          +platforms, streaming/real-time                                
+      214 +databases, real-time OLAP, query engines, catalogs, CDC). Thei
+          +r lines read                                                  
+      215 +`- **[[slug]]** (adjacent) — one-liner.` (no rank).           
+      216 +                                                              
+      217  ---
+      218  
+      219  ## 6. log.md
+
+⏺ CLAUDE.md schema updated. Now ranking.md — add the separate "Adjacent
+  technologies" tracking section (safe to edit now; not touched by the
+  workflows). Let me grab the tail to append cleanly.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(ranking.md)
+  ⎿  Added 29 lines
+      163  | 148 | Meilisearch | Search engine (+ multi-model) | done (20
+           26-06-04) |
+      164  | 149 | Oracle Berkeley DB | Key-value (+ multi-model) | done 
+           (2026-06-04) |
+      165  | 150 | Datomic | Relational | done (2026-06-04) |
+      166 +                                                              
+      167 +---                                                           
+      168 +                                                              
+      169 +## Adjacent technologies (tracked, not ranked)                
+      170 +                                                              
+      171 +Not part of the db-engines top-150, but covered because they m
+          +aterially shape database decisions                            
+      172 +(see [[CLAUDE]] §1). Filed in `engines/` with `adjacent: true`
+          +, `rank: n/a`.                                                
+      173 +                                                              
+      174 +| Category | Technology | Status |                            
+      175 +|----------|-----------|--------|                             
+      176 +| table-format | Apache Iceberg | in-progress |               
+      177 +| table-format | Delta Lake | in-progress |                   
+      178 +| table-format | Apache Hudi | in-progress |                  
+      179 +| table-format | Apache Paimon | in-progress |                
+      180 +| streaming-platform | Apache Kafka | in-progress |           
+      181 +| streaming-platform | Apache Pulsar | in-progress |          
+      182 +| streaming-platform | Redpanda | in-progress |               
+      183 +| cdc | Debezium | in-progress |                              
+      184 +| streaming-database | Materialize | in-progress |            
+      185 +| streaming-database | RisingWave | in-progress |             
+      186 +| streaming-database | ksqlDB | in-progress |                 
+      187 +| real-time-olap | Apache Pinot | in-progress |               
+      188 +| real-time-olap | Apache Doris | in-progress |               
+      189 +| real-time-olap | Apache Kudu | in-progress |                
+      190 +| query-engine | Dremio | in-progress |                       
+      191 +| query-engine | Apache DataFusion | in-progress |            
+      192 +| catalog | Unity Catalog | in-progress |                     
+      193 +| catalog | Apache Hive Metastore | in-progress |             
+      194 +| catalog | Apache Polaris | in-progress |                    
+
+⏺ Solid progress on the non-conflicting parts while both workflows run. Here's
+  where we are:
+
+  ✅ Done now (while workflows run)
+
+  - 9 concept pages written → lakehouse, open-table-formats,
+  streaming-platforms, streaming-databases, change-data-capture, data-catalog,
+  real-time-olap, plus the two theory pages hierarchical-data-model,
+  multivalue-data-model. (33 concept pages total.)
+  - CLAUDE.md schema updated — §1 (adjacent-tech scope), §2 (directory note), §4
+  (lighter adjacent frontmatter + category), §5 (index Adjacent section
+  convention).
+  - ranking.md — added the separate "Adjacent technologies (tracked, not
+  ranked)" table, 19 entries marked in-progress.
+
+  ⏳ Two workflows running in background
+
+  1. Verification (wjmrcm8ff) — adversarial fact-check + in-place fixes across
+  the 150 ranked pages.
+  2. Adjacent pages (wox2ovqy9) — 19 agents writing the new
+  lakehouse/streaming/CDC/catalog/query-engine pages.
+
+  🔒 Waiting on those to finish, then (final orchestrator pass)
+
+  - Cleanup remaps (sed across engines/*.md) — held until verification completes
+  so I don't race its edits: alias remaps (polardb-x, edb-postgres-distributed,
+  percona-xtradb-cluster, amazon-aurora-dsql), azure-cosmos-db case fix,
+  broken-URL link, CDC-tooling stubs → new pages.
+  - index.md Adjacent section (using the agents' actual one-liners) + flip
+  ranking.md adjacent rows to done.
+  - decision-guide.md — expand the Lakehouse subsection and add the new
+  Streaming/real-time branch, now that the pages exist to link.
+  - Verification summary + log.md entries.
+
+  Both will notify me automatically on completion — I'll do the final pass and
+  report the full results then. Nothing needed from you.
+
+✻ Brewed for 12m 0s
+
+❯ which concept page discusses acid vs. base                                    
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      echo "=== files mentioning BASE (as the acronym) ==="; grep -liE
+      'BASE\b|basically available|soft state|eventual' concept…)
+  ⎿  === files mentioning BASE (as the acronym) ===
+     clocks-and-time.md
+     change-data-capture.md
+     … +27 lines (ctrl+o to expand)
+
+⏺ Honest answer: none does, explicitly. There's no concept page dedicated to
+  ACID vs BASE, and the BASE acronym (Basically Available, Soft-state, Eventual
+  consistency) isn't defined as a named concept anywhere in the wiki. The grep
+  hits above are almost all false positives ("database", "DataBASEIC",
+  "eventual" prose) — there's no acid-vs-base.md and no section that frames the
+  dichotomy.
+
+  The underlying ideas are scattered across the theory pages instead:
+
+  - ACID side — [[isolation-levels]] (the I, and the snapshot-isolation-mislabel
+  theme), [[wal-and-durability]] (the D), and atomicity/consistency touched in
+  [[mvcc]].
+  - BASE / eventual-consistency side — [[cap-pacelc]] (the AP tradeoff),
+  [[replication-models]] (async/leaderless quorum), and [[crdts]] (how AP
+  systems converge).
+
+  So it's a genuine gap — and a notable one, since the decision guide leans on
+  exactly this distinction (CP/strong vs AP/eventual) without a single page that
+  names and contrasts ACID vs BASE for a reader.
+
+  Want me to add concepts/acid-vs-base.md — defining both acronyms, the
+  tradeoff, where each fits, and cross-linking to the pages above (plus
+  backlinks from cap-pacelc/isolation-levels)? It'd fold naturally into the
+  cleanup pass I'm already planning to run once the two background workflows
+  finish. I can also have it linked from the decision guide's "Ask these four
+  first" consistency question.
+
+✻ Worked for 22s
+
+⏺ Dynamic workflow "Research &amp; write ~19 adjacent data-platform pages
+(lakehouse/streaming/CDC/catalogs/query-engines) as adjacent:true engine pages"
+completed · 6m 3s
+
+⏺ Adjacent workflow done — 19/19 pages written. The verification workflow is
+  still running, so I'll hold the cleanup remaps (which touch ranked
+  engines/*.md), but the index/ranking/decision-guide updates for the adjacent
+  set don't conflict with it. Let me parse the results and verify the new pages.
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 << 'PY'…)
+  ⎿  results: 19
+     missing on disk: []
+     wrote_file false: []
+     … +56 lines (ctrl+o to expand)
+
+⏺ All 19 pages written correctly with adjacent: true frontmatter. Now I'll
+  append the Adjacent section to index.md (not touched by the verifier, safe
+  now) and flip the ranking.md adjacent rows to done.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      # Append adjacent section to index.md…)
+  ⎿  index.md adjacent section appended; total index entries now:
+     169
+     adjacent rows still in-progress:
+     … +3 lines (ctrl+o to expand)
+
+⏺ index.md now has 169 entries (150 ranked + 19 adjacent), and all 19 adjacent
+  rows are marked done in ranking.md.
+
+  Now the decision-guide expansion (safe — not touched by the verifier). And
+  since you flagged it, I'll create the missing acid-vs-base concept page now
+  and wire it into the guide's consistency question. Writing the concept page
+  first:
+
+⏺ Write(concepts/acid-vs-base.md)
+  ⎿  Wrote 52 lines to concepts/acid-vs-base.md
+       2 name: ACID vs BASE
+       3 slug: acid-vs-base
+         rst: transactions are all-or-nothing and isolated) vs BASE (avai
+         lability-first: stay up and converge later). It's a spectrum, no
+         t a binary, and most real systems sit in between.
+       6 ---t_researched: 2026-06-04
+       7 
+       9 # ACID vs BASE
+      10 > Two opposing design philosophies for how a database treats con
+         sistency. **ACID** prioritizes
+     … +71 lines (ctrl+o to expand)
+
+❯ yes fold into clean up phase , can make a concept page or add in cap-pacelc as an important mental model 
+
+⏺ You confirmed while I was working — and I'd just created the dedicated
+  concepts/acid-vs-base.md page (framing it as the mental model behind the
+  consistency question, with the "it's a spectrum, the labels lie" caveat). I'll
+  also drop a backlink into cap-pacelc as you suggested. Now wiring it into the
+  decision guide and expanding the lakehouse + streaming branches:
+
+⏺ Update(decision-guide.md)
+  ⎿  Added 4 lines, removed 3 lines
+      31     do you require **permissive** OSS (Apache/MIT/BSD) vs tolera
+          te **source-available** (SSPL/BSL)
+      32     or **proprietary**? See [[license-taxonomy]].
+      33  4. **Consistency & durability needs?** strict-serializable / st
+          rong vs tunable / eventual; what is
+      34 -   your acceptable **data-loss window** on crash? See [[isolati
+         -on-levels]], [[cap-pacelc]],                                   
+      35 -   [[wal-and-durability]]. Beware "ACID"/"serializable" that is
+         - really snapshot isolation, and                                
+      36 -   verify distributed-consistency claims against [[jepsen]].   
+      34 +   your acceptable **data-loss window** on crash? The framing m
+         +ental model is [[acid-vs-base]]                                
+      35 +   (correctness-first vs availability-first — a spectrum, not a
+         + binary). See [[isolation-levels]],                            
+      36 +   [[cap-pacelc]], [[wal-and-durability]]. Beware "ACID"/"seria
+         +lizable" that is really snapshot                               
+      37 +   isolation, and verify distributed-consistency claims against
+         + [[jepsen]].                                                   
+      38  
+      39  **The single most common right answer:** for a general transact
+          ional application, default to
+      40  **[[postgresql]]** until you have a concrete reason not to. Mos
+          t "we need NoSQL/distributed" instincts
+
+⏺ Update(decision-guide.md)
+  ⎿  Added 16 lines, removed 3 lines
+       84    overspend), [[google-bigquery]] (serverless, billed by bytes
+            scanned), [[amazon-redshift]],
+       85    [[microsoft-fabric]] / [[microsoft-azure-synapse-analytics]]
+            (Synapse now legacy → Fabric). ✗
+       86    cost surprises; vendor lock-in.
+       87 -- **Lakehouse (own your open storage):** [[databricks]] (Delta
+          -), query engines [[trino]] / [[presto]]                       
+       88 -  / [[apache-spark-sql]] / [[apache-impala]] / [[apache-drill]
+          -] over Iceberg/Delta/Parquet. ✗ these                         
+       89 -  are compute layers, not databases — no transactions of their
+          - own; ACID comes from the table format.                       
+       87 +- **Lakehouse (own your open storage):** see the dedicated sub
+          +section just below.                                           
+       88 +                                                              
+       89 +### Lakehouse: own your open storage                          
+       90 +Architecture, not a product — open columnar files + an [[open-
+          +table-formats|open table format]] +                           
+       91 +a [[data-catalog|catalog]], queried by many decoupled engines.
+          + See [[lakehouse]]. Decide three things:                      
+       92 +- **Table format** — [[apache-iceberg]] (vendor-neutral defaul
+          +t, broadest engine support) ·                                 
+       93 +  [[delta-lake]] (if you're on [[databricks]]/Spark; UniForm e
+          +xposes Iceberg metadata) ·                                    
+       94 +  [[apache-hudi]] / [[apache-paimon]] (streaming/CDC **upserts
+          +**: Hudi batch-leaning, Paimon                                
+       95 +  Flink-native LSM). ✗ table-format ACID is *table-level optim
+          +istic*, not row-level — bad for OLTP.                         
+       96 +- **Engine over it** — [[databricks]] (managed Spark+Delta), [
+          +[trino]]/[[presto]] (federated SQL),                          
+       97 +  [[apache-spark-sql]] (batch/ETL), [[dremio]] (Arrow, BI acce
+          +leration), [[clickhouse]]/[[starrocks]]                       
+       98 +  (fast reads), [[duckdb]] (single-node), or even [[snowflake]
+          +] reading Iceberg. ✗ these are compute                        
+       99 +  layers — transactions come from the table format, not the en
+          +gine.                                                         
+      100 +- **Catalog** — [[apache-polaris]] (open Iceberg REST, vendor-
+          +neutral) · [[unity-catalog]]                                  
+      101 +  (Databricks governance) · [[hive-metastore]] (legacy lingua 
+          +franca). The catalog arbitrates                               
+      102 +  multi-engine ACID — all writers must share one.             
+      103  - **Self-hosted / real-time OLAP:** [[clickhouse]] (blazing sc
+           ans, eventually consistent),
+      104    [[starrocks]] / [[apache-druid]] (sub-second slice-and-dice)
+           , [[exasol]] / [[vertica]] /
+      105    [[greenplum]] / [[sap-iq]] / [[teradata]] / [[netezza]] / [[
+           gbase]] (MPP, legacy→modern spectrum).
+
+⏺ Update(decision-guide.md)
+  ⎿  Added 1 line, removed 2 lines
+      206  
+      207  - **Spatial / GIS:** [[postgis]] (the de facto open-source GIS
+            engine, on [[postgresql]]),
+      208    [[spatialite]] (embedded, on [[sqlite]]). ✗ PostGIS has no n
+           ative spatial sharding.
+      209 -- **Stream processing (compute, not storage):** [[apache-flink
+          -]] (stateful, exactly-once). ✗ a                              
+      210 -  compute layer — needs a sink/store of record.               
+      209 +- **Stream processing / streaming / CDC:** see the dedicated *
+          +*Streaming** section (§10) below.                             
+      210  - **Multidimensional/MOLAP (financial planning):** [[oracle-es
+           sbase]]. ✗ single-node, proprietary.
+      211  - **Content repository (CMS/DAM):** [[apache-jackrabbit]] (JCR
+           ; engine under Adobe AEM).
+      212  - **Multi-model "do several at once":** [[arangodb]] (doc+grap
+           h+KV, one query language; ✗ cluster
+
+⏺ Update(decision-guide.md)
+  ⎿  Added 27 lines
+      220  
+      221  ---
+      222  
+      223 +## 10. Streaming, real-time & event-driven                    
+      224 +                                                              
+      225 +Moving and acting on events as they happen. These compose into
+          + a pipeline — pick one per layer, not                         
+      226 +one tool for all of it. See [[streaming-platforms]], [[streami
+          +ng-databases]], [[change-data-capture]],                      
+      227 +[[real-time-olap]].                                           
+      228 +                                                              
+      229 +- **Event log / transport (the backbone):** [[apache-kafka]] (
+          +de facto standard, huge ecosystem) ·                          
+      230 +  [[apache-pulsar]] (broker/storage separation, multi-tenant, 
+          +geo) · [[redpanda]] (Kafka-API, C++,                          
+      231 +  no JVM/ZooKeeper, lower p99; ✗ single-vendor BSL). ✗ none is
+          + a queryable database or system of                            
+      232 +  record — it's a replayable log.                             
+      233 +- **Get changes OUT of an operational DB (CDC):** [[debezium]]
+          + (log-based, the standard) → onto                             
+      234 +  Kafka or into [[apache-flink]]. Use for replication, cache/[
+          +[elasticsearch|search]] sync, and                             
+      235 +  feeding the lake. ✗ ordering/exactly-once only hold end-to-e
+          +nd; sinks must dedupe/upsert.                                 
+      236 +- **Transform / compute on streams:** [[apache-flink]] (statef
+          +ul, event-time, exactly-once — the                            
+      237 +  heavyweight), Kafka Streams / ksqlDB (Kafka-native). ✗ proce
+          +ssors aren't queryable stores by                              
+      238 +  themselves.                                                 
+      239 +- **Continuously-fresh SQL views (streaming databases):** [[ma
+          +terialize]] (Postgres-wire,                                   
+      240 +  strict-serializable incremental views) · [[risingwave]] (Pos
+          +tgres-wire, state on object storage) ·                        
+      241 +  [[ksqldb]] (Kafka-native; now largely superseded by Flink). 
+          +Use when you want                                             
+      242 +  `CREATE MATERIALIZED VIEW` that stays current. ✗ not for hea
+          +vy ad-hoc OLAP.                                               
+      243 +- **Serve fresh data for ad-hoc analytics (real-time OLAP sink
+          +s):** [[apache-pinot]] (high-QPS                              
+      244 +  user-facing) · [[apache-druid]] (time-series slice-and-dice)
+          + · [[clickhouse]] (general fast scans) ·                      
+      245 +  [[apache-doris]] / [[starrocks]] (MPP with real JOINs). See 
+          +[[real-time-olap]]. ✗ append/ingest                           
+      246 +  oriented — not OLTP, not a system of record.                
+      247 +- **Mutable analytic storage:** [[apache-kudu]] (fast scans + 
+          +random updates, paired with Impala/Spark)                     
+      248 +  — when lake table formats' update story is too coarse.      
+      249 +                                                              
+      250  ## Cross-cutting filters (apply to any leaf above)
+      251  
+      252  - **License red flags:** post-2018 relicensing to source-avail
+           able (SSPL: [[mongodb]],
+
+⏺ Now a catalog-interop cross-cutting note in the guide, and the acid-vs-base
+  backlink into cap-pacelc you suggested:
+
+⏺ Update(decision-guide.md)
+  ⎿  Added 5 lines
+      261    (closed to new customers), [[orientdb]] (orphaned), [[maxdb]
+           ] (EOL), [[apache-derby]] (read-only).
+      262  - **"Strongly consistent" claims:** verify against [[jepsen]] 
+           and check whether safe behavior needs
+      263    non-default settings — it often does ([[mongodb]], [[redis]]
+           , [[mariadb]] Galera, [[riak-kv]]).
+      264 +- **Lakehouse interop & lock-in:** if you want many engines on
+          + one copy of data, standardize on                             
+      265 +  [[apache-iceberg]] + an open [[data-catalog|catalog]] ([[apa
+          +che-polaris]]) over Delta+Unity unless                        
+      266 +  you're committed to [[databricks]]. All writers must share o
+          +ne catalog or multi-engine ACID breaks.                       
+      267 +- **ACID vs BASE framing:** don't accept the label — pin the c
+          +oncrete guarantee (default+achievable                         
+      268 +  isolation, CAP/PACELC, tunable?, data-loss window). See [[ac
+          +id-vs-base]].                                                 
+      269  
+      270  ---
+      271  
+
+⏺ Update(concepts/cap-pacelc.md)
+  ⎿  Added 4 lines
+      46  Linearizability also interacts with isolation (see [[isolation-
+          levels]]): a system can be
+      47  serializable but not linearizable (stale snapshots), or lineari
+          zable per-key but not serializable
+      48  across keys.
+      49 +                                                               
+      50 +**Mental model:** the partition-time **A-vs-C** choice is the d
+         +istributed-systems face of the                                 
+      51 +broader [[acid-vs-base]] dichotomy — CP/EC leans ACID (correctn
+         +ess-first), AP/EL leans BASE                                   
+      52 +(availability-first). Most real systems are tunable points on t
+         +hat spectrum, not one extreme.                                 
+
+⏺ Now logging the completed expansion work (the cleanup remaps + verification
+  summary will be a final batch once the verifier lands):
+⏺ Update(log.md)
+  ⎿  Added 4 lines
+      20  ## [2026-06-04] lint | canonicalized concept-link variants acro
+          ss all pages (wide-column-store(s)→wide-column, document-databa
+          se→document-data-model, rdf-triplestore/rdf-vs-property-graph/a
+          pache-tinkerpop→graph-data-model, log-sequence-numbers→wal-and-
+          durability, consistency-levels→cap-pacelc, etc.); fixed engine 
+          alias slugs ([[cassandra]]→apache-cassandra, [[bigquery]]→googl
+          e-bigquery, [[sql-server]]→microsoft-sql-server, [[hsqldb]]→hyp
+          ersql, +9 more); created concept pages document-data-model, key
+          -value-store (24 concept pages total); no orphan engine pages. 
+          Remaining dangling links are genuinely out-of-scope tech (apach
+          e-iceberg, apache-spark, delta-lake, apache-kafka, pgvector, db
+          t, lucene, vitess, foundationdb, etc.) — left as future-page ma
+          rkers per CLAUDE §3.
+      21  ## [2026-06-04] decision-guide | built decision-guide.md from 1
+          50 engine pages: 4 always-ask-first questions (job/model · scal
+          e&topology · ops&licensing · consistency) then a 9-branch tree 
+          (OLTP, OLAP, document, KV/cache, graph, time-series, search, ve
+          ctor, specialized) + cross-cutting filters (license red flags, 
+          managed-only, dead/dying, Jepsen caveats)
+      22  ## [2026-06-04] lint | adversarial verification workflow over a
+          ll 150 engine pages IN PROGRESS (one agent each: re-checks CAP/
+          PACELC, isolation, replication, Jepsen, license, version-specif
+          ic claims; fixes page in place); results to be summarized on co
+          mpletion
+      23 +## [2026-06-04] ingest | adjacent expansion: 19 adjacent:true p
+         +ages via background workflow (table-formats: apache-iceberg/del
+         +ta-lake/apache-hudi/apache-paimon; streaming: apache-kafka/apac
+         +he-pulsar/redpanda; cdc: debezium; streaming-db: materialize/ri
+         +singwave/ksqldb; real-time-olap: apache-pinot/apache-doris/apac
+         +he-kudu; query-engine: dremio/datafusion; catalog: unity-catalo
+         +g/hive-metastore/apache-polaris). Indexed under new "Adjacent /
+         + data platform" section; ranking.md adjacent table all done.   
+      24 +## [2026-06-04] ingest | 10 concept pages for the expansion: la
+         +kehouse, open-table-formats, streaming-platforms, streaming-dat
+         +abases, change-data-capture, data-catalog, real-time-olap, hier
+         +archical-data-model, multivalue-data-model, acid-vs-base (34 co
+         +ncept pages total)                                             
+      25 +## [2026-06-04] update | CLAUDE.md schema (§1/§2/§4/§5) formali
+         +zes adjacent-tech scope, lighter adjacent frontmatter (adjacent
+         +:true, rank:n/a, category), and the index Adjacent section     
+      26 +## [2026-06-04] decision-guide | expanded Lakehouse into a full
+         + subsection (table-format/engine/catalog choice) and added §10 
+         +Streaming/real-time/event-driven branch; added [[acid-vs-base]]
+         + to the consistency question + cross-cutting filters; backlinke
+         +d acid-vs-base from cap-pacelc                                 
+
+⏺ Done with everything that's safe to do before the verifier finishes. Status:
+
+  ✅ Lakehouse + streaming expansion fully integrated
+
+  - 19 adjacent pages written and indexed under a new ## Adjacent / data 
+  platform (not ranked) section (169 total index entries); all 19 ranking.md
+  adjacent rows marked done.
+  - acid-vs-base concept page created (per your call) — framed as the mental
+  model behind the consistency decision, with the "it's a spectrum, the labels
+  lie" caveat and links to NewSQL counterexamples. Backlinked from cap-pacelc as
+  you suggested ("the partition-time A-vs-C choice is the distributed face of
+  ACID vs BASE").
+  - Decision guide expanded:
+    - Lakehouse is now a full subsection — choose your table format (Iceberg
+  default / Delta if Databricks / Hudi·Paimon for upserts), engine, and catalog
+  (Polaris/Unity/Hive).
+    - New §10 Streaming, real-time & event-driven branch — event log
+  (Kafka/Pulsar/Redpanda) → CDC (Debezium) → stream processing (Flink) →
+  streaming DBs (Materialize/RisingWave) → real-time OLAP sinks
+  (Pinot/Druid/ClickHouse/Doris), each with trade-off + anti-pattern.
+    - [[acid-vs-base]] added to the consistency question and cross-cutting
+  filters; lakehouse-interop lock-in note added.
+  - CLAUDE.md schema updated (§1/§2/§4/§5) and 10 new concept pages total → 34 
+  concept pages.
+
+  ⏳ Still waiting on the verification workflow (wjmrcm8ff)
+
+  It's still fact-checking/fixing the 150 ranked pages in place. The moment it
+  lands I'll do the final cleanup pass (which must touch engines/*.md, so it has
+  to wait):
+  - Alias remaps (polardb-x, edb-postgres-distributed, percona-xtradb-cluster,
+  amazon-aurora-dsql), azure-cosmos-db case fix, the broken-URL link, and
+  CDC-tooling stubs (kafka-streams/flink-cdc/apache-spark) → now-existing pages.
+  - Re-run the dangling-link scan to confirm the big lakehouse/streaming targets
+  resolved.
+  - Verification summary (corrections count, any critical findings, updated
+  confidence distribution, unresolved flags) + final log.md lines.
+
+  I'll surface all of that in one report when the verifier completes — nothing
+  needed from you meanwhile.
+
+✻ Baked for 3m 44s
+
+❯ nice let's also add a task to make the repo github friendly, clean up any     
+  Obsidian-specific markdown like [[informix]] , use a script approach in       
+  preference to asking LLM to rewrite                                           
+
+⏺ Good call — GitHub's plain markdown renderer shows [[informix]] as literal
+  brackets (it doesn't resolve Obsidian wikilinks outside its wiki feature), so
+  the repo currently looks broken when browsed on GitHub. A deterministic script
+  is absolutely the right tool here — ~200 files and thousands of links; an LLM
+  rewrite would be slow, expensive, and error-prone, while a script with a
+  slug→path map is exact and idempotent.
+
+  I'll queue this as the final step of the cleanup pass — it has to run after
+  the verification workflow and the alias remaps finish, so we convert the
+  final, canonical links (and don't race the verifier's in-place edits).
+
+  One genuine fork determines the implementation, plus a quick artifacts
+  question:
+
+⏺ User answered Claude's questions:
+  ⎿  · How should the wikilink conversion work — replace [[ ]] in the source 
+     files, or keep them as source and generate a GitHub view? → In-place 
+     conversion
+     · Which other GitHub-friendly artifacts should the task include? → 
+     README.md, .gitignore, LICENSE, Link-check script
+
+⏺ Captured. Decisions locked: in-place conversion (switch the wiki to standard
+  markdown links and update CLAUDE.md §3 + the agent-prompt convention), plus
+  all four artifacts (README, .gitignore, LICENSE, link-check script). I'll
+  append this to the plan and slot it as the very last step. Let me record it in
+  the plan file:
+
+⏺ Updated plan
+  ⎿  /plan to preview
+
+⏺ Queued and recorded in the plan. Here's the final-pass sequence that will run
+  once the verification workflow lands (all of it touches engines/*.md, so it
+  waits for the verifier to avoid racing its edits):
+
+  1. Verification completes → I summarize corrections / critical findings /
+  confidence shifts.
+  2. Cleanup remaps — alias links → base pages, azure-cosmos-db case fix,
+  broken-URL link, CDC-tooling stubs (kafka-streams/flink-cdc/apache-spark) →
+  now-existing pages.
+  3. GitHub-friendly conversion (last):
+    - tools/wikilinks_to_md.py — deterministic, idempotent: builds a slug→path
+  map, rewrites [[slug]] / [[slug|display]] → [text](relative/path.md) with
+  correct relative paths per file; dangling links degrade to plain text, not
+  broken links; skips code blocks.
+    - Switch the convention: update CLAUDE.md §3 (+ §4 examples) to standard
+  markdown links; future agent prompts emit [text](path.md).
+    - Add README.md (repo landing → index + decision-guide), .gitignore
+  (.obsidian/, .DS_Store, *.wal), LICENSE (defaulting to CC-BY-4.0 for a docs
+  wiki — say the word if you'd rather MIT), and tools/check_links.py (verifies
+  every link resolves; reusable lint).
+  4. Verify: no [[ ]] remain, link-checker reports zero broken links, then final
+  log.md entries.
+
+  That's the whole backlog captured. I'm now just waiting on the verification
+  workflow (wjmrcm8ff) to finish — I'll execute steps 1–4 and report the full
+  results in one go. Nothing needed from you.
+
+✻ Churned for 2m 41s
+
+⏺ Dynamic workflow "Adversarially fact-check and fix all 150 engine pages in
+place; one agent per page" completed · 36m 30s
+
+⏺ Verification workflow completed: 150 verified, 269 corrections, 6 critical / 
+  18 major / 90 minor / 36 clean. One agent flagged that plan mode blocked an 
+  edit mid-run — so I need to check whether any corrections were blocked while I
+  was planning, and re-run those. Let me parse the full results.
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 << 'PY'…)
+  ⎿  results: 150
+     post-verify confidence: {'high': 129, 'medium': 21}
+     severity: {'none': 36, 'minor': 90, 'major': 18, 'critical': 6}
+     … +78 lines (ctrl+o to expand)
+
+⏺ Verification caught real, substantive errors (e.g. oceanbase license was
+  wrongly called permissive — it's copyleft MulanPubL; adabas wrongly said sold
+  to Rocket; redshift default isolation; meilisearch now dual-licensed). But 6
+  agents that ran during my plan-mode window may have had edits blocked. Let me
+  inspect those before doing anything else.
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 << 'PY'…)
+  ⎿  === apache-hive | severity=none corrections=0 conf=high ===
+      CHANGES:
+        - No edits made. Verified the page's highest-risk claims against au
+     … +78 lines (ctrl+o to expand)
+
+⏺ Reassuring: the plan-mode window caused zero unfixed errors. Of the 6 flagged
+  agents, splunk/sap-sql-anywhere/fauna successfully applied their edits, and
+  apache-hive/pinecone/greenplum had corrections=0 (verified accurate) — only
+  optional, non-error enhancements were skipped. Let me confirm the 6 critical
+  corrections actually landed on disk (guarding against an agent reporting an
+  edit it couldn't write):
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      echo "=== oceanbase: should say MulanPubL / copyleft (not permissive)
+      ==="; grep -iE 'mulanpubl|copyleft|public license'…)
+  ⎿  === oceanbase: should say MulanPubL / copyleft (not permissive) ===
+     license: Mulan Public License v2 (MulanPubL-2.0, copyleft; NOT OSI-app
+     roved) — open-core; enterprise edition proprietary
+     … +128 lines (ctrl+o to expand)
+
+⏺ All 6 critical corrections are confirmed on disk (oceanbase copyleft,
+  adabas→Software AG retained, redshift SNAPSHOT default, meilisearch
+  dual-license, ASE real-MVCC, Datastore pessimistic). So plan mode blocked no 
+  real corrections — only 3 optional, non-error enhancements on already-accurate
+  pages, which I'll note in the log.
+
+  Post-verification confidence: 129 high / 21 medium (up from 84/66). Now the
+  cleanup remaps. Let me run the alias remap (using piped links to preserve
+  readable display text) and locate that broken URL-as-wikilink:
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 << 'PY'…)
+  ⎿  === URL-as-wikilink occurrences ===
+       engines/greenplum.md: [[https://techdocs.broadcom.com/us/en/vmware-t
+     anzu/data-solutions/tanzu-greenplum/7/greenp
+     … +2 lines (ctrl+o to expand)
+
+⏺ The remaps applied (11 files). Now fix the broken URL-as-wikilink in
+  greenplum.md — let me see its context:
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      grep -n '\[\[https' engines/greenplum.md)
+  ⎿  17:- **Taxonomy / data model:** Relational, SQL, [[oltp-olap-htap|OLAP
+     ]]. Built on PostgreSQL (Greenplum 7 tracks PostgreSQL 12 [[https://te
+     chdocs.broadcom.com/us/en/vmware-tanzu/data-solutions/tanzu-greenplum/
+     … +3 lines (ctrl+o to expand)
+
+⏺ Update(engines/greenplum.md)
+  ⎿  File must be read first
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(engines/greenplum.md)
+  ⎿  Added 1 line, removed 1 line
+      14  > A PostgreSQL-based shared-nothing MPP data warehouse for mult
+          i-terabyte OLAP, now closed-source under Broadcom — the open-so
+          urce future lives in its forks ([[apache-cloudberry]], EDB Ware
+          housePG).
+      15  
+      16  ## Identity
+      17 -- **Taxonomy / data model:** Relational, SQL, [[oltp-olap-htap|
+         -OLAP]]. Built on PostgreSQL (Greenplum 7 tracks PostgreSQL 12 [
+         -[https://techdocs.broadcom.com/us/en/vmware-tanzu/data-solution
+         -s/tanzu-greenplum/7/greenplum-database/admin_guide-intro-arch_o
+         -verview.html]]). MPP = "shared-nothing": one coordinator plus m
+         -any independent PostgreSQL segment instances, each owning a sli
+         -ce of every table.                                             
+      17 +- **Taxonomy / data model:** Relational, SQL, [[oltp-olap-htap|
+         +OLAP]]. Built on PostgreSQL (Greenplum 7 tracks PostgreSQL 12, 
+         +per [Broadcom/Tanzu Greenplum architecture docs](https://techdo
+         +cs.broadcom.com/us/en/vmware-tanzu/data-solutions/tanzu-greenpl
+         +um/7/greenplum-database/admin_guide-intro-arch_overview.html)).
+         + MPP = "shared-nothing": one coordinator plus many independent 
+         +PostgreSQL segment instances, each owning a slice of every tabl
+         +e.                                                             
+      18  - **Storage model:** Hybrid. Default tables are PostgreSQL heap
+           (row store). Append-optimized (AO) tables add column-orientati
+          on, compression (zlib/zstd/quicklz; RLE only on column-oriented
+           AO), and per-block checksums ([Broadcom docs](https://techdocs
+          .broadcom.com/us/en/vmware-tanzu/data-solutions/tanzu-greenplum
+          /7/greenplum-database/admin_guide-intro-arch_overview.html)). I
+          t is **B-tree, not LSM** ([[lsm-vs-btree]]); columnar AO is the
+           analytics format, not a delta-merge store.
+      19  - **Workload:** OLAP/batch analytics and large-scale ELT. Not a
+          n OLTP engine — heap MVCC bloat and the coordinator bottleneck 
+          make high-rate single-row writes a poor fit. Not HTAP in any me
+          aningful sense.
+      20  
+
+⏺ Cleanup remaps and the broken-URL link are fixed. Now the final piece — the
+  GitHub-friendly conversion. First I'll write the deterministic conversion
+  script (and the reusable link-checker), excluding CLAUDE.md from
+  auto-conversion since I'll hand-update its convention section. Writing both
+  tools:
+
+⏺ Write(tools/wikilinks_to_md.py)
+  ⎿  Wrote 76 lines to tools/wikilinks_to_md.py
+      2 """Convert Obsidian-style [[wikilinks]] to GitHub-friendly relati
+        ve markdown links.
+      4 Deterministic and idempotent. Builds a slug -> file map from the 
+        wiki, then rewrites
+      5 [[slug]] and [[slug|display]] to [display-or-slug](relative/path.
+      6 file degrade to plain text (never a broken link). Fenced code blo
+        cks and inline `code` spans
+      8 are left untouched so example markup isn't mangled.
+      9 CLAUDE.md is intentionally NOT rewritten here (its cross-linking 
+        section is maintained by hand).
+     … +78 lines (ctrl+o to expand)
+
+⏺ Write(tools/check_links.py)
+  ⎿  Wrote 44 lines to tools/check_links.py
+       2 """Check that every relative markdown link to a local .md file r
+         esolves to a real file,
+         r the wiki.any leftover Obsidian [[wikilinks]]. Reusable lint fo
+       4 
+       5 Usage:  python3 tools/check_links.py
+         re found. 0 if clean, 1 if any broken links or stray wikilinks a
+       7 """
+       9 import os, re, sys, glob
+      10 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)
+         ))
+     … +39 lines (ctrl+o to expand)
+
+⏺ Now run the conversion — dry-run first to sanity-check counts, then for real,
+  then the link checker:
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      echo "=== DRY RUN ==="; python3 tools/wikilinks_to_md.py --dry-run…)
+  ⎿  Error: Exit code 1
+     === DRY RUN ===
+     [dry-run] converted 3803 wikilinks across 207 files (208 known slugs)
+
+     === REAL RUN ===
+     converted 3803 wikilinks across 207 files (208 known slugs)
+
+     === remaining [[ ]] in engines/concepts/root docs (excl CLAUDE.md) ===
+     (eval):5: no matches found: --include=*.md
+
+⏺ Conversion ran — 3,803 wikilinks converted across 207 files. The combined
+  command tripped on a zsh glob (--include=*.md), so the link check didn't run.
+  Let me run it properly and scan for any leftover [[ ]] (multi-line wikilinks
+  can slip past a line-based pass):
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      echo "=== leftover [[ ]] (full-text scan incl. multiline) ==="…)
+  ⎿  === leftover [[ ]] (full-text scan incl. multiline) ===
+       engines/intersystems-iris.md: '[[Enterprise Cache Protocol (ECP)]]'
+       concepts/change-data-capture.md: '[[open-table-formats|table\n  form
+     … +33 lines (ctrl+o to expand)
+
+⏺ Most leftovers are expected (CLAUDE.md, which I'll hand-rewrite for the
+  convention change) plus a few edge cases the line-based pass missed: two
+  multi-line wikilinks (change-data-capture, mvcc), one with parens the regex
+  didn't allow (intersystems-iris), and two illustrative ones inside code spans
+  (index, decision-guide). Let me fix the non-CLAUDE ones precisely:
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 - << 'PY'…)
+  ⎿  fixed concepts/change-data-capture.md
+     fixed concepts/mvcc.md
+     fixed engines/intersystems-iris.md
+
+⏺ Now the two illustrative ones and CLAUDE.md. Let me update the format-doc
+  lines in index.md and decision-guide.md:
+
+⏺ Update(index.md)
+  ⎿  Error editing file
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(index.md)
+  ⎿  Added 1 line, removed 1 line
+      3  Catalog of all engine pages, grouped by primary data model, sort
+         ed by db-engines rank within each
+      4  group. A multi-model engine is listed under its primary model wi
+         th "(also: …)".
+      5  
+      6 -Format: `- **[[slug]]** (rank N) — one-liner.`                  
+      6 +Format: `- **[slug](engines/slug.md)** (rank N) — one-liner.`   
+      7  
+      8  ## Relational
+      9  
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      grep -n '\[\[engine\]\]' decision-guide.md)
+  ⎿  11:> couple of minutes. Leaves name `[[engine]]` candidates with the *
+     *key trade-off** and the
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(decision-guide.md)
+  ⎿  Added 1 line, removed 1 line
+       8  # Which Database Should I Use?
+       9  
+      10  > Built **from the data** in this wiki (150 engines), per [CLAU
+          DE](CLAUDE.md) §8. Walk it top to bottom in a
+      11 -> couple of minutes. Leaves name `[[engine]]` candidates with t
+         -he **key trade-off** and the                                   
+      11 +> couple of minutes. Leaves name linked engine candidates with 
+         +the **key trade-off** and the                                  
+      12  > **anti-pattern** (when *not* to pick it). Every claim links t
+          o a page — follow it before betting on it.
+      13  
+      14  ---
+
+⏺ Now the schema doc itself. Let me read the current CLAUDE.md cross-linking
+  (§3), template (§4), and the relevant illustrative spots to rewrite them for
+  the standard-markdown convention:
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      grep -n '\[\[' CLAUDE.md)
+  ⎿  60:file shape and link the same way (`[[slug]]`), distinguished only b
+     y frontmatter (`adjacent: true`,
+     72:Use Obsidian-style `[[wikilinks]]` to connect pages. The link targe
+     … +18 lines (ctrl+o to expand)
+
+  Read 1 file (ctrl+o to expand)
+⏺ Now rewrite the CLAUDE.md cross-linking convention (§2 mention + §3) to
+  standard markdown links:
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 3 lines, removed 2 lines
+      57  ```
+      58  
+      59  `engines/` holds both **ranked db-engines** and **adjacent tech
+          nologies** (§1); they are the same
+      60 -file shape and link the same way (`[[slug]]`), distinguished on
+         -ly by frontmatter (`adjacent: true`,                           
+      61 -`rank: n/a`, `category:`). The index (§5) and `ranking.md` keep
+         - them in separate sections.                                    
+      60 +file shape and link the same way (relative markdown links — see
+         + §3), distinguished only by                                    
+      61 +frontmatter (`adjacent: true`, `rank: n/a`, `category:`). The i
+         +ndex (§5) and `ranking.md` keep them                           
+      62 +in separate sections.                                          
+      63  
+      64  **Naming:** files are lowercase kebab-case of the canonical eng
+          ine name.
+      65  `PostgreSQL` → `engines/postgresql.md`, `Amazon DynamoDB` → `en
+          gines/amazon-dynamodb.md`,
+
+⏺ Update(CLAUDE.md)
+  ⎿  Added 9 lines, removed 5 lines
+      70  
+      71  ## 3. Cross-linking
+      72  
+      73 -Use Obsidian-style `[[wikilinks]]` to connect pages. The link t
+         -arget is the file's slug                                       
+      74 -(no extension):                                                
+      75 -- `[[postgresql]]` → links to `engines/postgresql.md`          
+      76 -- `[[cap-pacelc]]` → links to `concepts/cap-pacelc.md`         
+      73 +Connect pages with **standard relative markdown links** (GitHub
+         + renders these natively). The repo                             
+      74 +was converted from Obsidian `[[wikilinks]]` by `tools/wikilinks
+         +_to_md.py` — author new links in                               
+      75 +markdown form. The target is the page file, path relative to th
+         +e *linking* file:                                              
+      76 +- from an `engines/` or `concepts/` page: `[postgresql](postgre
+         +sql.md)` (same dir),                                           
+      77 +  `[mvcc](../concepts/mvcc.md)` (cross dir)                    
+      78 +- from a root doc (`index.md`, `decision-guide.md`): `[oracle](
+         +engines/oracle.md)`                                            
+      79  
+      78 -Link liberally. A `[[slug]]` that doesn't exist yet is fine — i
+         -t marks a page worth writing.                                  
+      80 +Use the slug or a readable phrase as the link text. Link libera
+         +lly — but if a target page doesn't                             
+      81 +exist yet, leave the term as **plain text** rather than a broke
+         +n link (a path that 404s is worse                              
+      82 +than no link). Run `tools/check_links.py` to catch broken links
+         + and stray wikilinks.                                          
+      83  **Do not re-explain theory on every engine page.** Explain CAP/
+          PACELC, isolation levels, LSM vs
+      84  B-tree, etc. *once* in `concepts/` and link to it. Create a con
+          cept page the first time an engine
+      85  page needs it. Suggested seed concepts (create on first referen
+          ce):
+
+⏺ Now convert the §4 template's concept-link examples (to ../concepts/ form,
+  since the template is copied into engines/) and neutralize the generic
+  placeholders in §5/§7/§8:
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 - << 'PY'…)
+  ⎿  CLAUDE.md updated
+     remaining [[ ]] anywhere: [('CLAUDE.md', '[[wikilinks]]')]
+     … +20 lines (ctrl+o to expand)
+
+⏺ All 15 "broken" links and the 1 leftover are in CLAUDE.md — and every one is
+  an illustrative example inside the template fence or inline-code spans (e.g.
+  `[postgresql](postgresql.md)`, the template's ../concepts/... examples meant
+  for an engines/ page, and the word `[[wikilinks]]` itself). The actual content
+  files are clean. The link-checker should ignore code spans/fences like the
+  converter does — let me fix that and re-run:
+
+⏺ Update(tools/check_links.py)
+  ⎿  Added 10 lines, removed 1 line
+      17               + glob.glob(os.path.join(ROOT, "concepts", "*.md")
+          ))
+      18      broken, wikis = [], []
+      19      for fp in sorted(files):
+      20 -        text = open(fp, encoding="utf-8").read()               
+      20 +        # strip fenced code blocks and inline `code` spans (ill
+         +ustrative markup, not real links)                              
+      21 +        lines, in_fence = [], False                            
+      22 +        for line in open(fp, encoding="utf-8").read().split("\n
+         +"):                                                            
+      23 +            if line.lstrip().startswith("```"):                
+      24 +                in_fence = not in_fence; lines.append(""); cont
+         +inue                                                           
+      25 +            if in_fence:                                       
+      26 +                lines.append(""); continue                     
+      27 +            parts = line.split("`")                            
+      28 +            lines.append("".join(parts[i] for i in range(0, len
+         +(parts), 2)))                                                  
+      29 +        text = "\n".join(lines)                                
+      30          d = os.path.dirname(fp)
+      31          for m in MDLINK.finditer(text):
+      32              link = m.group(1)
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      echo "=== FINAL LINK CHECK ==="; python3 tools/check_links.py; echo "exit:
+      $?"…)
+  ⎿  === FINAL LINK CHECK ===
+     OK: all local .md links resolve; no leftover wikilinks.
+     exit: 0
+     … +14 lines (ctrl+o to expand)
+
+⏺ Link check passes cleanly — all local .md links resolve, zero leftover
+  wikilinks. The conversion is complete and verified. Now the remaining
+  GitHub-friendly artifacts — README, .gitignore, LICENSE:
+
+⏺ Write(README.md)
+  ⎿  Wrote 59 lines to README.md
+       2 # Database Engines Research Wiki
+         s** (by-linked reference covering the **top ~150 database engine
+       4 [db-engines.com ranking](https://db-engines.com/en/ranking)) plu
+       5 technologies** that shape real database decisions (lakehouse tab
+         le formats, streaming platforms,
+          the **theory concepts** behindCDC, catalogs, query engines) and
+       8 them.
+       9 Each engine page answers, quickly: *what is it, how does it beha
+      10 wrong tool?* — with light citations, explicit confidence levels,
+          and honest `⚠️ unverified` flags
+     … +80 lines (ctrl+o to expand)
+
+⏺ Write(.gitignore)
+  ⎿  Wrote 21 lines to .gitignore
+       2 .obsidian/ tooling
+       3 .vscode/
+       4 .idea/
+       5 
+       6 # OS cruft
+       7 .DS_Store
+       8 Thumbs.db
+       9 
+      10 # Stray DB/WAL artifacts that shouldn't be committed to a docs w
+         iki
+     … +11 lines (ctrl+o to expand)
+
+⏺ Write(LICENSE)
+  ⎿  Wrote 55 lines to LICENSE
+       2 This repository is dual-licensed:
+       3 ================================================================
+       4 1. DOCUMENTATION & CONTENT  (all Markdown files: *.md in this re
+         po)
+       5 ================================================================
+       6 ================
+       7 Licensed under the Creative Commons Attribution 4.0 Internationa
+       8 (CC BY 4.0).
+       9 
+      10 You are free to:
+     … +72 lines (ctrl+o to expand)
+
+⏺ Now the final log.md entries (verification + cleanup + conversion) and an
+  overall state check:
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      cat >> log.md << 'EOF'…)
+  ⎿  === FINAL STATE ===
+     ranked engine pages:   150
+     adjacent engine pages: 19
+     … +10 lines (ctrl+o to expand)
+
+⏺ One false positive: the literal phrase "Obsidian [[wikilinks]]" in the log
+  entry I just wrote. Wrapping it in backticks so the checker (which skips
+  inline code) ignores it:
+
+⏺ Update(log.md)
+  ⎿  Error editing file
+
+⏺ Bash(cd /Users/drucev/projects/MTA/dbengine
+      python3 - << 'PY'…)
+  ⎿  patched log.md
+     OK: all local .md links resolve; no leftover wikilinks.
+     exit: 0
+
+⏺ Done — the full backlog is complete and the repo is GitHub-ready. Final
+  report:
+
+  1. Verification (150/150 pages adversarially fact-checked + fixed in place)
+
+  - 269 corrections applied · severity: 6 critical / 18 major / 90 minor / 36 
+  clean
+  - Confidence rose from 84/66 to 129 high / 21 medium
+  - Notable real errors caught & fixed:
+    - oceanbase — license was wrongly called permissive; it's copyleft 
+  MulanPubL-2.0, not OSI-approved
+    - adabas — wrongly said sold to Rocket; Software AG retained Adabas/Natural
+  (Jan 2025)
+    - amazon-redshift — SNAPSHOT is now the default isolation (AWS, May 2024),
+  not SERIALIZABLE
+    - meilisearch — now dual MIT-CE / BUSL-EE, sharding/replication exist behind
+  the paid tier
+    - sap-adaptive-server — corrected "fundamentally lock-based" → real
+  version-based MVCC exists (opt-in)
+    - google-cloud-datastore — pessimistic concurrency default, not optimistic
+  - Plan-mode check: all 6 critical fixes confirmed on disk. The plan-mode
+  window blocked zero real corrections — only 3 optional, non-error enhancements
+  were skipped (apache-hive date nuance, pinecone read-units cap, greenplum
+  HTAP-divergence note). Logged; happy to apply them if you want.
+
+  2. Cleanup
+
+  - Variant aliases remapped to base pages via piped links preserving readable
+  text (polardb-x→PolarDB-X, apache-spark→Apache Spark,
+  kafka-streams→streaming-databases, etc.); azure-cosmos-db case fixed; broken
+  URL-as-wikilink in greenplum fixed.
+
+  3. GitHub-friendly conversion
+
+  - 3,803 wikilinks → relative markdown links across 207 files
+  (tools/wikilinks_to_md.py, deterministic & idempotent; dangling links degraded
+  to plain text, code blocks skipped).
+  - CLAUDE.md §3 convention switched to standard markdown links (+ §2/§4/§5
+  examples updated).
+  - Added README.md (repo landing), .gitignore, LICENSE (CC-BY-4.0 content / MIT
+  tools), and tools/check_links.py.
+  - check_links.py reports OK — every internal link resolves, zero stray 
+  wikilinks.
+
+  Final state
+
+  ┌────────────────┬────────────────────────────────────────────────────────┐
+  │                │                                                        │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ Ranked engine  │ 150                                                    │
+  │ pages          │                                                        │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ Adjacent tech  │ 19                                                     │
+  │ pages          │                                                        │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ Concept pages  │ 34                                                     │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ Index entries  │ 169                                                    │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ Tools          │ wikilinks_to_md.py, check_links.py                     │
+  ├────────────────┼────────────────────────────────────────────────────────┤
+  │ Repo files     │ README, LICENSE, .gitignore, CLAUDE.md, index,         │
+  │                │ decision-guide, ranking, log                           │
+  └────────────────┴────────────────────────────────────────────────────────┘
+
+  The wiki now browses cleanly on GitHub, the schema doc reflects the new
+  conventions, and everything's logged in log.md.
+
+  Nothing is committed (you haven't asked me to). Want me to commit this on a
+  branch — and if so, scoped to the dbengine/ subtree? I can also knock out
+  those 3 optional verification enhancements first if you'd like them in.
+
+✻ Baked for 51m 15s
+
+❯ walk me through how to commit and push to github, I will do it myself         
+
+⏺ Happy to. First let me check a few read-only facts about your git setup so the
+  instructions are exact — the wiki lives in a subfolder (dbengine/) of the
+  larger MTA repo, which matters a lot here.
+
+⏺ Bash(cd /Users/drucev/projects/MTA
+      echo "=== git root ==="; git rev-parse --show-toplevel…)  ⎿  === git root ===
+     /Users/drucev/projects/MTA
+     === current branch ===
+     … +11 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/drucev/projects/MTA/dbengine
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ ok I am going to move to under my ~/Documents/Obsidian                        
+
+⏺ Got it — moving it into your Obsidian vault as a standalone repo actually
+  makes this cleaner: it sidesteps the dbengine/-is-a-subfolder-of-MTA tangle
+  entirely (the folder is currently untracked in MTA, so a plain mv is safe —
+  nothing in MTA's git references it).
+
+  Two quick flags before the commands:
+
+  1. Obsidian + the link conversion: the markdown links we generated
+  ([mvcc](../concepts/mvcc.md)) are clickable in Obsidian and show up in graph
+  view / backlinks, so you lose nothing functionally. If you specifically want
+  the [[wikilink]] authoring experience (autocomplete, unlinked mentions), say
+  the word — I can revert the conversion (or make the script reversible).
+  Otherwise the current form is both GitHub- and Obsidian-friendly.
+  2. Is your vault already a git repo? If ~/Documents/Obsidian itself is under
+  git, don't nest a second repo — skip git init and just git add dbengine/ there
+  instead. The steps below assume dbengine becomes its own repo.
+
+  Walkthrough
+
+  1. Move the folder (adjust the destination if your vault path differs):
+  mv /Users/drucev/projects/MTA/dbengine ~/Documents/Obsidian/dbengine
+  cd ~/Documents/Obsidian/dbengine
+
+  2. Initialize a standalone repo and stage everything:
+  git init -b main
+  git add .
+  git status          # sanity-check: README.md, LICENSE, CLAUDE.md, index.md, 
+  engines/, concepts/, tools/ …
+  The .gitignore we added will keep .obsidian/, .DS_Store, and *.wal out of the
+  commit.
+
+  3. Commit:
+  git commit -m "Database engines research wiki: 150 ranked + 19 adjacent + 34 
+  concepts"
+
+  4. Create the GitHub repo and push — pick one:
+
+  Option A — GitHub CLI (one command, creates repo + pushes):
+  gh repo create dbengine --public --source=. --remote=origin --push
+  (Use --private if you'd rather keep it private. Requires gh auth login once.)
+
+  Option B — web UI: create a new empty repo at github.com (no
+  README/license/gitignore — you already have them), then:
+  git remote add origin https://github.com/druce/dbengine.git
+  git push -u origin main
+
+  That's it — GitHub will render README.md as the landing page, with working
+  links into index.md and decision-guide.md.
+
+  Want me to revert the wikilink conversion for a fuller Obsidian experience
+  before you move it, or leave the GitHub-friendly markdown links as-is?
+
+✻ Churned for 45s
+
+※ recap: You're building an LLM-maintained database-engines wiki and just finished verifying it and making it GitHub-friendly. Next: move dbengine into your Obsidian vault and run the git init/commit/push steps I outlined. Tell me if you want wikilinks reverted first.

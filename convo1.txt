@@ -1,0 +1,342 @@
+ ▐▛███▜▌   Claude Code v2.1.165
+▝▜█████▛▘  Opus 4.8 · Claude Max
+  ▘▘ ▝▝    ~/projects/MTA/dbengine
+
+
+❯ help me make a CLAUDE.md to research database entines using Karpathy's        
+  methodology, see https://x.com/karpathy/status/2039805659525644595 and        
+  https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f and https:/ 
+  /www.mindstudio.ai/blog/andrej-karpathy-llm-wiki-knowledge-base-claude-code   
+                                                                                
+  I would like to research all the database engines listed here:                
+  https://db-engines.com/en/ranking                                             
+                                                                                
+  for each one make a wiki page that describes the key points                   
+  - taxonomy / data model                                                       
+  - storage model                                                               
+  - OLTP vs OLAP vs HTAP — and if it claims HTAP, how it physically separates   
+  the two workloads (separate replicas, columnar secondary index, etc.).        
+                                                                                
+  Where it sits on CAP under partition: CP (refuses writes to stay consistent)  
+  or AP (stays up, reconciles later)? CAP is a coarse lens, though — PACELC is  
+  more useful because it also tells you the latency-vs-consistency tradeoff     
+  when there's no partition.                                                    
+  Default isolation level and what's actually achievable (read committed,       
+  snapshot, serializable). Many "ACID" claims mean snapshot isolation, not      
+  serializable.                                                                 
+  Replication model: single-leader, multi-leader, leaderless quorum (R+W>N)?    
+  Synchronous vs async, and what the failover/split-brain story is.             
+  Tunable consistency? (Cassandra/Dynamo-style per-query consistency levels.)   
+  Clock dependency — does correctness rest on synchronized clocks               
+  (Spanner/TrueTime, hybrid logical clocks)?                                    
+                                                                                
+  Schema                                                                        
+                                                                                
+  Schema-on-write vs schema-on-read; rigid, flexible, or schemaless.            
+  "Schemaless" usually just means the schema lives in your application code     
+  instead of the DB.                                                            
+  Migration/evolution story — online DDL, or does an ALTER lock the table?      
+  Type system richness (native JSON, arrays, geospatial, vectors, intervals).   
+                                                                                
+  Query interface                                                               
+                                                                                
+  Query language: SQL (which dialect / standard compliance), a custom DSL (CQL, 
+  AQL, Cypher/GQL, PromQL), or API-only (get/put)?                              
+  Transaction support: full multi-statement ACID, single-row atomicity only, or 
+  none?                                                                         
+  Secondary indexes, joins, aggregations, window functions — what's native vs   
+  what you reimplement in the app.                                              
+  Stored procedures / UDFs, and in what language.                               
+                                                                                
+  Scaling & topology                                                            
+                                                                                
+  Vertical vs horizontal scaling; sharding (auto vs manual, resharding pain),   
+  partitioning scheme.                                                          
+  Read replicas, and whether reads from them are consistent.                    
+  Separation of storage and compute (the Snowflake/Aurora/Neon pattern) —       
+  matters a lot for elasticity and cost.                                        
+                                                                                
+  Performance & durability                                                      
+                                                                                
+  Write path durability: WAL, fsync policy, group commit. What's the data-loss  
+  window on crash?                                                              
+  Read/write throughput and latency profile under your access pattern; tail     
+  latencies, not just averages.                                                 
+  Compaction / vacuum / GC behavior and its impact on p99.                      
+                                                                                
+  Operations                                                                    
+                                                                                
+  Backup/restore, point-in-time recovery, snapshotting.                         
+  Observability: metrics, query plans/EXPLAIN, slow-query logs.                 
+  Upgrade story (rolling, downtime), and the day-2 operational burden generally 
+  — this is where most engines hide their real cost.                            
+  Maturity: production track record, known failure modes, the Aphyr/Jepsen      
+  result if one exists.                                                         
+                                                                                
+  Ecosystem & people                                                            
+                                                                                
+  Typical users / canonical use cases — and just as informative, the            
+  anti-patterns where it's the wrong tool.                                      
+  Client drivers, ORM support, connectors (CDC, Kafka, dbt, BI tools).          
+  Community size, commercial support, documentation quality.                    
+                                                                                
+  Licensing & cost                                                              
+                                                                                
+  OSS license and which flavor — permissive (Apache/MIT/BSD) vs copyleft vs a   
+  source-available "open-ish" license (SSPL, BSL/Elastic, Confluent Community). 
+  The post-2018 relicensing wave (Mongo, Elastic, Redis, Cockroach, HashiCorp)  
+  matters if you're embedding or reselling.                                     
+  Self-managed vs managed-only; vendor lock-in via proprietary extensions.      
+  Cost model: per-node, per-core, per-GB stored, per-query/serverless — and how 
+  it behaves at your scale, since the cheap-at-small ones often invert at       
+  scale.                                                                        
+                                                                                
+  Hardware / deployment                                                         
+                                                                                
+  Memory-bound vs disk-bound vs CPU-bound; does it want to fit the working set  
+  (or all) of data in RAM?                                                      
+  Storage assumptions — NVMe vs spinning disk, local vs network-attached (some  
+  engines tolerate EBS-style latency, some really don't).                       
+  Single-node, clustered, embedded (SQLite/DuckDB/RocksDB style), or            
+  serverless.                                                                   
+  Cloud-native vs on-prem; container/k8s friendliness, stateful-set realities.  
+                                                                                
+  - SaaS/on-prem                                                                
+  - learning curve/complexity/size of typical team                              
+  - does it have a big ecosystem and community and engineer availability        
+  ask any question and then create a claude.md that will create a good database 
+  research wiki                                                                 
+
+⏺ I'll start by invoking the brainstorming skill (this is creative work —
+  designing a research workflow), and in parallel fetch the Karpathy references
+  so I understand the methodology you're pointing me at.
+
+⏺ Skill(superpowers:brainstorming)
+  ⎿  Successfully loaded skill
+
+⏺ Let me fetch the Karpathy references to ground the methodology, and check the
+  project context.
+
+⏺ Fetch(https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+  ⎿  Received 441.6KB (200 OK)
+
+⏺ Fetch(https://www.mindstudio.ai/blog/andrej-karpathy-llm-wiki-knowledge-base-c
+       laude-code)
+  ⎿  Received 98.6KB (200 OK)
+
+  Listed 1 directory (ctrl+o to expand)
+
+⏺ I've got the methodology now. Karpathy's pattern is a folder of cross-linked
+  markdown files where each page has a one-line summary at top (the LLM reads it
+  to decide relevance), [[wikilinks]] for connections, an index.md catalog, a
+  log.md, and a CLAUDE.md "schema" that tells Claude the conventions +
+  ingest/query/lint workflows. You've already given me an excellent per-page
+  template (the dimensions list).
+
+  The dbengine directory is empty, so this is a clean build. A few scoping
+  decisions will shape the CLAUDE.md significantly:
+
+⏺ User answered Claude's questions:
+  ⎿  · How many engines should the wiki cover? db-engines.com ranks ~430 systems
+     — researching all with deep per-page detail is a massive fan-out. → top 
+     150
+     · Should the CLAUDE.md drive Claude to actively web-research each engine, 
+     or be a scaffold for you to feed sources into? → Active research
+     · How strict should verification / sourcing be on each page? → Light 
+     citations
+     · Beyond one page per engine, what cross-cutting artifacts do you want? → 
+     decision flowchart to choose your db by answering a series of question
+
+⏺ Got it. Here's what I'm hearing: top 150 engines, active web research (Claude
+  searches docs/Jepsen and writes pages), light citations (cite
+  major/contentious claims + Jepsen, general knowledge otherwise), and a
+  decision flowchart ("answer a series of questions → recommended DB") as the
+  headline cross-cutting artifact.
+
+  Since the deliverable is a single CLAUDE.md (not a software build), I'll scale
+  the brainstorming ceremony down — present the design here, get your nod, then
+  write the file directly rather than going through a separate spec +
+  implementation-plan cycle. Here's the proposed design:
+
+  Directory layout
+
+  dbengine/
+  ├── CLAUDE.md              # the "schema" — conventions + workflows (the
+  deliverable)
+  ├── index.md              # catalog grouped by data model, one-liner each,
+  links to pages
+  ├── log.md                # append-only: ## [DATE] ingest|update|lint |
+  <engine>
+  ├── decision-guide.md     # the question-tree flowchart → recommended engines
+  ├── ranking.md            # the top-150 worklist (rank, name, status:
+  todo/done)
+  ├── engines/              # one page per engine: postgresql.md, mongodb.md,
+  ...
+  └── concepts/             # shared pages: cap-pacelc.md, isolation-levels.md,
+  lsm-vs-btree.md
+  concepts/ exists so engine pages can link [[cap-pacelc]] instead of
+  re-explaining theory 150 times — keeps pages tight and consistent.
+
+  Engine page template
+
+  Frontmatter (name, rank, data_model, license, one-liner summary,
+  last_researched, confidence) + the one-line summary at top (Karpathy's "most
+  important line" — Claude reads it to decide relevance). Then your dimension
+  sections grouped into: Identity (taxonomy/data model/storage), Distribution
+  (CAP/PACELC, isolation, replication, tunable consistency, clocks), Schema,
+  Query interface, Scaling & topology, Performance & durability, Operations & 
+  maturity (incl. Jepsen), Ecosystem & people, Licensing & cost,
+  Hardware/deployment, and a Bottom line (canonical use-cases + anti-patterns).
+  Each section a few tight sentences, not an essay. [[wikilinks]] to concepts
+  and related engines.
+
+  Workflows in CLAUDE.md
+
+  - Ingest/research one engine: web-search official docs + Jepsen + db-engines
+  entry → fill template → cite contentious claims → flag unverified → update
+  index.md, log.md, ranking.md.
+  - Batch research: process N from ranking.md (I'll note this is parallelizable
+  via subagents — good for 150).
+  - Query: answer against the wiki, cite pages, optionally promote answer to a
+  new page.
+  - Lint: find contradictions, stale last_researched, orphan pages, missing
+  backlinks, un-flagged unsourced claims.
+
+  Decision guide
+
+  A branching question tree (workload OLTP/OLAP/HTAP? → consistency needs? →
+  scale/topology? → data model? → license constraints?) where leaves point to
+  [[engine]] candidates with the trade-off, plus explicit anti-patterns.
+
+  Does this structure look right before I write the CLAUDE.md? In particular:
+  keep the separate concepts/ folder, and is the decision-guide question order
+  (workload → consistency → scale → model → license) the priority you'd want?
+
+✻ Cogitated for 1m 38s
+
+❯ yes, go ahead, put off the decision order until we finished research, then    
+  identify the best order e.g. always ask these 3 questions, then drill down to 
+  get the best answer fastest                                                   
+
+⏺ Approved. I'll write the CLAUDE.md plus the scaffold files, and make
+  decision-guide.md explicitly a post-research deliverable — built from the
+  data, designed to ask the fewest high-signal questions first then drill down.
+
+⏺ Write(CLAUDE.md)
+  ⎿  Wrote 281 lines to CLAUDE.md
+      2 # Database Engines Research Wiki — Schema & Workflows
+      3 This repository is an **LLM-maintained wiki** about database engi
+        nes, built on Karpathy's
+        hat *you* (Claude) write andlder of cross-linked markdown files t
+      5 maintain, that a human reads and queries. This file is the **sche
+        ma** — it defines the
+      7 conventions and the workflows. Follow it exactly.
+      8 > The human curates scope and asks questions. You do all the rese
+        arch, writing, cross-linking,
+      9 > and bookkeeping. The human reads; you write.
+     … +379 lines (ctrl+o to expand)
+
+⏺ Now the scaffold files referenced by CLAUDE.md:
+
+⏺ Write(index.md)
+  ⎿  Wrote 30 lines to index.md
+       2 # Database Engines — Index
+       3 Catalog of all engine pages, grouped by primary data model, sort
+         ed by db-engines rank within each
+         th "(also: …)".model engine is listed under its primary model wi
+       5 
+       6 Format: `- **[[slug]]** (rank N) — one-liner.`
+       8 > Empty until the bootstrap + research workflows run. See [[CLAU
+         DE]] §5 and §7.
+       9 
+      10 ## Relational
+     … +23 lines (ctrl+o to expand)
+
+⏺ Write(log.md)
+  ⎿  Wrote 13 lines to log.md
+      1 # Operations Log
+      2 
+      3 Append-only. Newest at the bottom. One line per operation:
+      4 
+      5 ```
+      6 ## [YYYY-MM-DD] <operation> | <engine or scope>
+      7 ```
+      8 
+      9 `operation` ∈ `bootstrap` · `ingest` · `update` · `lint` · `decis
+        ion-guide`.
+     … +5 lines (ctrl+o to expand)
+
+⏺ Write(ranking.md)
+  ⎿  Wrote 21 lines to ranking.md
+      2 # Top-150 Worklist
+      3 The research worklist. Populated by the **bootstrap** workflow ([
+        [CLAUDE]] §7.0): fetch the
+      4 [db-engines.com ranking](https://db-engines.com/en/ranking) and l
+        ist the top 150 here, each with a
+      5 status. Then work them with the research workflows (§7.1–7.2).
+      6 
+      7 Status: `todo` · `in-progress` · `done (YYYY-MM-DD)`.
+      8 
+      9 Format:
+     … +15 lines (ctrl+o to expand)
+
+⏺ Write(decision-guide.md)
+  ⎿  Wrote 15 lines to decision-guide.md
+       2 # Which Database Should I Use? — Decision Guide
+       3 > **Built after research, from the data — not yet populated.** S
+       4 ee [[CLAUDE]] §8.
+       5 This guide is intentionally empty until enough engine pages exis
+         t to derive it empirically. The
+       7 plan:
+       8 1. Analyze the researched engine pages to find which dimensions 
+       9 2. Fix the **2–4 highest-signal questions to always ask first** 
+         (the ones that eliminate the most
+      10    candidates fastest).
+     … +12 lines (ctrl+o to expand)
+
+⏺ Bash(mkdir -p engines concepts && touch engines/.gitkeep concepts/.gitkeep &&
+      ls -la && echo "---" && ls engines concepts)
+  ⎿  engines
+     concepts
+     total 64
+     … +13 lines (ctrl+o to expand)
+
+⏺ Done. The wiki is scaffolded in dbengine/:
+
+  CLAUDE.md            ← the schema: conventions + workflows (the deliverable)
+  index.md             ← catalog grouped by data model (empty groups ready)
+  log.md               ← append-only ops log (bootstrap entry recorded)
+  ranking.md           ← top-150 worklist (populated by bootstrap)
+  decision-guide.md    ← built AFTER research, from the data
+  engines/             ← one page per engine
+  concepts/            ← shared theory pages (CAP/PACELC, isolation, LSM vs
+  B-tree…)
+
+  What the CLAUDE.md encodes:
+  - Karpathy pattern — LLM-written cross-linked markdown, load-bearing one-line
+  summary at the top of each page, [[wikilinks]], index.md catalog, append-only
+  log.md, and ingest/query/lint workflows.
+  - Your choices — top 150 engines, active web research (primary sources first),
+  light citations (Jepsen + all CAP/PACELC/isolation claims must cite;
+  everything else can be general knowledge), and a ⚠️ unverified flag for
+  anything Claude can't confirm.
+  - Your full dimension list as the fixed engine-page template, organized into
+  Identity / Distribution & consistency / Schema / Query / Scaling / Performance
+  & durability / Operations & maturity / Ecosystem / Licensing / Hardware /
+  Bottom line — keeping your sharp prompts intact ("if it claims HTAP, say how
+  it physically separates the workloads", "snapshot ≠ serializable", PACELC over
+  CAP, tail latency not averages, anti-patterns).
+  - Theory factored into concepts/ so engine pages link instead of repeating.
+  - Decision guide deferred — §8 says explicitly: don't design the tree up
+  front; after a batch is researched, find the dimensions that partition the
+  field most cleanly, fix the 2–4 questions to always ask first, then drill down
+  — re-derived as coverage grows.
+  - Parallel-friendly batch workflow (§7.2): one engine per subagent, with
+  shared-file edits funneled through the orchestrator to avoid write conflicts —
+  important for 150 pages.
+
+  To start researching, open Claude Code in this directory and say "run the 
+  bootstrap workflow" (fetches the live ranking into ranking.md), then "research
+  the next 10 engines". Want me to run bootstrap now and kick off the first few
+  engine pages so you can see the template in action?
+✻ Cogitated for 1m 56s
