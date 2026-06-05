@@ -62,9 +62,23 @@ are premature.
   embedded workload reach for [duckdb](engines/duckdb.md) instead, see OLAP §2), [h2](engines/h2.md)/[hypersql](engines/hypersql.md)/[apache-derby](engines/apache-derby.md) (JVM/test),
   [firebird](engines/firebird.md) (server *or* embedded), [sap-sql-anywhere](engines/sap-sql-anywhere.md) (edge/sync), [realm](engines/realm.md)/[pouchdb](engines/pouchdb.md)
   (mobile/offline), [microsoft-access](engines/microsoft-access.md) (desktop/file, single-user). See [embedded-databases](concepts/embedded-databases.md). ❌ not multi-writer servers.
-- **Managed, minimal ops (cloud OK):** [amazon-aurora](engines/amazon-aurora.md) (MySQL/Postgres-compatible, disaggregated
-  storage), [microsoft-azure-sql-database](engines/microsoft-azure-sql-database.md), [alibaba-cloud-polardb](engines/alibaba-cloud-polardb.md), [edb-postgres](engines/edb-postgres.md). ❌ cloud
+- **Managed, minimal ops (cloud OK):** hyperscaler-managed relational — [amazon-aurora](engines/amazon-aurora.md)
+  (MySQL/Postgres-compatible, disaggregated storage), [microsoft-azure-sql-database](engines/microsoft-azure-sql-database.md)
+  (managed SQL Server), [alibaba-cloud-polardb](engines/alibaba-cloud-polardb.md), [edb-postgres](engines/edb-postgres.md). ❌ cloud
   lock-in; AWS/Azure-only.
+  - **Hosted Postgres — baselines:** **Amazon RDS** / **Google Cloud SQL** / **Azure Database for PostgreSQL** run
+    stock community Postgres (you pick the version, they handle patching/backups/HA); **AlloyDB** is Google's
+    Postgres-compatible engine with separated storage/compute + a columnar engine for HTAP. ❌ still per-cloud lock-in;
+    not as cheap-at-small as the serverless players.
+  - **Serverless / scale-to-zero + DB branching:** **Neon** — separated storage/compute, copy-on-write **database
+    branching**, scale-to-zero, Apache-2.0 (Databricks-owned since 2025) · **Supabase** — a Firebase-style
+    backend-as-a-service on *real* Postgres (auth, realtime, storage, auto REST/GraphQL via PostgREST) on dedicated
+    instances with no per-query cold start. ❌ Neon trades a small cold-start latency for scale-to-zero; Supabase is a
+    whole app platform, not just a DB.
+  - **Vanilla Postgres, multi-cloud, low lock-in:** **Crunchy Bridge** / **Snowflake Postgres** (enterprise-grade
+    Postgres from Crunchy Data, Snowflake-owned since 2025) · **Aiven** (one console across AWS/GCP/Azure) · **Render**
+    / **Railway** / **Fly.io** / **DigitalOcean** (developer-platform managed Postgres). ❌ thinner enterprise/DBA
+    tooling than the hyperscalers; smaller-vendor longevity risk.
 
 ### Need to scale OLTP horizontally or across regions?
 - **Distributed SQL (NewSQL), strong consistency:** [cockroachdb](engines/cockroachdb.md) (serializable, Postgres-wire,
@@ -202,12 +216,16 @@ See [time-series-storage](concepts/time-series-storage.md).
 See [full-text-search](concepts/full-text-search.md). **All are secondary indexes fed from a durable primary — not systems of
 record** (e.g. [elasticsearch](engines/elasticsearch.md) lost acknowledged writes under partition, [jepsen](concepts/jepsen.md)).
 
-- **Self-hosted Lucene:** [elasticsearch](engines/elasticsearch.md) (now SSPL/AGPL; logs/observability/vectors),
-  [opensearch](engines/opensearch.md) (Apache-2.0 fork), [apache-solr](engines/apache-solr.md) (mature, CP SolrCloud). 
+- **Self-hosted Lucene:** [elasticsearch](engines/elasticsearch.md) — the engine at the heart of the **ELK / Elastic
+  Stack** (Elasticsearch store + **L**ogstash/Beats ingest + **K**ibana viz; now SSPL/AGPL; logs/observability/SIEM/vectors) ·
+  [opensearch](engines/opensearch.md) (Apache-2.0 fork, with OpenSearch Dashboards + Data Prepper) · [apache-solr](engines/apache-solr.md)
+  (mature, CP SolrCloud).
 - **Managed / hosted:** [algolia](engines/algolia.md) (sub-50ms instant search), [microsoft-azure-ai-search](engines/microsoft-azure-ai-search.md)
   (full-text + vector + RAG), [coveo](engines/coveo.md) (enterprise/commerce), [amazon-cloudsearch](engines/amazon-cloudsearch.md) (legacy).
 - **Lightweight / single-node:** [meilisearch](engines/meilisearch.md) (typo-tolerant; ❌ weak HA/scale), [sphinx](engines/sphinx.md)
-  (frozen → Manticore fork). **Logs/SIEM at scale:** [splunk](engines/splunk.md) (schema-on-read; ❌ expensive).
+  (frozen → Manticore fork). **Logs/SIEM at scale:** [splunk](engines/splunk.md) (schema-on-read; ❌ expensive) — the
+  open(-ish) alternative is the **ELK / Elastic Stack** ([elasticsearch](engines/elasticsearch.md) + Kibana) or
+  [opensearch](engines/opensearch.md).
 
 ---
 

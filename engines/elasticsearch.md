@@ -11,7 +11,7 @@ confidence: high
 
 # Elasticsearch
 
-> A distributed, near-real-time full-text search and analytics engine built on Lucene — the default for search, observability, and log analytics, but historically weak as a primary store of record (acknowledged writes were lost under partition in Jepsen testing).
+> A distributed, near-real-time full-text search and analytics engine built on Lucene — the heart of the **ELK / Elastic Stack** and the default for search, observability, and log analytics, but historically weak as a primary store of record (acknowledged writes were lost under partition in Jepsen testing).
 
 ## When to use
 
@@ -65,6 +65,7 @@ confidence: high
 - **Maturity:** very mature, huge production footprint. Known failure modes: historical **acked-write loss under partition** ([Jepsen 1.5.0](https://aphyr.com/posts/323-jepsen-elasticsearch-1-5-0), [Jepsen 1.1.0](https://aphyr.com/posts/317-jepsen-elasticsearch)); shard explosion; mapping explosion; split-brain (largely fixed by Zen2). No current public Jepsen re-audit of the modern coordination layer.
 
 ## Ecosystem & people
+- **The ELK / Elastic Stack:** Elasticsearch is the **datastore + search/aggregation engine at the center of a stack**, not a standalone product in most deployments. The classic **ELK** trio is **E**lasticsearch (store + query) + **L**ogstash (server-side ingest/transform pipeline) + **K**ibana (the visualization/exploration/dashboard UI). Elastic later added **Beats** (lightweight per-host shippers — Filebeat for logs, Metricbeat, Packetbeat, etc.) and the unified **Elastic Agent**/Fleet, and rebranded the whole thing the **Elastic Stack**. Typical data flow: *Beats/Logstash → Elasticsearch → Kibana*. It is the dominant **open(-ish) logs/observability/SIEM platform** — the dual to [splunk](splunk.md) — spanning centralized logging, full observability (logs/metrics/traces via Elastic APM), and security analytics. Note Logstash is heavy (JVM, rich filter plugins); many modern pipelines push transforms into **Elasticsearch ingest pipelines** or ship via Beats/**OpenTelemetry** directly, reserving Logstash for complex enrichment. The Apache-2.0 [opensearch](opensearch.md) fork ships a parallel stack: OpenSearch + **OpenSearch Dashboards** (Kibana fork) + **Data Prepper**/Logstash. Logstash and Kibana are companion tools, not databases, so they have no separate page here.
 - **Canonical use cases:** full-text/site search, log & observability analytics (ELK/Elastic Stack), security analytics (SIEM), geo search, and increasingly semantic/hybrid (BM25 + vector) search.
 - **Anti-patterns:** system-of-record for financial/transactional data (no cross-doc ACID, history of write loss); workloads needing relational joins or strong serializable transactions; high-cardinality frequently-updated documents (every update rewrites/marks-deletes a doc). When you need durability guarantees, keep the source of truth elsewhere and treat ES as a derived index.
 - **Ecosystem:** enormous. Official clients (Java/Python/JS/Go/.NET/etc.), Logstash/Beats/Elastic Agent ingestion, Kibana for viz, Kafka connectors, Debezium/CDC, dbt and BI via ES|QL/SQL bridges. Docs are extensive; learning curve moderate (Query DSL + sharding/mapping mental model).
