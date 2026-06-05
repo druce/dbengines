@@ -55,15 +55,16 @@ under the schema in [`CLAUDE.md`](CLAUDE.md); a human curates scope and asks que
 The wiki was built with Claude Code (Opus 4.8) over three sessions, transcripts of which are
 checked in:
 
-1. **[`convo0.txt`](convo0.txt)** — used Claude to brainstorm the rubric: the set of concerns /
+1. **[`convo0.txt`](convo0.txt)** — Used Claude to brainstorm the rubric: the set of concerns /
    dimensions every database engine should be evaluated against (data taxonomy, CAP placement,
    schema model, query language, hardware profile, licensing, etc.). This became the engine-page
    template.
-2. **[`convo1.txt`](convo1.txt)** — wrote [`CLAUDE.md`](CLAUDE.md) (the schema + workflows) to
+2. **[`convo1.txt`](convo1.txt)** — Wrote [`CLAUDE.md`](CLAUDE.md) (the schema + workflows) to
    bootstrap the full wiki using Karpathy's knowledge-base methodology — a folder of cross-linked
    markdown the LLM writes and a human reads.
-3. **[`convo2.txt`](convo2.txt)** — the long-running session that researched and drafted the wiki,
-   then began the manual review pass, addressing issues and improvements.
+3. **[`convo2.txt`](convo2.txt)** — the long-running session that researched and drafted the wiki 
+   (Longest prompt cogitated for 1h 13m 49s), then began a manual review pass, addressing issues
+   and improvements.
 
 > ⚠️ **Caveat:** content is AI-generated from web research and may contain errors or go stale
 > (rankings and licenses change). Pages note their `last_researched` date. Verify against primary
