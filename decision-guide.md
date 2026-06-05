@@ -97,25 +97,22 @@ writes / point lookups.**
   overspend), [google-bigquery](engines/google-bigquery.md) (serverless, billed by bytes scanned), [amazon-redshift](engines/amazon-redshift.md),
   [microsoft-fabric](engines/microsoft-fabric.md) / [microsoft-azure-synapse-analytics](engines/microsoft-azure-synapse-analytics.md) (Synapse now legacy → Fabric). ❌
   cost surprises; vendor lock-in.
-- **Lakehouse (own your open storage):** see the dedicated subsection just below.
-
-### Lakehouse: own your open storage
-Architecture, not a product — open columnar files + an [open table format](concepts/open-table-formats.md) +
-a [catalog](concepts/data-catalog.md), queried by many decoupled engines. See [lakehouse](concepts/lakehouse.md). Decide three things:
-- **Table format** — [apache-iceberg](engines/apache-iceberg.md) (vendor-neutral default, broadest engine support) ·
-  [delta-lake](engines/delta-lake.md) (if you're on [databricks](engines/databricks.md)/Spark; UniForm exposes Iceberg metadata) ·
-  [apache-hudi](engines/apache-hudi.md) / [apache-paimon](engines/apache-paimon.md) (streaming/CDC **upserts**: Hudi batch-leaning, Paimon
-  Flink-native LSM). ❌ table-format ACID is *table-level optimistic*, not row-level — bad for OLTP.
-- **Engine over it** — [databricks](engines/databricks.md) (managed Spark+Delta), [trino](engines/trino.md)/[presto](engines/presto.md) (federated SQL),
-  [apache-spark-sql](engines/apache-spark-sql.md) (batch/ETL), [apache-impala](engines/apache-impala.md) (MPP low-latency SQL on HDFS/Iceberg),
-  [apache-hive](engines/apache-hive.md) (batch SQL, the legacy workhorse), [apache-drill](engines/apache-drill.md) (schema-free SQL over
-  files), [dremio](engines/dremio.md) (Arrow, BI acceleration), [clickhouse](engines/clickhouse.md)/[starrocks](engines/starrocks.md)
-  (fast reads), [duckdb](engines/duckdb.md) (single-node), [datafusion](engines/datafusion.md) (embeddable Rust/Arrow engine you build
-  on), or even [snowflake](engines/snowflake.md) reading Iceberg. ❌ these are compute
-  layers — transactions come from the table format, not the engine.
-- **Catalog** — [apache-polaris](engines/apache-polaris.md) (open Iceberg REST, vendor-neutral) · [unity-catalog](engines/unity-catalog.md)
-  (Databricks governance) · [hive-metastore](engines/hive-metastore.md) (legacy lingua franca). The catalog arbitrates
-  multi-engine ACID — all writers must share one.
+- **Lakehouse (own your open storage):** Architecture, not a product — open columnar files + an [open table format](concepts/open-table-formats.md) +
+  a [catalog](concepts/data-catalog.md), queried by many decoupled engines. See [lakehouse](concepts/lakehouse.md). Decide three things:
+  - **Table format** — [apache-iceberg](engines/apache-iceberg.md) (vendor-neutral default, broadest engine support) ·
+    [delta-lake](engines/delta-lake.md) (if you're on [databricks](engines/databricks.md)/Spark; UniForm exposes Iceberg metadata) ·
+    [apache-hudi](engines/apache-hudi.md) / [apache-paimon](engines/apache-paimon.md) (streaming/CDC **upserts**: Hudi batch-leaning, Paimon
+    Flink-native LSM). ❌ table-format ACID is *table-level optimistic*, not row-level — bad for OLTP.
+  - **Engine over it** — [databricks](engines/databricks.md) (managed Spark+Delta), [trino](engines/trino.md)/[presto](engines/presto.md) (federated SQL),
+    [apache-spark-sql](engines/apache-spark-sql.md) (batch/ETL), [apache-impala](engines/apache-impala.md) (MPP low-latency SQL on HDFS/Iceberg),
+    [apache-hive](engines/apache-hive.md) (batch SQL, the legacy workhorse), [apache-drill](engines/apache-drill.md) (schema-free SQL over
+    files), [dremio](engines/dremio.md) (Arrow, BI acceleration), [clickhouse](engines/clickhouse.md)/[starrocks](engines/starrocks.md)
+    (fast reads), [duckdb](engines/duckdb.md) (single-node), [datafusion](engines/datafusion.md) (embeddable Rust/Arrow engine you build
+    on), or even [snowflake](engines/snowflake.md) reading Iceberg. ❌ these are compute
+    layers — transactions come from the table format, not the engine.
+  - **Catalog** — [apache-polaris](engines/apache-polaris.md) (open Iceberg REST, vendor-neutral) · [unity-catalog](engines/unity-catalog.md)
+    (Databricks governance) · [hive-metastore](engines/hive-metastore.md) (legacy lingua franca). The catalog arbitrates
+    multi-engine ACID — all writers must share one.
 - **Self-hosted / real-time OLAP:** [clickhouse](engines/clickhouse.md) (blazing scans, eventually consistent),
   [starrocks](engines/starrocks.md) / [apache-druid](engines/apache-druid.md) (sub-second slice-and-dice), [exasol](engines/exasol.md) / [vertica](engines/vertica.md) /
   [greenplum](engines/greenplum.md) / [sap-iq](engines/sap-iq.md) / [teradata](engines/teradata.md) / [netezza](engines/netezza.md) / [gbase](engines/gbase.md) (MPP, legacy→modern spectrum).
