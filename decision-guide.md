@@ -27,14 +27,14 @@ section.
    horizontally sharded · globally distributed (multi-region writes). Most workloads are smaller
    than people think — don't buy distribution you won't use. See [sharding-partitioning](concepts/sharding-partitioning.md),
    [replication-models](concepts/replication-models.md).
-3. **Operations & licensing?** self-hosted vs managed/serverless; is cloud lock-in acceptable;
-   do you require **permissive** OSS (Apache/MIT/BSD) vs tolerate **source-available** (SSPL/BSL)
-   or **proprietary**? See [license-taxonomy](concepts/license-taxonomy.md).
-4. **Consistency & durability needs?** strict-serializable / strong vs tunable / eventual; what is
+3. **Consistency & durability needs?** strict-serializable / strong vs tunable / eventual; what is
    your acceptable **data-loss window** on crash? The framing mental model is [acid-vs-base](concepts/acid-vs-base.md)
    (correctness-first vs availability-first — a spectrum, not a binary). See [isolation-levels](concepts/isolation-levels.md),
    [cap-pacelc](concepts/cap-pacelc.md), [wal-and-durability](concepts/wal-and-durability.md). Beware "ACID"/"serializable" that is really snapshot
    isolation, and verify distributed-consistency claims against [jepsen](concepts/jepsen.md).
+4. **Operations & licensing?** self-hosted vs managed/serverless; is cloud lock-in acceptable;
+   do you require **permissive** OSS (Apache/MIT/BSD) vs tolerate **source-available** (SSPL/BSL)
+   or **proprietary**? See [license-taxonomy](concepts/license-taxonomy.md).
 
 **The single most common right answer:** for a general transactional application, default to
 **[postgresql](engines/postgresql.md)** until you have a concrete reason not to. Most "we need NoSQL/distributed" instincts
@@ -58,8 +58,7 @@ are premature.
   columnar HTAP), [sap-adaptive-server](engines/sap-adaptive-server.md) (Sybase ASE), [informix](engines/informix.md),
   [ingres](engines/ingres.md)/[openedge](engines/openedge.md) (choose only if the app already mandates it). ❌ cost and shrinking
   talent pools.
-- **Embedded / single-file / edge:** [sqlite](engines/sqlite.md) (the default; single-writer — for an *analytical*
-  embedded workload reach for [duckdb](engines/duckdb.md) instead, see OLAP §2), [h2](engines/h2.md)/[hypersql](engines/hypersql.md)/[apache-derby](engines/apache-derby.md) (JVM/test),
+- **Embedded / single-file / edge:** [sqlite](engines/sqlite.md) (the default; single-writer), [h2](engines/h2.md)/[hypersql](engines/hypersql.md)/[apache-derby](engines/apache-derby.md) (JVM/test),
   [firebird](engines/firebird.md) (server *or* embedded), [sap-sql-anywhere](engines/sap-sql-anywhere.md) (edge/sync), [realm](engines/realm.md)/[pouchdb](engines/pouchdb.md)
   (mobile/offline), [microsoft-access](engines/microsoft-access.md) (desktop/file, single-user). See [embedded-databases](concepts/embedded-databases.md). ❌ not multi-writer servers.
 - **Managed, minimal ops (cloud OK):** hyperscaler-managed relational — [amazon-aurora](engines/amazon-aurora.md)
@@ -99,14 +98,6 @@ are premature.
 Column-stores and MPP — see [columnar-storage](concepts/columnar-storage.md). **Anti-pattern for all of these: OLTP / many small
 writes / point lookups.**
 
-- **Start here — the simplest thing that might possibly work:** [duckdb](engines/duckdb.md) — "SQLite for analytics":
-  embedded, in-process, vectorized column-store with **zero ops**, querying Parquet/CSV/Arrow/Iceberg in place. Scales
-  **vertically** — larger-than-memory queries spill to local disk (best on NVMe/SSD), comfortably crunching
-  tens-to-hundreds of GB on one box. **Scaling path when you outgrow a single node:** *MotherDuck* extends the *same*
-  DuckDB to the cloud via **dual execution** — the planner routes each query stage to wherever the data lives (local or
-  cloud) to minimize transfer — with per-user serverless "Ducklings" that scale up and out to TB scale, no rewrite. Try
-  it before buying a warehouse below. ❌ not multi-user OLTP / many small writes; single-writer file; not a
-  shared-nothing MPP warehouse for petabyte-scale or high-concurrency BI.
 - **Managed cloud warehouse, near-zero tuning:** [snowflake](engines/snowflake.md) (storage/compute separation, easy to
   overspend), [google-bigquery](engines/google-bigquery.md) (serverless, billed by bytes scanned), [amazon-redshift](engines/amazon-redshift.md),
   [microsoft-fabric](engines/microsoft-fabric.md) / [microsoft-azure-synapse-analytics](engines/microsoft-azure-synapse-analytics.md) (Synapse now legacy → Fabric). ❌
@@ -187,6 +178,10 @@ See [graph-data-model](concepts/graph-data-model.md).
 - **Property graph, deep traversals:** [neo4j](engines/neo4j.md) (market leader, Cypher, index-free adjacency). ❌
   single-leader, read-committed, doesn't shard a connected graph.
 - **In-memory / real-time graph:** [memgraph](engines/memgraph.md) (Neo4j-compatible Cypher). ❌ HA is Enterprise-only.
+- **Embedded / in-process (no server):** [ladybugdb](engines/ladybugdb.md) — the "SQLite/DuckDB for graphs": embedded
+  property-graph engine, Cypher, columnar + vectorized for fast analytical traversals, with native SQLite interop;
+  ships inside your app/agent process (popular for AI-agent memory). Community fork continuing **Kuzu** after it was
+  archived Oct 2025. ❌ single-node embedded, young/just-forked — no HA/clustering, not a multi-writer server.
 - **Distributed / huge graphs:** [janusgraph](engines/janusgraph.md) (over Cassandra/HBase/Bigtable; ❌ not ACID on common
   backends), [nebulagraph](engines/nebulagraph.md) (trillions of edges; ❌ no general ACID), [tigergraph](engines/tigergraph.md) (MPP analytics).
 - **Managed:** [amazon-neptune](engines/amazon-neptune.md) (property graph + RDF). ❌ single-writer, AWS lock-in.
@@ -216,16 +211,15 @@ See [time-series-storage](concepts/time-series-storage.md).
 See [full-text-search](concepts/full-text-search.md). **All are secondary indexes fed from a durable primary — not systems of
 record** (e.g. [elasticsearch](engines/elasticsearch.md) lost acknowledged writes under partition, [jepsen](concepts/jepsen.md)).
 
-- **Self-hosted Lucene:** [elasticsearch](engines/elasticsearch.md) — the engine at the heart of the **ELK / Elastic
-  Stack** (Elasticsearch store + **L**ogstash/Beats ingest + **K**ibana viz; now SSPL/AGPL; logs/observability/SIEM/vectors) ·
-  [opensearch](engines/opensearch.md) (Apache-2.0 fork, with OpenSearch Dashboards + Data Prepper) · [apache-solr](engines/apache-solr.md)
-  (mature, CP SolrCloud).
+- **Self-hosted, Lucene-based** (Lucene = the open-source Java full-text indexing library underneath all three):
+  [elasticsearch](engines/elasticsearch.md) — the engine at the heart of the **ELK Stack** (Elasticsearch store +
+  **L**ogstash/Beats ingest + **K**ibana viz; now SSPL/AGPL; logs/observability/SIEM/vectors) · [opensearch](engines/opensearch.md)
+  (Apache-2.0 fork, with OpenSearch Dashboards + Data Prepper) · [apache-solr](engines/apache-solr.md) (mature, CP SolrCloud).
 - **Managed / hosted:** [algolia](engines/algolia.md) (sub-50ms instant search), [microsoft-azure-ai-search](engines/microsoft-azure-ai-search.md)
   (full-text + vector + RAG), [coveo](engines/coveo.md) (enterprise/commerce), [amazon-cloudsearch](engines/amazon-cloudsearch.md) (legacy).
 - **Lightweight / single-node:** [meilisearch](engines/meilisearch.md) (typo-tolerant; ❌ weak HA/scale), [sphinx](engines/sphinx.md)
   (frozen → Manticore fork). **Logs/SIEM at scale:** [splunk](engines/splunk.md) (schema-on-read; ❌ expensive) — the
-  open(-ish) alternative is the **ELK / Elastic Stack** ([elasticsearch](engines/elasticsearch.md) + Kibana) or
-  [opensearch](engines/opensearch.md).
+  open(-ish) alternatives are the **ELK Stack** or [opensearch](engines/opensearch.md).
 
 ---
 
@@ -301,9 +295,6 @@ one tool for all of it. See [streaming-platforms](concepts/streaming-platforms.m
 - **Managed-only (no self-host):** [snowflake](engines/snowflake.md), [google-bigquery](engines/google-bigquery.md), [google-cloud-spanner](engines/google-cloud-spanner.md),
   [amazon-dynamodb](engines/amazon-dynamodb.md), [pinecone](engines/pinecone.md), [microsoft-azure-cosmos-db](engines/microsoft-azure-cosmos-db.md), [cloudkit](engines/cloudkit.md) — accept lock-in or
   rule them out.
-- **Dead / dying / frozen (avoid for new builds):** [rockset](engines/rockset.md) (shut to outsiders 2024),
-  [fauna](engines/fauna.md) (2025), [rethinkdb](engines/rethinkdb.md) (commercially dead), [amazon-simpledb](engines/amazon-simpledb.md) / [amazon-cloudsearch](engines/amazon-cloudsearch.md)
-  (closed to new customers), [orientdb](engines/orientdb.md) (orphaned), [maxdb](engines/maxdb.md) (EOL), [apache-derby](engines/apache-derby.md) (read-only).
 - **"Strongly consistent" claims:** verify against [jepsen](concepts/jepsen.md) and check whether safe behavior needs
   non-default settings — it often does ([mongodb](engines/mongodb.md), [redis](engines/redis.md), [mariadb](engines/mariadb.md) Galera, [riak-kv](engines/riak-kv.md)).
 - **Lakehouse interop & lock-in:** if you want many engines on one copy of data, standardize on

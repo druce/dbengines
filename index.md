@@ -235,3 +235,7 @@ Not db-engines-ranked, but they shape database decisions (see [CLAUDE](CLAUDE.md
 ### Embedded / vector
 
 - **[lancedb](engines/lancedb.md)** (adjacent) — Embedded Apache-2.0 vector/multimodal store on the columnar Lance format ("SQLite/DuckDB for AI data"); runs in-process over local disk or S3, with a managed Enterprise tier for low-latency high-QPS serving.
+
+### Embedded / graph
+
+- **[ladybugdb](engines/ladybugdb.md)** (adjacent) — Embedded MIT columnar property-graph engine speaking Cypher ("SQLite/DuckDB for graphs"); in-process with vectorized execution and no-copy attach to SQLite/DuckDB/Parquet/Arrow; the community fork of Kuzu after Apple acqui-hired the team (archived Oct 2025).
