@@ -239,3 +239,11 @@ Not db-engines-ranked, but they shape database decisions (see [CLAUDE](CLAUDE.md
 ### Embedded / graph
 
 - **[ladybugdb](engines/ladybugdb.md)** (adjacent) — Embedded MIT columnar property-graph engine speaking Cypher ("SQLite/DuckDB for graphs"); in-process with vectorized execution and no-copy attach to SQLite/DuckDB/Parquet/Arrow; the community fork of Kuzu after Apple acqui-hired the team (archived Oct 2025).
+
+### Embedded / full-text
+
+- **[tantivy](engines/tantivy.md)** (adjacent) — Embedded MIT full-text search library in Rust ("Lucene for Rust"); segment-based inverted index with BM25, no server, ~2× Lucene; the engine under Quickwit and ParadeDB.
+
+### Serverless relational
+
+- **[neon](engines/neon.md)** (adjacent) — Serverless Postgres that disaggregates storage from compute (Paxos-quorum safekeepers + pageserver on object storage); scale-to-zero, autoscaling, instant copy-on-write branching; Apache-2.0, Databricks-owned since 2025.

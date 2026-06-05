@@ -194,3 +194,5 @@ Not part of the db-engines top-150, but covered because they materially shape da
 | catalog | Apache Polaris | done (2026-06-04) |
 | vector | LanceDB | done (2026-06-04) |
 | graph | LadybugDB | done (2026-06-04) |
+| full-text | Tantivy | done (2026-06-04) |
+| relational | Neon | done (2026-06-04) |

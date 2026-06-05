@@ -51,14 +51,14 @@ no real option of that shape (informative in itself: e.g. wide-column has no emb
 
 | Data model | Embedded (in-process) | Self-hosted server (single node) | Distributed (self-hosted scale-out) | Managed / SaaS |
 |---|---|---|---|---|
-| **OLTP** (§1) | [sqlite](engines/sqlite.md) | [postgresql](engines/postgresql.md) · [mysql](engines/mysql.md) | [cockroachdb](engines/cockroachdb.md) · [yugabytedb](engines/yugabytedb.md) · [tidb](engines/tidb.md) | [amazon-aurora](engines/amazon-aurora.md) · [google-cloud-spanner](engines/google-cloud-spanner.md) · Neon |
+| **OLTP** (§1) | [sqlite](engines/sqlite.md) | [postgresql](engines/postgresql.md) · [mysql](engines/mysql.md) · [microsoft-sql-server](engines/microsoft-sql-server.md) · [oracle](engines/oracle.md) | [cockroachdb](engines/cockroachdb.md) · [yugabytedb](engines/yugabytedb.md) · [tidb](engines/tidb.md) | [amazon-aurora](engines/amazon-aurora.md) · [microsoft-azure-sql-database](engines/microsoft-azure-sql-database.md) · [google-cloud-spanner](engines/google-cloud-spanner.md) · [neon](engines/neon.md) |
 | **OLAP** (§2) | [duckdb](engines/duckdb.md) | [clickhouse](engines/clickhouse.md) · [starrocks](engines/starrocks.md) | [apache-druid](engines/apache-druid.md) · [greenplum](engines/greenplum.md) · [trino](engines/trino.md) | [snowflake](engines/snowflake.md) · [google-bigquery](engines/google-bigquery.md) · MotherDuck |
 | **Document** (§3) | [realm](engines/realm.md) · [pouchdb](engines/pouchdb.md) | [mongodb](engines/mongodb.md) · [couchdb](engines/couchdb.md) | [mongodb](engines/mongodb.md) (sharded) · [couchbase](engines/couchbase.md) | [google-cloud-firestore](engines/google-cloud-firestore.md) · [microsoft-azure-cosmos-db](engines/microsoft-azure-cosmos-db.md) |
 | **Key-value** (§4) | [rocksdb](engines/rocksdb.md) · [lmdb](engines/lmdb.md) | [redis](engines/redis.md) · [valkey](engines/valkey.md) | [aerospike](engines/aerospike.md) · [riak-kv](engines/riak-kv.md) | [amazon-dynamodb](engines/amazon-dynamodb.md) |
 | **Wide-column** (§4) | — | — *(clustered by nature)* | [apache-cassandra](engines/apache-cassandra.md) · [scylladb](engines/scylladb.md) · [apache-hbase](engines/apache-hbase.md) | [google-cloud-bigtable](engines/google-cloud-bigtable.md) · [datastax-enterprise](engines/datastax-enterprise.md) |
 | **Graph** (§5) | [ladybugdb](engines/ladybugdb.md) | [neo4j](engines/neo4j.md) · [memgraph](engines/memgraph.md) | [janusgraph](engines/janusgraph.md) · [nebulagraph](engines/nebulagraph.md) | [amazon-neptune](engines/amazon-neptune.md) |
 | **Time-series** (§6) | — *(use [duckdb](engines/duckdb.md)/[sqlite](engines/sqlite.md))* | [timescaledb](engines/timescaledb.md) · [influxdb](engines/influxdb.md) · [questdb](engines/questdb.md) | [victoriametrics](engines/victoriametrics.md) · [apache-druid](engines/apache-druid.md) | [microsoft-azure-data-explorer](engines/microsoft-azure-data-explorer.md) · Timescale Cloud |
-| **Full-text** (§7) | [sqlite](engines/sqlite.md) FTS5 · Tantivy | [elasticsearch](engines/elasticsearch.md) · [apache-solr](engines/apache-solr.md) | [elasticsearch](engines/elasticsearch.md) · [opensearch](engines/opensearch.md) | [algolia](engines/algolia.md) · [microsoft-azure-ai-search](engines/microsoft-azure-ai-search.md) |
+| **Full-text** (§7) | [sqlite](engines/sqlite.md) FTS5 · [tantivy](engines/tantivy.md) | [elasticsearch](engines/elasticsearch.md) · [apache-solr](engines/apache-solr.md) | [elasticsearch](engines/elasticsearch.md) · [opensearch](engines/opensearch.md) | [algolia](engines/algolia.md) · [microsoft-azure-ai-search](engines/microsoft-azure-ai-search.md) |
 | **Vector** (§8) | [lancedb](engines/lancedb.md) · [chroma](engines/chroma.md) | [qdrant](engines/qdrant.md) · [weaviate](engines/weaviate.md) | [milvus](engines/milvus.md) · [qdrant](engines/qdrant.md) | [pinecone](engines/pinecone.md) |
 
 Reading the columns as a **scaling ladder**: start as far left as your workload allows (embedded is the cheapest to
@@ -95,7 +95,7 @@ columns. Several engines span multiple columns (e.g. [clickhouse](engines/clickh
     stock community Postgres (you pick the version, they handle patching/backups/HA); **AlloyDB** is Google's
     Postgres-compatible engine with separated storage/compute + a columnar engine for HTAP. ❌ still per-cloud lock-in;
     not as cheap-at-small as the serverless players.
-  - **Serverless / scale-to-zero + DB branching:** **Neon** — separated storage/compute, copy-on-write **database
+  - **Serverless / scale-to-zero + DB branching:** [neon](engines/neon.md) — separated storage/compute, copy-on-write **database
     branching**, scale-to-zero, Apache-2.0 (Databricks-owned since 2025) · **Supabase** — a Firebase-style
     backend-as-a-service on *real* Postgres (auth, realtime, storage, auto REST/GraphQL via PostgREST) on dedicated
     instances with no per-query cold start. ❌ Neon trades a small cold-start latency for scale-to-zero; Supabase is a
