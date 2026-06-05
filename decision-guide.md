@@ -42,6 +42,32 @@ are premature.
 
 ---
 
+## At-a-glance: data model × deployment
+
+A fast lookup if you already know your **data model** (rows) and roughly how you want to **run it** (columns,
+a ladder from least ops/smallest to most ops/largest). This is an **index, not the answer** — 1–2 top picks per
+cell; the tradeoffs and anti-patterns live in the numbered sections below and on each engine page. `—` means there is
+no real option of that shape (informative in itself: e.g. wide-column has no embedded or single-node story).
+
+| Data model | Embedded (in-process) | Self-hosted server (single node) | Distributed (self-hosted scale-out) | Managed / SaaS |
+|---|---|---|---|---|
+| **OLTP** (§1) | [sqlite](engines/sqlite.md) | [postgresql](engines/postgresql.md) · [mysql](engines/mysql.md) | [cockroachdb](engines/cockroachdb.md) · [yugabytedb](engines/yugabytedb.md) · [tidb](engines/tidb.md) | [amazon-aurora](engines/amazon-aurora.md) · [google-cloud-spanner](engines/google-cloud-spanner.md) · Neon |
+| **OLAP** (§2) | [duckdb](engines/duckdb.md) | [clickhouse](engines/clickhouse.md) · [starrocks](engines/starrocks.md) | [apache-druid](engines/apache-druid.md) · [greenplum](engines/greenplum.md) · [trino](engines/trino.md) | [snowflake](engines/snowflake.md) · [google-bigquery](engines/google-bigquery.md) · MotherDuck |
+| **Document** (§3) | [realm](engines/realm.md) · [pouchdb](engines/pouchdb.md) | [mongodb](engines/mongodb.md) · [couchdb](engines/couchdb.md) | [mongodb](engines/mongodb.md) (sharded) · [couchbase](engines/couchbase.md) | [google-cloud-firestore](engines/google-cloud-firestore.md) · [microsoft-azure-cosmos-db](engines/microsoft-azure-cosmos-db.md) |
+| **Key-value** (§4) | [rocksdb](engines/rocksdb.md) · [lmdb](engines/lmdb.md) | [redis](engines/redis.md) · [valkey](engines/valkey.md) | [aerospike](engines/aerospike.md) · [riak-kv](engines/riak-kv.md) | [amazon-dynamodb](engines/amazon-dynamodb.md) |
+| **Wide-column** (§4) | — | — *(clustered by nature)* | [apache-cassandra](engines/apache-cassandra.md) · [scylladb](engines/scylladb.md) · [apache-hbase](engines/apache-hbase.md) | [google-cloud-bigtable](engines/google-cloud-bigtable.md) · [datastax-enterprise](engines/datastax-enterprise.md) |
+| **Graph** (§5) | [ladybugdb](engines/ladybugdb.md) | [neo4j](engines/neo4j.md) · [memgraph](engines/memgraph.md) | [janusgraph](engines/janusgraph.md) · [nebulagraph](engines/nebulagraph.md) | [amazon-neptune](engines/amazon-neptune.md) |
+| **Time-series** (§6) | — *(use [duckdb](engines/duckdb.md)/[sqlite](engines/sqlite.md))* | [timescaledb](engines/timescaledb.md) · [influxdb](engines/influxdb.md) · [questdb](engines/questdb.md) | [victoriametrics](engines/victoriametrics.md) · [apache-druid](engines/apache-druid.md) | [microsoft-azure-data-explorer](engines/microsoft-azure-data-explorer.md) · Timescale Cloud |
+| **Full-text** (§7) | [sqlite](engines/sqlite.md) FTS5 · Tantivy | [elasticsearch](engines/elasticsearch.md) · [apache-solr](engines/apache-solr.md) | [elasticsearch](engines/elasticsearch.md) · [opensearch](engines/opensearch.md) | [algolia](engines/algolia.md) · [microsoft-azure-ai-search](engines/microsoft-azure-ai-search.md) |
+| **Vector** (§8) | [lancedb](engines/lancedb.md) · [chroma](engines/chroma.md) | [qdrant](engines/qdrant.md) · [weaviate](engines/weaviate.md) | [milvus](engines/milvus.md) · [qdrant](engines/qdrant.md) | [pinecone](engines/pinecone.md) |
+
+Reading the columns as a **scaling ladder**: start as far left as your workload allows (embedded is the cheapest to
+operate) and move right only when scale, concurrency, or HA forces it — most workloads never need the right two
+columns. Several engines span multiple columns (e.g. [clickhouse](engines/clickhouse.md), [mongodb](engines/mongodb.md),
+[qdrant](engines/qdrant.md) run single-node *and* clustered); they're listed where they're the most natural pick.
+
+---
+
 ## 1. Transactional application database (OLTP)
 
 **Start here unless you have a specific reason to leave.**
